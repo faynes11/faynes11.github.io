@@ -209,12 +209,13 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: min(170%, 680px);
-            height: 155%;
+            width: min(176%, 700px);
+            height: 162%;
             z-index: 0;
             pointer-events: none;
-            filter: blur(28px);
-            opacity: 0.92;
+            opacity: 0.98;
+            -webkit-mask-image: radial-gradient(ellipse 68% 66% at 50% 50%, #000 32%, rgba(0,0,0,0.55) 62%, transparent 92%);
+            mask-image: radial-gradient(ellipse 68% 66% at 50% 50%, #000 32%, rgba(0,0,0,0.55) 62%, transparent 92%);
         }
 
         .widget-container {
@@ -490,47 +491,87 @@
         resize();
         window.addEventListener('resize', resize);
 
-        const blobs = [
-            { bx: 0.5, by: 0.5, rx: 0.34, ry: 0.30, sx: 0.7, sy: 0.55, px: 0.0, py: 1.2, color: 'rgba(198, 28, 52, 0.58)' },
-            { bx: 0.45, by: 0.42, rx: 0.28, ry: 0.25, sx: 0.9, sy: 0.72, px: 2.1, py: 0.4, color: 'rgba(138, 18, 42, 0.52)' },
-            { bx: 0.55, by: 0.58, rx: 0.30, ry: 0.26, sx: 0.62, sy: 0.85, px: 4.0, py: 2.5, color: 'rgba(217, 130, 58, 0.26)' },
-            { bx: 0.5, by: 0.5,  rx: 0.25, ry: 0.33, sx: 1.05, sy: 0.65, px: 1.3, py: 3.7, color: 'rgba(165, 22, 48, 0.46)' }
+        const ribbons = [
+            { yBase: 0.24, amp: 0.085, freq: 2.3, speed: 1.45, phase: 0.0,  width: 22, colorCore: 'rgba(255, 95, 120, 0.92)', colorGlow: 'rgba(210, 25, 55, 0.55)' },
+            { yBase: 0.40, amp: 0.105, freq: 2.7, speed: 1.85, phase: 1.7,  width: 26, colorCore: 'rgba(255, 70, 98, 0.95)',  colorGlow: 'rgba(185, 18, 45, 0.62)' },
+            { yBase: 0.56, amp: 0.095, freq: 2.1, speed: 1.25, phase: 3.3,  width: 24, colorCore: 'rgba(255, 165, 95, 0.85)', colorGlow: 'rgba(215, 75, 35, 0.48)' },
+            { yBase: 0.72, amp: 0.080, freq: 2.9, speed: 1.65, phase: 4.9,  width: 20, colorCore: 'rgba(245, 65, 95, 0.88)',  colorGlow: 'rgba(155, 15, 42, 0.55)' }
         ];
 
         let t = 0;
         let lastTime = performance.now();
 
+        function drawRibbon(w, h, r, time) {
+            const steps = 64;
+            const points = [];
+            for (let i = 0; i <= steps; i++) {
+                const u = i / steps;
+                const x = u * w;
+                const envelope = Math.sin(u * Math.PI);
+                const wave1 = Math.sin(u * Math.PI * r.freq + time * r.speed + r.phase);
+                const wave2 = Math.cos(u * Math.PI * (r.freq * 0.65) - time * r.speed * 0.7 + r.phase * 1.3);
+                const y = (r.yBase + (wave1 * 0.65 + wave2 * 0.35) * r.amp * (0.55 + envelope * 0.65)) * h;
+                points.push({ x, y, envelope });
+            }
+
+            ctx.save();
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            // Внешний выраженный ореол
+            ctx.beginPath();
+            points.forEach((p, idx) => idx === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+            ctx.strokeStyle = r.colorGlow;
+            ctx.lineWidth = r.width * (2.3 + auraBoost * 0.7);
+            ctx.shadowColor = r.colorGlow;
+            ctx.shadowBlur = 24 + auraBoost * 14;
+            ctx.stroke();
+
+            // Чёткая светящаяся полоса с ярким гребнем
+            const grad = ctx.createLinearGradient(0, 0, w, 0);
+            grad.addColorStop(0, 'rgba(220, 30, 58, 0.1)');
+            grad.addColorStop(0.25, r.colorCore);
+            grad.addColorStop(0.5, 'rgba(255, 195, 175, 0.96)');
+            grad.addColorStop(0.75, r.colorCore);
+            grad.addColorStop(1, 'rgba(220, 30, 58, 0.1)');
+
+            ctx.beginPath();
+            points.forEach((p, idx) => idx === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = r.width * (0.55 + auraBoost * 0.2);
+            ctx.shadowColor = r.colorCore;
+            ctx.shadowBlur = 12;
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
         function frame(now) {
             const dt = Math.min((now - lastTime) / 1000, 0.05);
             lastTime = now;
 
-            auraBoost = Math.max(0, auraBoost - dt * 0.65);
-            t += dt * (0.65 + auraBoost * 1.4);
+            auraBoost = Math.max(0, auraBoost - dt * 0.55);
+            t += dt * (1.0 + auraBoost * 2.2);
 
             const w = canvas.width / dpr;
             const h = canvas.height / dpr;
 
             ctx.clearRect(0, 0, w, h);
+
+            // Центральное плотное свечение за карточкой
+            const centerGlow = ctx.createRadialGradient(w * 0.5, h * 0.5, w * 0.04, w * 0.5, h * 0.5, Math.max(w, h) * 0.48);
+            centerGlow.addColorStop(0, `rgba(215, 32, 60, ${0.42 + auraBoost * 0.22})`);
+            centerGlow.addColorStop(0.55, `rgba(145, 18, 42, ${0.22 + auraBoost * 0.12})`);
+            centerGlow.addColorStop(1, 'rgba(14, 14, 16, 0)');
+            ctx.fillStyle = centerGlow;
+            ctx.fillRect(0, 0, w, h);
+
             ctx.globalCompositeOperation = 'lighter';
-
-            for (const b of blobs) {
-                const cx = (b.bx + Math.sin(t * b.sx + b.px) * 0.11) * w;
-                const cy = (b.by + Math.cos(t * b.sy + b.py) * 0.11) * h;
-                const pulse = 1 + Math.sin(t * 1.3 + b.px) * 0.12 + auraBoost * 0.16;
-                const radius = Math.max(w * b.rx, h * b.ry) * pulse;
-
-                const grad = ctx.createRadialGradient(cx, cy, radius * 0.05, cx, cy, radius);
-                grad.addColorStop(0, b.color);
-                grad.addColorStop(0.6, b.color.replace(/0\.\d+\)$/, '0.16)'));
-                grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-
-                ctx.fillStyle = grad;
-                ctx.beginPath();
-                ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-                ctx.fill();
+            for (const r of ribbons) {
+                drawRibbon(w, h, r, t);
             }
-
             ctx.globalCompositeOperation = 'source-over';
+
             requestAnimationFrame(frame);
         }
 
