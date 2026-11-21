@@ -153,10 +153,12 @@
         }
 
         .jp-item {
+            position: relative;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 14px;
             padding: 12px 14px;
+            overflow: hidden;
         }
 
         .jp-item.unlocked {
@@ -168,7 +170,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             font-size: 11px;
             font-weight: 700;
             letter-spacing: 0.5px;
@@ -180,7 +182,15 @@
         }
 
         .jp-status-locked {
-            color: #8c848e;
+            color: #9b93a0;
+        }
+
+        .jp-secret-box {
+            position: relative;
+            border-radius: 9px;
+            padding: 6px 8px;
+            background: rgba(0, 0, 0, 0.25);
+            overflow: hidden;
         }
 
         .jp-combo {
@@ -192,9 +202,32 @@
         }
 
         .jp-item.locked-jp .jp-combo {
-            filter: blur(6px);
-            opacity: 0.55;
+            filter: blur(8px);
+            -webkit-filter: blur(8px);
+            opacity: 0.35;
             user-select: none;
+            transform: scale(1.02);
+        }
+
+        .jp-blur-veil {
+            display: none;
+        }
+
+        .jp-item.locked-jp .jp-blur-veil {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            inset: 0;
+            background: rgba(18, 16, 22, 0.55);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #b5acb9;
+            pointer-events: none;
         }
 
         .modal-close {
@@ -783,16 +816,20 @@
             const item = document.createElement('div');
             item.className = `jp-item ${isOpen ? 'unlocked' : 'locked-jp'}`;
 
+            const titleText = isOpen ? `#${idx + 1} ${jp.name}` : `#${idx + 1} СЕКРЕТНЫЙ ДЖЕКПОТ`;
             const statusHtml = isOpen
                 ? `<span class="jp-status-open">★ ВЫБИТ</span>`
                 : `<span class="jp-status-locked">🔒 СКРЫТ</span>`;
 
             item.innerHTML = `
                 <div class="jp-item-top">
-                    <span>#${idx + 1} ${jp.name}</span>
+                    <span>${titleText}</span>
                     ${statusHtml}
                 </div>
-                <div class="jp-combo">${jp.who} • ${jp.action} • ${jp.target}</div>
+                <div class="jp-secret-box">
+                    <div class="jp-combo">${jp.who} • ${jp.action} • ${jp.target}</div>
+                    <div class="jp-blur-veil">Ещё не выбит</div>
+                </div>
             `;
             listEl.appendChild(item);
         });
@@ -1256,7 +1293,6 @@
 
         const dict = packs[currentTone];
 
-        // Проверяем, не выпал ли один из секретных джекпотов (например, Пантелеев)
         let plannedJackpot = null;
         if (currentTone === 'absurd') {
             for (const jp of JACKPOTS) {
