@@ -158,7 +158,7 @@
             padding: 24px 20px;
             border-radius: 26px;
             width: 100%;
-            max-width: 420px;
+            max-width: 400px;
             box-shadow:
                 0 25px 60px rgba(0, 0, 0, 0.85),
                 0 0 45px rgba(150, 20, 35, 0.22),
@@ -200,7 +200,7 @@
             display: flex;
             flex-direction: column;
             gap: 14px;
-            margin-bottom: 18px;
+            margin-bottom: 22px;
         }
 
         .slot {
@@ -218,86 +218,81 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.2s ease, box-shadow 0.2s ease;
             text-transform: uppercase;
             letter-spacing: 0.4px;
             box-shadow:
                 inset 0 2px 6px rgba(0, 0, 0, 0.85),
                 0 1px 0 rgba(255, 255, 255, 0.04);
+            overflow: hidden;
         }
 
         .slot.spinning {
-            opacity: 0.35;
-            transform: scale(0.985);
-            border-color: rgba(220, 40, 60, 0.8);
-        }
-
-        .mode-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-
-        .ai-btn {
-            background: linear-gradient(180deg, #9c192b 0%, #78101e 100%);
-            color: #ffffff;
-            border: 1px solid rgba(255, 110, 130, 0.25);
-            padding: 15px 12px;
-            border-radius: 14px;
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 0.4px;
-            text-transform: uppercase;
-            cursor: pointer;
+            border-color: rgba(235, 55, 75, 0.9);
             box-shadow:
-                0 8px 24px var(--crimson-glow),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            transition: all 0.15s ease;
+                inset 0 0 18px rgba(185, 28, 48, 0.35),
+                0 0 16px rgba(185, 28, 48, 0.28);
+            animation: reelPulse 0.12s linear infinite;
         }
 
-        .ai-btn:active {
-            transform: scale(0.97);
+        .slot.landed {
+            transform: scale(1.02);
+            border-color: rgba(217, 182, 104, 0.75);
+            box-shadow:
+                inset 0 2px 6px rgba(0, 0, 0, 0.85),
+                0 0 16px rgba(217, 182, 104, 0.22);
         }
 
-        .ai-btn:disabled,
-        .preset-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .preset-btn {
-            background: linear-gradient(180deg, #2b272a 0%, #1c1a1d 100%);
-            color: #f0d79c;
-            border: 1px solid rgba(217, 182, 104, 0.35);
-            padding: 15px 12px;
-            border-radius: 14px;
-            font-size: 14px;
-            font-weight: 700;
-            letter-spacing: 0.4px;
-            text-transform: uppercase;
-            cursor: pointer;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
-            transition: all 0.15s ease;
-        }
-
-        .preset-btn:active {
-            transform: scale(0.97);
+        @keyframes reelPulse {
+            0% { transform: translateY(-2px); opacity: 0.85; }
+            50% { transform: translateY(2px); opacity: 1; }
+            100% { transform: translateY(-2px); opacity: 0.85; }
         }
 
         .controls {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
             gap: 12px;
         }
 
-        .status-line {
-            font-size: 12px;
-            color: #b7b3b8;
-            letter-spacing: 0.3px;
+        .spin-btn {
             flex-grow: 1;
-            padding-left: 4px;
+            background: linear-gradient(180deg, #b81d33 0%, #7d0f1e 100%);
+            color: #ffffff;
+            border: 1px solid rgba(255, 120, 138, 0.32);
+            padding: 17px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            box-shadow:
+                0 8px 24px var(--crimson-glow),
+                inset 0 1px 0 rgba(255, 255, 255, 0.22);
+            transition: all 0.15s ease;
+        }
+
+        .spin-btn:active {
+            transform: scale(0.97);
+            box-shadow: 0 4px 12px var(--crimson-glow);
+        }
+
+        .spin-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .spin-btn::after {
+            content: '';
+            display: inline-block;
+            width: 11px;
+            height: 11px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ffffff, 0 0 18px rgba(255, 255, 255, 0.8);
         }
 
         .copy-btn {
@@ -305,7 +300,6 @@
             color: #a83240;
             border: 1px solid rgba(255, 255, 255, 0.08);
             width: 58px;
-            height: 48px;
             border-radius: 14px;
             cursor: pointer;
             display: flex;
@@ -313,7 +307,6 @@
             align-items: center;
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
             transition: all 0.15s ease;
-            flex-shrink: 0;
         }
 
         .copy-btn svg {
@@ -348,19 +341,15 @@
 <div class="widget-container">
     <div class="header">
         <span class="title">Я опоздал, потому что...</span>
-        <span class="badge" id="modeBadge">РЕЖИМ</span>
+        <span class="badge">SLOTS</span>
     </div>
     <div class="slots-wrapper">
         <div class="slot" id="slot1">ЦЫГАНЕ</div>
         <div class="slot" id="slot2">УТАЩИЛИ В НОРУ</div>
         <div class="slot" id="slot3">КЛЮЧИ ОТ КВАРТИРЫ</div>
     </div>
-    <div class="mode-buttons">
-        <button class="ai-btn" id="aiBtn" onclick="generateWithAi()">ИИ ГЕНЕРИРОВАТЬ</button>
-        <button class="preset-btn" id="presetBtn" onclick="pickFromDictionary()">ИЗ ЗАГОТОВЛЕННЫХ</button>
-    </div>
     <div class="controls">
-        <span class="status-line" id="statusLine">Выбери способ генерации</span>
+        <button class="spin-btn" id="spinBtn" onclick="spinAll()">КРУТИТЬ</button>
         <button class="copy-btn" onclick="copyExcuse()" title="Скопировать">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
@@ -373,9 +362,6 @@
 </div>
 
 <script>
-    const API_KEY = "AQ.Ab8RN6KN9PbOSMRM_xxD6Tie-r5JuFanghgFQ1XpsAtGAE6LQA";
-    const GEMINI_MODEL = "gemini-2.5-flash";
-
     const dictionary = {
         who: [
             "ДЕД", "СОСЕДКА", "КОТ", "КУРЬЕР", "ИНОПЛАНЕТЯНЕ", "МЭР ГОРОДА",
@@ -408,22 +394,7 @@
         ]
     };
 
-    const fullExcusePresets = [
-        "Я опоздал, потому что сосед с перфоратором заблокировал входную дверь ровно перед выходом.",
-        "Я опоздал, потому что кот соседей утащил в нору ключи от квартиры и спрятал второй ботинок.",
-        "Я опоздал, потому что бариста перепутал расписание и залил кофе мою зарядку телефона.",
-        "Я опоздал, потому что вахтёр закрыл на засов лифт и заставил меня слушать лекцию про погоду.",
-        "Я опоздал, потому что водитель газели переехал маршрутку и выкатил на дорогу электросамокат.",
-        "Я опоздал, потому что курьер самоката похитил мой завтрак и выключил из розетки будильник.",
-        "Я опоздал, потому что генеральный директор удалил рабочий аккаунт и отменил утренний сигнал.",
-        "Я опоздал, потому что инопланетяне сдули ветром пропуск и запутали в проводах мой автобус.",
-        "Я опоздал, потому что сантехник залил клеем тормоза на велике и запер в подвале штаны.",
-        "Я опоздал, потому что голубь в кепке остановил на полпути последний электропоезд.",
-        "Я опоздал, потому что напарник потерял в тумане карту оплаты и перепрошил код от домофона.",
-        "Я опоздал, потому что домовой посадил на диету утренний кофе и спрятал левый носок."
-    ];
-
-    let isBusy = false;
+    let isSpinning = false;
 
     function openSecret() {
         document.getElementById('secretModal').classList.add('active');
@@ -439,111 +410,81 @@
         }
     }
 
-    function getRandomElement(arr) {
-        return arr[Math.floor(Math.random() * arr.length)];
-    }
-
-    function getDictionaryExcuse() {
-        return {
-            who: getRandomElement(dictionary.who),
-            action: getRandomElement(dictionary.action),
-            target: getRandomElement(dictionary.target)
-        };
-    }
-
-    async function callGeminiExcuse() {
-        if (!API_KEY || API_KEY === "ВСТАВЬ_СВОЙ_API_КЛЮЧ_СЮДА") {
-            throw new Error("API_KEY is missing");
+    function pickNextWord(array, currentText) {
+        if (array.length <= 1) return array[0];
+        let candidate = array[Math.floor(Math.random() * array.length)];
+        while (candidate === currentText) {
+            candidate = array[Math.floor(Math.random() * array.length)];
         }
+        return candidate;
+    }
 
-        const prompt =
-            'Придумай смешную, абсурдную и грамматически согласованную отмазку для опоздания на русском языке в трёх коротких частях. ' +
-            'Верни ТОЛЬКО валидный JSON без markdown-оформления вида {"who":"...","action":"...","target":"..."}. ' +
-            'Правила: "who" — кто/что (1-3 слова заглавными буквами), ' +
-            '"action" — действие в прошедшем времени (1-4 слова заглавными буквами), ' +
-            '"target" — над чем действие (1-3 слова заглавными буквами). ' +
-            'Фраза "Я опоздал, потому что " + who + " " + action + " " + target должна звучать естественно.';
+    function spinReel(id, array, durationMs) {
+        return new Promise(resolve => {
+            const element = document.getElementById(id);
+            element.classList.remove('landed');
+            element.classList.add('spinning');
 
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(API_KEY)}`;
+            const startTime = performance.now();
+            let tickDelay = 55;
+            let timerId = null;
 
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                contents: [
-                    {
-                        parts: [{ text: prompt }]
-                    }
-                ],
-                generationConfig: {
-                    temperature: 1.0,
-                    responseMimeType: "application/json"
+            function step() {
+                const elapsed = performance.now() - startTime;
+                if (elapsed >= durationMs) {
+                    element.innerText = pickNextWord(array, element.innerText);
+                    element.classList.remove('spinning');
+                    element.classList.add('landed');
+                    setTimeout(() => element.classList.remove('landed'), 220);
+                    resolve();
+                    return;
                 }
-            })
+
+                element.innerText = pickNextWord(array, element.innerText);
+
+                const progress = elapsed / durationMs;
+                tickDelay = 55 + Math.pow(progress, 2.2) * 145;
+                timerId = setTimeout(step, tickDelay);
+            }
+
+            step();
         });
-
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
-
-        const data = await response.json();
-        const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-        const cleaned = rawText.replace(/```json|```/gi, "").trim();
-        const parsed = JSON.parse(cleaned);
-
-        const who = String(parsed.who || "").trim().toUpperCase();
-        const action = String(parsed.action || "").trim().toUpperCase();
-        const target = String(parsed.target || "").trim().toUpperCase();
-
-        if (!who || !action || !target) {
-            throw new Error("Incomplete fields");
-        }
-
-        return { who, action, target };
     }
 
-    async function setSlotValue(id, value) {
-        const element = document.getElementById(id);
-        element.classList.add('spinning');
-        await new Promise(r => setTimeout(r, 150));
-        element.innerText = value;
-        element.classList.remove('spinning');
-    }
+    async function spinAll() {
+        if (isSpinning) return;
+        isSpinning = true;
 
-    function setButtonsDisabled(disabled) {
-        document.getElementById('aiBtn').disabled = disabled;
-        document.getElementById('presetBtn').disabled = disabled;
-    }
+        const spinBtn = document.getElementById('spinBtn');
+        spinBtn.disabled = true;
 
-    async function renderSlots(excuse, badgeText, statusText) {
-        document.getElementById('modeBadge').innerText = badgeText;
-        document.getElementById('statusLine').innerText = statusText;
         await Promise.all([
-            setSlotValue('slot1', excuse.who),
-            setSlotValue('slot2', excuse.action),
-            setSlotValue('slot3', excuse.target)
+            spinReel('slot1', dictionary.who, 1100),
+            spinReel('slot2', dictionary.action, 1550),
+            spinReel('slot3', dictionary.target, 2000)
         ]);
+
+        spinBtn.disabled = false;
+        isSpinning = false;
     }
 
-    async function generateWithAi() {
-        if (isBusy) return;
-        isBusy = true;
-        setButtonsDisabled(true);
+    function copyExcuse() {
+        const s1 = document.getElementById('slot1').innerText;
+        const s2 = document.getElementById('slot2').innerText;
+        const s3 = document.getElementById('slot3').innerText;
+        const fullText = `Я опоздал, потому что ${s1.toLowerCase()} ${s2.toLowerCase()} ${s3.toLowerCase()}.`;
 
-        ['slot1', 'slot2', 'slot3'].forEach(id => document.getElementById(id).classList.add('spinning'));
-        document.getElementById('statusLine').innerText = "Запрос в Gemini...";
+        navigator.clipboard.writeText(fullText).then(() => {
+            alert('Отмазка скопирована: ' + fullText);
+        }).catch(() => {
+            prompt("Скопируйте вручную:", fullText);
+        });
+    }
+</script>
 
-        try {
-            const excuse = await callGeminiExcuse();
-            await renderSlots(excuse, "ИИ", "Сгенерировано нейросетью");
-        } catch (err) {
-            console.warn("Gemini error:", err);
-            document.getElementById('modeBadge').innerText = "ОШИБКА ИИ";
-            document.getElementById('statusLine').innerText = `Ошибка API (${err.message}). Нажми «Из заготовленных»`;
-            ['slot1', 'slot2', 'slot3'].forEach(id => document.getElementById(id).classList.remove('spinning'));
-        } finally {
+</body>
+</html>
+ {
             setButtonsDisabled(false);
             isBusy = false;
         }
