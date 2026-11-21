@@ -484,37 +484,3 @@
 
 </body>
 </html>
- {
-            setButtonsDisabled(false);
-            isBusy = false;
-        }
-    }
-
-    async function pickFromDictionary() {
-        if (isBusy) return;
-        isBusy = true;
-        setButtonsDisabled(true);
-
-        const excuse = getDictionaryExcuse();
-        await renderSlots(excuse, "СЛОВАРЬ", "Вариант из заготовленных");
-
-        setButtonsDisabled(false);
-        isBusy = false;
-    }
-
-    function copyExcuse() {
-        const s1 = document.getElementById('slot1').innerText;
-        const s2 = document.getElementById('slot2').innerText;
-        const s3 = document.getElementById('slot3').innerText;
-        const fullText = `Я опоздал, потому что ${s1.toLowerCase()} ${s2.toLowerCase()} ${s3.toLowerCase()}.`;
-
-        navigator.clipboard.writeText(fullText).then(() => {
-            alert('Отмазка скопирована: ' + fullText);
-        }).catch(() => {
-            prompt("Скопируйте вручную:", fullText);
-        });
-    }
-</script>
-
-</body>
-</html>
