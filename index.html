@@ -153,12 +153,56 @@
             transform: scale(0.97);
         }
 
+        .stage-wrap {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            padding-top: 42px;
+        }
+
+        .sound-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            z-index: 5;
+            background: linear-gradient(180deg, rgba(42, 26, 29, 0.95) 0%, rgba(20, 18, 21, 0.98) 100%);
+            color: #e8d2d5;
+            border: 1px solid rgba(185, 34, 52, 0.45);
+            padding: 7px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow:
+                0 6px 18px rgba(0, 0, 0, 0.65),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.15s ease;
+        }
+
+        .sound-btn:hover {
+            border-color: rgba(220, 50, 70, 0.75);
+            color: #ffffff;
+        }
+
+        .sound-btn:active {
+            transform: scale(0.96);
+        }
+
+        .sound-btn.muted {
+            color: #968c8e;
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
         .widget-container {
             background: linear-gradient(180deg, rgba(34, 24, 26, 0.92) 0%, rgba(20, 20, 22, 0.96) 35%, rgba(18, 18, 20, 0.98) 100%);
             padding: 24px 20px;
             border-radius: 26px;
             width: 100%;
-            max-width: 400px;
             box-shadow:
                 0 25px 60px rgba(0, 0, 0, 0.85),
                 0 0 45px rgba(150, 20, 35, 0.22),
@@ -338,26 +382,33 @@
     </div>
 </div>
 
-<div class="widget-container">
-    <div class="header">
-        <span class="title">Я опоздал, потому что...</span>
-        <span class="badge">SLOTS</span>
-    </div>
-    <div class="slots-wrapper">
-        <div class="slot" id="slot1">ЦЫГАНЕ</div>
-        <div class="slot" id="slot2">УТАЩИЛИ В НОРУ</div>
-        <div class="slot" id="slot3">КЛЮЧИ ОТ КВАРТИРЫ</div>
-    </div>
-    <div class="controls">
-        <button class="spin-btn" id="spinBtn" onclick="spinAll()">КРУТИТЬ</button>
-        <button class="copy-btn" onclick="copyExcuse()" title="Скопировать">
-            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                <line x1="9" y1="12" x2="15" y2="12"></line>
-                <line x1="9" y1="16" x2="15" y2="16"></line>
-            </svg>
-        </button>
+<div class="stage-wrap">
+    <button class="sound-btn" id="soundBtn" onclick="toggleSound()" title="Переключить звук прокрутки">
+        <span id="soundIcon">🔊</span>
+        <span id="soundLabel">ЗВУК ВКЛ</span>
+    </button>
+
+    <div class="widget-container">
+        <div class="header">
+            <span class="title">Я опоздал, потому что...</span>
+            <span class="badge">SLOTS</span>
+        </div>
+        <div class="slots-wrapper">
+            <div class="slot" id="slot1">ЦЫГАНЕ</div>
+            <div class="slot" id="slot2">УТАЩИЛИ В НОРУ</div>
+            <div class="slot" id="slot3">КЛЮЧИ ОТ КВАРТИРЫ</div>
+        </div>
+        <div class="controls">
+            <button class="spin-btn" id="spinBtn" onclick="spinAll()">КРУТИТЬ</button>
+            <button class="copy-btn" onclick="copyExcuse()" title="Скопировать">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                    <line x1="9" y1="12" x2="15" y2="12"></line>
+                    <line x1="9" y1="16" x2="15" y2="16"></line>
+                </svg>
+            </button>
+        </div>
     </div>
 </div>
 
@@ -395,6 +446,86 @@
     };
 
     let isSpinning = false;
+    let isSoundEnabled = true;
+    let audioCtx = null;
+
+    function ensureAudioContext() {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return null;
+        if (!audioCtx) {
+            audioCtx = new AudioContextClass();
+        }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume().catch(() => {});
+        }
+        return audioCtx;
+    }
+
+    function playTickSound(progress = 0) {
+        if (!isSoundEnabled) return;
+        const ctx = ensureAudioContext();
+        if (!ctx) return;
+
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'triangle';
+        const baseFreq = 520 - progress * 160 + (Math.random() * 60 - 30);
+        osc.frequency.setValueAtTime(baseFreq, now);
+        osc.frequency.exponentialRampToValueAtTime(140, now + 0.028);
+
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.028);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.03);
+    }
+
+    function playStopSound(reelIndex = 0) {
+        if (!isSoundEnabled) return;
+        const ctx = ensureAudioContext();
+        if (!ctx) return;
+
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        const freq = 220 + reelIndex * 55;
+        osc.frequency.setValueAtTime(freq, now);
+        osc.frequency.exponentialRampToValueAtTime(85, now + 0.09);
+
+        gain.gain.setValueAtTime(0.16, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.095);
+    }
+
+    function toggleSound() {
+        isSoundEnabled = !isSoundEnabled;
+        const btn = document.getElementById('soundBtn');
+        const icon = document.getElementById('soundIcon');
+        const label = document.getElementById('soundLabel');
+
+        if (isSoundEnabled) {
+            btn.classList.remove('muted');
+            icon.innerText = '🔊';
+            label.innerText = 'ЗВУК ВКЛ';
+            playStopSound(1);
+        } else {
+            btn.classList.add('muted');
+            icon.innerText = '🔇';
+            label.innerText = 'ЗВУК ВЫКЛ';
+        }
+    }
 
     function openSecret() {
         document.getElementById('secretModal').classList.add('active');
@@ -419,7 +550,7 @@
         return candidate;
     }
 
-    function spinReel(id, array, durationMs) {
+    function spinReel(id, array, durationMs, reelIndex) {
         return new Promise(resolve => {
             const element = document.getElementById(id);
             element.classList.remove('landed');
@@ -427,24 +558,26 @@
 
             const startTime = performance.now();
             let tickDelay = 55;
-            let timerId = null;
 
             function step() {
                 const elapsed = performance.now() - startTime;
+                const progress = Math.min(elapsed / durationMs, 1);
+
                 if (elapsed >= durationMs) {
                     element.innerText = pickNextWord(array, element.innerText);
                     element.classList.remove('spinning');
                     element.classList.add('landed');
+                    playStopSound(reelIndex);
                     setTimeout(() => element.classList.remove('landed'), 220);
                     resolve();
                     return;
                 }
 
                 element.innerText = pickNextWord(array, element.innerText);
+                playTickSound(progress);
 
-                const progress = elapsed / durationMs;
                 tickDelay = 55 + Math.pow(progress, 2.2) * 145;
-                timerId = setTimeout(step, tickDelay);
+                setTimeout(step, tickDelay);
             }
 
             step();
@@ -454,14 +587,15 @@
     async function spinAll() {
         if (isSpinning) return;
         isSpinning = true;
+        ensureAudioContext();
 
         const spinBtn = document.getElementById('spinBtn');
         spinBtn.disabled = true;
 
         await Promise.all([
-            spinReel('slot1', dictionary.who, 1100),
-            spinReel('slot2', dictionary.action, 1550),
-            spinReel('slot3', dictionary.target, 2000)
+            spinReel('slot1', dictionary.who, 1100, 0),
+            spinReel('slot2', dictionary.action, 1550, 1),
+            spinReel('slot3', dictionary.target, 2000, 2)
         ]);
 
         spinBtn.disabled = false;
@@ -483,4 +617,4 @@
 </script>
 
 </body>
-</html>
+    </html>
