@@ -698,7 +698,7 @@
 
 <div class="modal-backdrop" id="jackpotsModal" onclick="handleBackdropClick(event, 'jackpotsModal')">
     <div class="modal-card">
-        <div class="modal-title" id="jpModalTitle">Джекпоты (0/1)</div>
+        <div class="modal-title" id="jpModalTitle">Джекпоты (0/7)</div>
         <div class="jp-list" id="jpList"></div>
         <button class="modal-close" onclick="closeModal('jackpotsModal')">Закрыть</button>
     </div>
@@ -713,7 +713,7 @@
             </button>
             <button class="mini-btn jp-btn" id="jpBtn" onclick="openJackpotsModal()" title="Список джекпотов">
                 <span>🏆</span>
-                <span id="jpBtnLabel">ДЖЕКПОТЫ 0/1</span>
+                <span id="jpBtnLabel">ДЖЕКПОТЫ 0/7</span>
             </button>
         </div>
 
@@ -777,11 +777,67 @@
             who: 'ПАНТЕЛЕЕВ',
             action: 'УТАЩИЛ В НОРУ',
             target: 'КЛЮЧИ ОТ КВАРТИРЫ',
-            chance: 0.16
+            chance: 0.14
+        },
+        {
+            id: 'gozyava',
+            name: 'ГОЗЯВА',
+            who: 'ГОЗЯВА',
+            action: 'ЗАБЛОКИРОВАЛ',
+            target: 'ВХОДНУЮ ДВЕРЬ',
+            chance: 0.14
+        },
+        {
+            id: 'hrumki',
+            name: 'ХРУМКИ',
+            who: 'ХРУМКИ',
+            action: 'СЪЕЛ',
+            target: 'МОЙ ЗАВТРАК',
+            chance: 0.14
+        },
+        {
+            id: 'polad',
+            name: 'ПОЛАД',
+            who: 'ПОЛАД',
+            action: 'УГНАЛ',
+            target: 'МОЙ АВТОБУС',
+            chance: 0.14
+        },
+        {
+            id: 'david',
+            name: 'ДАВИД',
+            who: 'ДАВИД',
+            action: 'ПЕРЕПРОШИЛ',
+            target: 'БУДИЛЬНИК',
+            chance: 0.14
+        },
+        {
+            id: 'arseniy',
+            name: 'АРСЕНІЙ',
+            who: 'АРСЕНІЙ',
+            action: 'ЗАПЕР В ПОДВАЛЕ',
+            target: 'РАБОЧИЙ АККАУНТ',
+            chance: 0.14
+        },
+        {
+            id: 'kira',
+            name: 'КИРА',
+            who: 'КИРА',
+            action: 'СПРЯТАЛ',
+            target: 'ПРОПУСК',
+            chance: 0.14
         }
     ];
 
-    const STORAGE_KEY = 'excuse_slots_unlocked_jackpots_v1';
+    // Нормализуем написание АРСЕНІЙ -> АРСЕНІЙ/АРСЕНІЙ на случай кириллицы/латиницы
+    JACKPOTS.forEach(j => {
+        if (j.id === 'arseniy') {
+            j.name = 'АРСЕНІЙ';
+            j.who = 'АРСЕНІЙ';
+        }
+    });
+
+    const STORAGE_KEY = 'excuse_slots_unlocked_jackpots_v2';
     let unlockedIds = loadUnlockedJackpots();
 
     function loadUnlockedJackpots() {
@@ -844,7 +900,8 @@
     const packs = {
         absurd: {
             who: [
-                "ПАНТЕЛЕЕВ", "ДЕД", "СОСЕДКА", "КОТ", "КУРЬЕР", "ИНОПЛАНЕТЯНЕ", "МЭР ГОРОДА",
+                "ПАНТЕЛЕЕВ", "ГОЗЯВА", "ХРУМКИ", "ПОЛАД", "ДАВИД", "АРСЕНІЙ", "КИРА",
+                "ДЕД", "СОСЕДКА", "КОТ", "КУРЬЕР", "ИНОПЛАНЕТЯНЕ", "МЭР ГОРОДА",
                 "ВОЕНКОМ", "СВЕКРОВЬ", "АЛКАШ С ДВОРА", "УЧИТЕЛЬНИЦА", "ЦЫГАНЕ",
                 "МОЙ ПЁС", "БЫВШАЯ", "ДРУГ", "ЭКСКАВАТОРЩИК", "ГЕНЕРАЛЬНЫЙ ДИРЕКТОР",
                 "БАРИСТА", "ВАХТЁР", "СОСЕД С ПЕРФОРАТОРОМ", "ГОЛУБЬ В КЕПКЕ",
