@@ -209,13 +209,13 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: min(176%, 700px);
-            height: 162%;
+            width: min(190%, 760px);
+            height: 175%;
             z-index: 0;
             pointer-events: none;
             opacity: 0.98;
-            -webkit-mask-image: radial-gradient(ellipse 68% 66% at 50% 50%, #000 32%, rgba(0,0,0,0.55) 62%, transparent 92%);
-            mask-image: radial-gradient(ellipse 68% 66% at 50% 50%, #000 32%, rgba(0,0,0,0.55) 62%, transparent 92%);
+            -webkit-mask-image: radial-gradient(ellipse 66% 64% at 50% 50%, #000 34%, rgba(0,0,0,0.5) 64%, transparent 92%);
+            mask-image: radial-gradient(ellipse 66% 64% at 50% 50%, #000 34%, rgba(0,0,0,0.5) 64%, transparent 92%);
         }
 
         .widget-container {
@@ -475,7 +475,7 @@
     let audioCtx = null;
     let auraBoost = 0;
 
-    (function initFluidAura() {
+    (function initCenterRaysAura() {
         const canvas = document.getElementById('auraCanvas');
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
@@ -491,56 +491,67 @@
         resize();
         window.addEventListener('resize', resize);
 
-        const ribbons = [
-            { yBase: 0.24, amp: 0.085, freq: 2.3, speed: 1.45, phase: 0.0,  width: 22, colorCore: 'rgba(255, 95, 120, 0.92)', colorGlow: 'rgba(210, 25, 55, 0.55)' },
-            { yBase: 0.40, amp: 0.105, freq: 2.7, speed: 1.85, phase: 1.7,  width: 26, colorCore: 'rgba(255, 70, 98, 0.95)',  colorGlow: 'rgba(185, 18, 45, 0.62)' },
-            { yBase: 0.56, amp: 0.095, freq: 2.1, speed: 1.25, phase: 3.3,  width: 24, colorCore: 'rgba(255, 165, 95, 0.85)', colorGlow: 'rgba(215, 75, 35, 0.48)' },
-            { yBase: 0.72, amp: 0.080, freq: 2.9, speed: 1.65, phase: 4.9,  width: 20, colorCore: 'rgba(245, 65, 95, 0.88)',  colorGlow: 'rgba(155, 15, 42, 0.55)' }
+        const rays = [
+            { angle: -2.65, jitter: 0.24, freq: 5.2, speed: 1.9, phase: 0.2,  length: 0.56, width: 14 },
+            { angle: -2.15, jitter: 0.28, freq: 6.1, speed: 2.3, phase: 1.4,  length: 0.62, width: 16 },
+            { angle: -1.55, jitter: 0.22, freq: 4.8, speed: 1.6, phase: 2.6,  length: 0.54, width: 13 },
+            { angle: -0.92, jitter: 0.27, freq: 5.8, speed: 2.1, phase: 3.8,  length: 0.60, width: 15 },
+            { angle: -0.35, jitter: 0.25, freq: 6.4, speed: 2.4, phase: 0.9,  length: 0.58, width: 14 },
+            { angle:  0.32, jitter: 0.26, freq: 5.0, speed: 1.8, phase: 2.1,  length: 0.57, width: 14 },
+            { angle:  0.95, jitter: 0.29, freq: 6.2, speed: 2.2, phase: 3.4,  length: 0.62, width: 16 },
+            { angle:  1.58, jitter: 0.23, freq: 4.9, speed: 1.7, phase: 4.7,  length: 0.55, width: 13 },
+            { angle:  2.22, jitter: 0.28, freq: 5.9, speed: 2.0, phase: 1.1,  length: 0.61, width: 15 },
+            { angle:  2.78, jitter: 0.25, freq: 5.5, speed: 1.9, phase: 2.9,  length: 0.56, width: 14 }
         ];
 
         let t = 0;
         let lastTime = performance.now();
 
-        function drawRibbon(w, h, r, time) {
-            const steps = 64;
-            const points = [];
+        function drawRay(cx, cy, maxR, ray, time) {
+            const steps = 36;
+            const len = maxR * ray.length * (0.88 + Math.sin(time * 1.4 + ray.phase) * 0.12 + auraBoost * 0.18);
+            const pts = [];
+
             for (let i = 0; i <= steps; i++) {
                 const u = i / steps;
-                const x = u * w;
-                const envelope = Math.sin(u * Math.PI);
-                const wave1 = Math.sin(u * Math.PI * r.freq + time * r.speed + r.phase);
-                const wave2 = Math.cos(u * Math.PI * (r.freq * 0.65) - time * r.speed * 0.7 + r.phase * 1.3);
-                const y = (r.yBase + (wave1 * 0.65 + wave2 * 0.35) * r.amp * (0.55 + envelope * 0.65)) * h;
-                points.push({ x, y, envelope });
+                const dist = u * len;
+                const sway =
+                    Math.sin(u * ray.freq + time * ray.speed + ray.phase) * ray.jitter * u +
+                    Math.cos(u * (ray.freq * 1.7) - time * (ray.speed * 1.3) + ray.phase * 1.5) * (ray.jitter * 0.45) * u;
+                const a = ray.angle + sway;
+                pts.push({
+                    x: cx + Math.cos(a) * dist,
+                    y: cy + Math.sin(a) * dist,
+                    u
+                });
             }
 
             ctx.save();
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
 
-            // Внешний выраженный ореол
+            // Мягкий красный ореол луча
             ctx.beginPath();
-            points.forEach((p, idx) => idx === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
-            ctx.strokeStyle = r.colorGlow;
-            ctx.lineWidth = r.width * (2.3 + auraBoost * 0.7);
-            ctx.shadowColor = r.colorGlow;
-            ctx.shadowBlur = 24 + auraBoost * 14;
+            pts.forEach((p, idx) => idx === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+            ctx.strokeStyle = `rgba(215, 28, 56, ${0.42 + auraBoost * 0.18})`;
+            ctx.lineWidth = ray.width * (2.2 + auraBoost * 0.6);
+            ctx.shadowColor = 'rgba(225, 32, 62, 0.75)';
+            ctx.shadowBlur = 22 + auraBoost * 12;
             ctx.stroke();
 
-            // Чёткая светящаяся полоса с ярким гребнем
-            const grad = ctx.createLinearGradient(0, 0, w, 0);
-            grad.addColorStop(0, 'rgba(220, 30, 58, 0.1)');
-            grad.addColorStop(0.25, r.colorCore);
-            grad.addColorStop(0.5, 'rgba(255, 195, 175, 0.96)');
-            grad.addColorStop(0.75, r.colorCore);
-            grad.addColorStop(1, 'rgba(220, 30, 58, 0.1)');
+            // Яркий лучевой стержень от центра наружу
+            const endP = pts[pts.length - 1];
+            const grad = ctx.createLinearGradient(cx, cy, endP.x, endP.y);
+            grad.addColorStop(0, 'rgba(255, 210, 195, 0.95)');
+            grad.addColorStop(0.45, 'rgba(255, 85, 115, 0.85)');
+            grad.addColorStop(1, 'rgba(210, 25, 55, 0)');
 
             ctx.beginPath();
-            points.forEach((p, idx) => idx === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+            pts.forEach((p, idx) => idx === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
             ctx.strokeStyle = grad;
-            ctx.lineWidth = r.width * (0.55 + auraBoost * 0.2);
-            ctx.shadowColor = r.colorCore;
-            ctx.shadowBlur = 12;
+            ctx.lineWidth = ray.width * (0.45 + auraBoost * 0.2);
+            ctx.shadowColor = 'rgba(255, 115, 135, 0.9)';
+            ctx.shadowBlur = 10;
             ctx.stroke();
 
             ctx.restore();
@@ -551,24 +562,27 @@
             lastTime = now;
 
             auraBoost = Math.max(0, auraBoost - dt * 0.55);
-            t += dt * (1.0 + auraBoost * 2.2);
+            t += dt * (1.0 + auraBoost * 2.1);
 
             const w = canvas.width / dpr;
             const h = canvas.height / dpr;
+            const cx = w * 0.5;
+            const cy = h * 0.5;
+            const maxR = Math.max(w, h) * 0.5;
 
             ctx.clearRect(0, 0, w, h);
 
-            // Центральное плотное свечение за карточкой
-            const centerGlow = ctx.createRadialGradient(w * 0.5, h * 0.5, w * 0.04, w * 0.5, h * 0.5, Math.max(w, h) * 0.48);
-            centerGlow.addColorStop(0, `rgba(215, 32, 60, ${0.42 + auraBoost * 0.22})`);
-            centerGlow.addColorStop(0.55, `rgba(145, 18, 42, ${0.22 + auraBoost * 0.12})`);
-            centerGlow.addColorStop(1, 'rgba(14, 14, 16, 0)');
-            ctx.fillStyle = centerGlow;
+            // Ядро свечения в центре за окном
+            const coreGlow = ctx.createRadialGradient(cx, cy, 4, cx, cy, maxR * 0.45);
+            coreGlow.addColorStop(0, `rgba(235, 42, 70, ${0.52 + auraBoost * 0.2})`);
+            coreGlow.addColorStop(0.6, `rgba(155, 18, 42, ${0.22 + auraBoost * 0.1})`);
+            coreGlow.addColorStop(1, 'rgba(14, 14, 16, 0)');
+            ctx.fillStyle = coreGlow;
             ctx.fillRect(0, 0, w, h);
 
             ctx.globalCompositeOperation = 'lighter';
-            for (const r of ribbons) {
-                drawRibbon(w, h, r, t);
+            for (const ray of rays) {
+                drawRay(cx, cy, maxR, ray, t);
             }
             ctx.globalCompositeOperation = 'source-over';
 
