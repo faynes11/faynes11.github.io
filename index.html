@@ -699,31 +699,4 @@
 </script>
 
 </body>
-</html>led = true;
-
-        await Promise.all([
-            spinReel('slot1', dictionary.who, 1100, 0),
-            spinReel('slot2', dictionary.action, 1550, 1),
-            spinReel('slot3', dictionary.target, 2000, 2)
-        ]);
-
-        spinBtn.disabled = false;
-        isSpinning = false;
-    }
-
-    function copyExcuse() {
-        const s1 = document.getElementById('slot1').innerText;
-        const s2 = document.getElementById('slot2').innerText;
-        const s3 = document.getElementById('slot3').innerText;
-        const fullText = `Я опоздал, потому что ${s1.toLowerCase()} ${s2.toLowerCase()} ${s3.toLowerCase()}.`;
-
-        navigator.clipboard.writeText(fullText).then(() => {
-            alert('Отмазка скопирована: ' + fullText);
-        }).catch(() => {
-            prompt("Скопируйте вручную:", fullText);
-        });
-    }
-</script>
-
-</body>
-    </html>
+</html>
