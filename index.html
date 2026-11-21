@@ -17,7 +17,7 @@
         body {
             background-color: var(--bg-dark);
             background-image:
-                radial-gradient(circle at 50% 48%, rgba(165, 20, 35, 0.28) 0%, rgba(14, 14, 16, 0.92) 60%),
+                radial-gradient(circle at 50% 48%, rgba(165, 20, 35, 0.22) 0%, rgba(14, 14, 16, 0.94) 62%),
                 repeating-linear-gradient(115deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 2px, transparent 2px, transparent 9px),
                 repeating-linear-gradient(25deg, rgba(0,0,0,0.4) 0px, rgba(0,0,0,0.4) 4px, transparent 4px, transparent 14px),
                 radial-gradient(ellipse at 20% 30%, #1c1c1f 0%, #0a0a0c 100%);
@@ -30,6 +30,7 @@
             margin: 0;
             padding: 16px;
             box-sizing: border-box;
+            overflow-x: hidden;
         }
 
         .made-by {
@@ -160,6 +161,19 @@
             padding-top: 42px;
         }
 
+        .aura-canvas {
+            position: absolute;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 145%;
+            height: calc(100% + 40px);
+            z-index: 0;
+            pointer-events: none;
+            filter: blur(26px);
+            opacity: 0.88;
+        }
+
         .sound-btn {
             position: absolute;
             top: 0;
@@ -210,6 +224,7 @@
             box-sizing: border-box;
             border: 1px solid rgba(255, 255, 255, 0.08);
             position: relative;
+            z-index: 2;
         }
 
         .header {
@@ -383,6 +398,8 @@
 </div>
 
 <div class="stage-wrap">
+    <canvas class="aura-canvas" id="auraCanvas"></canvas>
+
     <button class="sound-btn" id="soundBtn" onclick="toggleSound()" title="Переключить звук прокрутки">
         <span id="soundIcon">🔊</span>
         <span id="soundLabel">ЗВУК ВКЛ</span>
@@ -448,6 +465,70 @@
     let isSpinning = false;
     let isSoundEnabled = true;
     let audioCtx = null;
+    let auraBoost = 0;
+
+    (function initFluidAura() {
+        const canvas = document.getElementById('auraCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+        function resize() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = Math.max(1, Math.floor(rect.width * dpr));
+            canvas.height = Math.max(1, Math.floor(rect.height * dpr));
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        resize();
+        window.addEventListener('resize', resize);
+
+        const blobs = [
+            { bx: 0.5, by: 0.45, rx: 0.34, ry: 0.28, sx: 0.7, sy: 0.55, px: 0.0, py: 1.2, color: 'rgba(198, 28, 52, 0.58)' },
+            { bx: 0.42, by: 0.35, rx: 0.28, ry: 0.24, sx: 0.9, sy: 0.72, px: 2.1, py: 0.4, color: 'rgba(138, 18, 42, 0.52)' },
+            { bx: 0.58, by: 0.62, rx: 0.30, ry: 0.25, sx: 0.62, sy: 0.85, px: 4.0, py: 2.5, color: 'rgba(217, 130, 58, 0.26)' },
+            { bx: 0.5, by: 0.5,  rx: 0.24, ry: 0.34, sx: 1.05, sy: 0.65, px: 1.3, py: 3.7, color: 'rgba(165, 22, 48, 0.46)' }
+        ];
+
+        let t = 0;
+        let lastTime = performance.now();
+
+        function frame(now) {
+            const dt = Math.min((now - lastTime) / 1000, 0.05);
+            lastTime = now;
+
+            auraBoost = Math.max(0, auraBoost - dt * 0.65);
+            t += dt * (0.65 + auraBoost * 1.4);
+
+            const w = canvas.width / dpr;
+            const h = canvas.height / dpr;
+
+            ctx.clearRect(0, 0, w, h);
+            ctx.globalCompositeOperation = 'lighter';
+
+            for (const b of blobs) {
+                const cx = (b.bx + Math.sin(t * b.sx + b.px) * 0.14) * w;
+                const cy = (b.by + Math.cos(t * b.sy + b.py) * 0.13) * h;
+                const pulse = 1 + Math.sin(t * 1.3 + b.px) * 0.12 + auraBoost * 0.16;
+                const radius = Math.max(w * b.rx, h * b.ry) * pulse;
+
+                const grad = ctx.createRadialGradient(cx, cy, radius * 0.05, cx, cy, radius);
+                grad.addColorStop(0, b.color);
+                grad.addColorStop(0.6, b.color.replace(/0\.\d+\)$/, '0.16)'));
+                grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            ctx.globalCompositeOperation = 'source-over';
+            requestAnimationFrame(frame);
+        }
+
+        requestAnimationFrame(frame);
+    })();
 
     function ensureAudioContext() {
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -587,10 +668,38 @@
     async function spinAll() {
         if (isSpinning) return;
         isSpinning = true;
+        auraBoost = 1;
         ensureAudioContext();
 
         const spinBtn = document.getElementById('spinBtn');
         spinBtn.disabled = true;
+
+        await Promise.all([
+            spinReel('slot1', dictionary.who, 1100, 0),
+            spinReel('slot2', dictionary.action, 1550, 1),
+            spinReel('slot3', dictionary.target, 2000, 2)
+        ]);
+
+        spinBtn.disabled = false;
+        isSpinning = false;
+    }
+
+    function copyExcuse() {
+        const s1 = document.getElementById('slot1').innerText;
+        const s2 = document.getElementById('slot2').innerText;
+        const s3 = document.getElementById('slot3').innerText;
+        const fullText = `Я опоздал, потому что ${s1.toLowerCase()} ${s2.toLowerCase()} ${s3.toLowerCase()}.`;
+
+        navigator.clipboard.writeText(fullText).then(() => {
+            alert('Отмазка скопирована: ' + fullText);
+        }).catch(() => {
+            prompt("Скопируйте вручную:", fullText);
+        });
+    }
+</script>
+
+</body>
+</html>led = true;
 
         await Promise.all([
             spinReel('slot1', dictionary.who, 1100, 0),
