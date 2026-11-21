@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Я опоздал, потому что...</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --container-bg: #1e1e1e;
+            --text-color: #ffffff;
+            --accent-color: #ff3b30;
+            --slot-border: #333333;
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .widget-container {
+            background-color: var(--container-bg);
+            padding: 20px;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+            border: 1px solid var(--slot-border);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .title {
+            font-size: 14px;
+            font-weight: 600;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .slots-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .slot {
+            background-color: #2a2a2a;
+            padding: 12px 15px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            border: 1px solid var(--slot-border);
+            min-height: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .spin-btn {
+            flex-grow: 1;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .spin-btn::after {
+            content: '';
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: white;
+            border-radius: 50%;
+            box-shadow: 0 0 8px white;
+        }
+
+        .copy-btn {
+            background-color: #3a3a3a;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="widget-container">
+    <div class="header">
+        <span class="title">Я опоздал, потому что...</span>
+        <span class="badge">BETA</span>
+    </div>
+    <div class="slots-wrapper">
+        <div class="slot" id="slot1">ДЕГЕНЕРАТ</div>
+        <div class="slot" id="slot2">СЛОМАЛ</div>
+        <div class="slot" id="slot3">МОЙ АВТОБУС</div>
+    </div>
+    <div class="controls">
+        <button class="spin-btn" onclick="spinAll()">КРУТИТЬ</button>
+        <button class="copy-btn" onclick="copyExcuse()">📋</button>
+    </div>
+</div>
+
+<script>
+    const dictionary = {
+        who: ["ДЕД", "СОСЕДКА", "КОТ", "КУРЬЕР", "ИНОПЛАНЕТЯНЕ", "МЭР ГОРОДА"],
+        action: ["СЛОМАЛ", "УГНАЛ", "СЪЕЛ", "ЗАБЛОКИРОВАЛ", "ПОХИТИЛ"],
+        target: ["МОЙ АВТОБУС", "БУДИЛЬНИК", "ЛИФТ", "ПРОПУСК", "ШТАНЫ"]
+    };
+
+    function getRandomElement(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function spinSlot(id, array) {
+        const element = document.getElementById(id);
+        element.style.opacity = 0.3;
+        setTimeout(() => {
+            element.innerText = getRandomElement(array);
+            element.style.opacity = 1;
+        }, 100);
+    }
+
+    function spinAll() {
+        spinSlot('slot1', dictionary.who);
+        spinSlot('slot2', dictionary.action);
+        spinSlot('slot3', dictionary.target);
+    }
+
+    function copyExcuse() {
+        const s1 = document.getElementById('slot1').innerText;
+        const s2 = document.getElementById('slot2').innerText;
+        const s3 = document.getElementById('slot3').innerText;
+        const fullText = `Я опоздал, потому что ${s1.toLowerCase()} ${s2.toLowerCase()} ${s3.toLowerCase()}.`;
+        
+        navigator.clipboard.writeText(fullText).then(() => {
+            alert('Отмазка скопирована: ' + fullText);
+        });
+    }
+</script>
+
+</body>
+</html>
+
