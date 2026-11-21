@@ -1,107 +1,209 @@
-<script>
-    const GEMINI_API_KEY = 'AQ.Ab8RN6KN9PbOSMRM_xxD6Tie-r5JuFanghgFQ1XpsAtGAE6LQA';
-
-    function openSecret() {
-        document.getElementById('secretModal').classList.add('active');
-    }
-
-    function closeSecret() {
-        document.getElementById('secretModal').classList.remove('active');
-    }
-
-    function handleBackdropClick(event) {
-        if (event.target.id === 'secretModal') {
-            closeSecret();
-        }
-    }
-
-    async function fetchExcuseFromGemini() {
-        if (!GEMINI_API_KEY || GEMINI_API_KEY === 'ВСТАВЬ_СВОЙ_КЛЮЧ_СЮДА') {
-            throw new Error('Не указан GEMINI_API_KEY в коде');
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Я опоздал, потому что...</title>
+    <style>
+        :root {
+            --bg-dark: #0e0e10;
+            --text-color: #f3f3f4;
+            --crimson-glow: rgba(185, 28, 48, 0.35);
+            --slot-border: rgba(155, 34, 48, 0.45);
+            --gold-bg: rgba(145, 110, 40, 0.25);
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        const prompt =
-            'Придумай одну смешную и реалистичную отмазку для опоздания на русском языке. ' +
-            'Разбей её на 3 короткие части верхним регистром: ' +
-            'who (кто/что, 1-3 слова, например "МОЙ ПЁС"), ' +
-            'action (действие в прошедшем времени, 1-3 слова, например "СЪЕЛ"), ' +
-            'target (объект, 1-3 слова, например "МОЙ ПРОПУСК"). ' +
-            'Верни строго валидный JSON без пояснений: {"who":"...","action":"...","target":"..."}';
-
-        const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(GEMINI_API_KEY)}`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }],
-                    generationConfig: {
-                        responseMimeType: 'application/json',
-                        temperature: 1.0
-                    }
-                })
-            }
-        );
-
-        if (!response.ok) {
-            const errText = await response.text();
-            throw new Error(`Ошибка Gemini (${response.status}): ${errText}`);
+        body {
+            background-color: var(--bg-dark);
+            background-image:
+                radial-gradient(circle at 50% 48%, rgba(165, 20, 35, 0.28) 0%, rgba(14, 14, 16, 0.92) 60%),
+                repeating-linear-gradient(115deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 2px, transparent 2px, transparent 9px),
+                repeating-linear-gradient(25deg, rgba(0,0,0,0.4) 0px, rgba(0,0,0,0.4) 4px, transparent 4px, transparent 14px),
+                radial-gradient(ellipse at 20% 30%, #1c1c1f 0%, #0a0a0c 100%);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 16px;
+            box-sizing: border-box;
         }
 
-        const data = await response.json();
-        const rawText = data?.candidates?.[0]?.content?.parts?.[0]?.text || '{}';
-        const parsed = JSON.parse(rawText);
-
-        if (!parsed.who || !parsed.action || !parsed.target) {
-            throw new Error('Модель вернула неполный JSON');
+        .made-by {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 10;
+            background: linear-gradient(180deg, rgba(34, 24, 26, 0.9) 0%, rgba(20, 20, 22, 0.94) 100%);
+            color: #c9b8ba;
+            border: 1px solid rgba(155, 34, 48, 0.35);
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            box-shadow:
+                0 8px 20px rgba(0, 0, 0, 0.55),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            pointer-events: none;
         }
 
-        return {
-            who: String(parsed.who).trim().toUpperCase(),
-            action: String(parsed.action).trim().toUpperCase(),
-            target: String(parsed.target).trim().toUpperCase()
-        };
-    }
-
-    async function spinAll() {
-        const spinBtn = document.getElementById('spinBtn');
-        const slot1 = document.getElementById('slot1');
-        const slot2 = document.getElementById('slot2');
-        const slot3 = document.getElementById('slot3');
-
-        spinBtn.disabled = true;
-        slot1.classList.add('spinning');
-        slot2.classList.add('spinning');
-        slot3.classList.add('spinning');
-
-        try {
-            const excuse = await fetchExcuseFromGemini();
-            slot1.innerText = excuse.who;
-            slot2.innerText = excuse.action;
-            slot3.innerText = excuse.target;
-        } catch (err) {
-            console.error(err);
-            slot1.innerText = 'ОШИБКА';
-            slot2.innerText = 'GEMINI';
-            slot3.innerText = err.message.slice(0, 28).toUpperCase();
-        } finally {
-            slot1.classList.remove('spinning');
-            slot2.classList.remove('spinning');
-            slot3.classList.remove('spinning');
-            spinBtn.disabled = false;
+        .secret-btn {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 10;
+            background: linear-gradient(180deg, rgba(44, 24, 28, 0.94) 0%, rgba(22, 18, 20, 0.96) 100%);
+            color: #e2b8be;
+            border: 1px solid rgba(185, 34, 52, 0.45);
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow:
+                0 8px 20px rgba(0, 0, 0, 0.55),
+                0 0 14px rgba(165, 20, 35, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.15s ease;
         }
-    }
 
-    function copyExcuse() {
-        const s1 = document.getElementById('slot1').innerText;
-        const s2 = document.getElementById('slot2').innerText;
-        const s3 = document.getElementById('slot3').innerText;
-        const fullText = `Я опоздал, потому что ${s1.toLowerCase()} ${s2.toLowerCase()} ${s3.toLowerCase()}.`;
+        .widget-container {
+            background: linear-gradient(180deg, rgba(34, 24, 26, 0.92) 0%, rgba(20, 20, 22, 0.96) 35%, rgba(18, 18, 20, 0.98) 100%);
+            padding: 24px 20px;
+            border-radius: 26px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow:
+                0 25px 60px rgba(0, 0, 0, 0.85),
+                0 0 45px rgba(150, 20, 35, 0.22),
+                inset 0 1px 1px rgba(255, 255, 255, 0.12);
+            box-sizing: border-box;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
 
-        navigator.clipboard.writeText(fullText).then(() => {
-            alert('Отмазка скопирована: ' + fullText);
-        }).catch(() => {
-            prompt("Скопируйте вручную:", fullText);
-        });
-    }
-</script>
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+            padding: 0 4px;
+        }
+
+        .title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #d8d8dc;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .badge {
+            background-color: var(--gold-bg);
+            color: #d9b668;
+            border: 1px solid rgba(217, 182, 104, 0.35);
+            padding: 3px 11px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .slots-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 22px;
+        }
+
+        .slot {
+            background:
+                repeating-linear-gradient(90deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 3px),
+                linear-gradient(180deg, #1b1b1e 0%, #111113 100%);
+            padding: 18px 16px;
+            border-radius: 14px;
+            text-align: center;
+            font-size: 19px;
+            font-weight: 700;
+            color: #f0f0f2;
+            border: 1px solid var(--slot-border);
+            min-height: 26px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            box-shadow:
+                inset 0 2px 6px rgba(0, 0, 0, 0.85),
+                0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        .spin-btn {
+            flex-grow: 1;
+            background: linear-gradient(180deg, #9c192b 0%, #78101e 100%);
+            color: #ffffff;
+            border: 1px solid rgba(255, 110, 130, 0.25);
+            padding: 17px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            box-shadow:
+                0 8px 24px var(--crimson-glow),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .copy-btn {
+            background: linear-gradient(180deg, #252427 0%, #1c1b1e 100%);
+            color: #a83240;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            width: 58px;
+            border-radius: 14px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+<div class="made-by">сделано михуньчиком ❤️</div>
+<button class="secret-btn">секретик</button>
+
+<div class="widget-container">
+    <div class="header">
+        <span class="title">Я опоздал, потому что...</span>
+        <span class="badge">TEST</span>
+    </div>
+    <div class="slots-wrapper">
+        <div class="slot">ПРОВЕРКА</div>
+        <div class="slot">ЗАГРУЗКИ</div>
+        <div class="slot">ДИЗАЙНА</div>
+    </div>
+    <div class="controls">
+        <button class="spin-btn">КРУТИТЬ</button>
+        <button class="copy-btn">КОПИРОВАТЬ</button>
+    </div>
+</div>
+
+</body>
+</html>2
