@@ -161,19 +161,6 @@
             padding-top: 42px;
         }
 
-        .aura-canvas {
-            position: absolute;
-            top: 24px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 145%;
-            height: calc(100% + 40px);
-            z-index: 0;
-            pointer-events: none;
-            filter: blur(26px);
-            opacity: 0.88;
-        }
-
         .sound-btn {
             position: absolute;
             top: 0;
@@ -210,6 +197,24 @@
         .sound-btn.muted {
             color: #968c8e;
             border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .widget-box {
+            position: relative;
+            width: 100%;
+        }
+
+        .aura-canvas {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: min(170%, 680px);
+            height: 155%;
+            z-index: 0;
+            pointer-events: none;
+            filter: blur(28px);
+            opacity: 0.92;
         }
 
         .widget-container {
@@ -398,33 +403,35 @@
 </div>
 
 <div class="stage-wrap">
-    <canvas class="aura-canvas" id="auraCanvas"></canvas>
-
     <button class="sound-btn" id="soundBtn" onclick="toggleSound()" title="Переключить звук прокрутки">
         <span id="soundIcon">🔊</span>
         <span id="soundLabel">ЗВУК ВКЛ</span>
     </button>
 
-    <div class="widget-container">
-        <div class="header">
-            <span class="title">Я опоздал, потому что...</span>
-            <span class="badge">SLOTS</span>
-        </div>
-        <div class="slots-wrapper">
-            <div class="slot" id="slot1">ЦЫГАНЕ</div>
-            <div class="slot" id="slot2">УТАЩИЛИ В НОРУ</div>
-            <div class="slot" id="slot3">КЛЮЧИ ОТ КВАРТИРЫ</div>
-        </div>
-        <div class="controls">
-            <button class="spin-btn" id="spinBtn" onclick="spinAll()">КРУТИТЬ</button>
-            <button class="copy-btn" onclick="copyExcuse()" title="Скопировать">
-                <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
-                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                    <line x1="9" y1="12" x2="15" y2="12"></line>
-                    <line x1="9" y1="16" x2="15" y2="16"></line>
-                </svg>
-            </button>
+    <div class="widget-box">
+        <canvas class="aura-canvas" id="auraCanvas"></canvas>
+
+        <div class="widget-container">
+            <div class="header">
+                <span class="title">Я опоздал, потому что...</span>
+                <span class="badge">SLOTS</span>
+            </div>
+            <div class="slots-wrapper">
+                <div class="slot" id="slot1">ЦЫГАНЕ</div>
+                <div class="slot" id="slot2">УТАЩИЛИ В НОРУ</div>
+                <div class="slot" id="slot3">КЛЮЧИ ОТ КВАРТИРЫ</div>
+            </div>
+            <div class="controls">
+                <button class="spin-btn" id="spinBtn" onclick="spinAll()">КРУТИТЬ</button>
+                <button class="copy-btn" onclick="copyExcuse()" title="Скопировать">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                        <line x1="9" y1="12" x2="15" y2="12"></line>
+                        <line x1="9" y1="16" x2="15" y2="16"></line>
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -484,10 +491,10 @@
         window.addEventListener('resize', resize);
 
         const blobs = [
-            { bx: 0.5, by: 0.45, rx: 0.34, ry: 0.28, sx: 0.7, sy: 0.55, px: 0.0, py: 1.2, color: 'rgba(198, 28, 52, 0.58)' },
-            { bx: 0.42, by: 0.35, rx: 0.28, ry: 0.24, sx: 0.9, sy: 0.72, px: 2.1, py: 0.4, color: 'rgba(138, 18, 42, 0.52)' },
-            { bx: 0.58, by: 0.62, rx: 0.30, ry: 0.25, sx: 0.62, sy: 0.85, px: 4.0, py: 2.5, color: 'rgba(217, 130, 58, 0.26)' },
-            { bx: 0.5, by: 0.5,  rx: 0.24, ry: 0.34, sx: 1.05, sy: 0.65, px: 1.3, py: 3.7, color: 'rgba(165, 22, 48, 0.46)' }
+            { bx: 0.5, by: 0.5, rx: 0.34, ry: 0.30, sx: 0.7, sy: 0.55, px: 0.0, py: 1.2, color: 'rgba(198, 28, 52, 0.58)' },
+            { bx: 0.45, by: 0.42, rx: 0.28, ry: 0.25, sx: 0.9, sy: 0.72, px: 2.1, py: 0.4, color: 'rgba(138, 18, 42, 0.52)' },
+            { bx: 0.55, by: 0.58, rx: 0.30, ry: 0.26, sx: 0.62, sy: 0.85, px: 4.0, py: 2.5, color: 'rgba(217, 130, 58, 0.26)' },
+            { bx: 0.5, by: 0.5,  rx: 0.25, ry: 0.33, sx: 1.05, sy: 0.65, px: 1.3, py: 3.7, color: 'rgba(165, 22, 48, 0.46)' }
         ];
 
         let t = 0;
@@ -507,8 +514,8 @@
             ctx.globalCompositeOperation = 'lighter';
 
             for (const b of blobs) {
-                const cx = (b.bx + Math.sin(t * b.sx + b.px) * 0.14) * w;
-                const cy = (b.by + Math.cos(t * b.sy + b.py) * 0.13) * h;
+                const cx = (b.bx + Math.sin(t * b.sx + b.px) * 0.11) * w;
+                const cy = (b.by + Math.cos(t * b.sy + b.py) * 0.11) * h;
                 const pulse = 1 + Math.sin(t * 1.3 + b.px) * 0.12 + auraBoost * 0.16;
                 const radius = Math.max(w * b.rx, h * b.ry) * pulse;
 
