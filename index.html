@@ -52,6 +52,107 @@
             pointer-events: none;
         }
 
+        .secret-btn {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 10;
+            background: linear-gradient(180deg, rgba(44, 24, 28, 0.94) 0%, rgba(22, 18, 20, 0.96) 100%);
+            color: #e2b8be;
+            border: 1px solid rgba(185, 34, 52, 0.45);
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow:
+                0 8px 20px rgba(0, 0, 0, 0.55),
+                0 0 14px rgba(165, 20, 35, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.15s ease;
+        }
+
+        .secret-btn:hover {
+            border-color: rgba(220, 50, 70, 0.75);
+            color: #ffffff;
+        }
+
+        .secret-btn:active {
+            transform: scale(0.96);
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            background: rgba(0, 0, 0, 0.72);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+
+        .modal-backdrop.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: linear-gradient(180deg, rgba(38, 24, 27, 0.97) 0%, rgba(18, 18, 20, 0.99) 100%);
+            border: 1px solid rgba(185, 34, 52, 0.5);
+            border-radius: 22px;
+            padding: 24px 20px;
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+            box-shadow:
+                0 25px 60px rgba(0, 0, 0, 0.9),
+                0 0 40px rgba(165, 20, 35, 0.28),
+                inset 0 1px 1px rgba(255, 255, 255, 0.12);
+        }
+
+        .modal-title {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: #d9b668;
+            margin-bottom: 12px;
+        }
+
+        .modal-text {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #f3f3f4;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            width: 100%;
+            background: linear-gradient(180deg, #9c192b 0%, #78101e 100%);
+            color: #ffffff;
+            border: 1px solid rgba(255, 110, 130, 0.25);
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 6px 18px var(--crimson-glow);
+            transition: transform 0.12s ease;
+        }
+
+        .modal-close:active {
+            transform: scale(0.97);
+        }
+
         .widget-container {
             background: linear-gradient(180deg, rgba(34, 24, 26, 0.92) 0%, rgba(20, 20, 22, 0.96) 35%, rgba(18, 18, 20, 0.98) 100%);
             padding: 24px 20px;
@@ -205,6 +306,15 @@
 <body>
 
 <div class="made-by">сделано михуньчиком ❤️</div>
+<button class="secret-btn" onclick="openSecret()">секретик</button>
+
+<div class="modal-backdrop" id="secretModal" onclick="handleBackdropClick(event)">
+    <div class="modal-card">
+        <div class="modal-title">Секрет раскрыт</div>
+        <div class="modal-text">дилюрка лох</div>
+        <button class="modal-close" onclick="closeSecret()">Закрыть</button>
+    </div>
+</div>
 
 <div class="widget-container">
     <div class="header">
@@ -247,6 +357,20 @@
             "ЭЛЕКТРОСАМОКАТ", "БОТИНОК", "РАСПИСАНИЕ УРОКОВ", "УТРЕННИЙ КОФЕ"
         ]
     };
+
+    function openSecret() {
+        document.getElementById('secretModal').classList.add('active');
+    }
+
+    function closeSecret() {
+        document.getElementById('secretModal').classList.remove('active');
+    }
+
+    function handleBackdropClick(event) {
+        if (event.target.id === 'secretModal') {
+            closeSecret();
+        }
+    }
 
     function getRandomElement(arr) {
         return arr[Math.floor(Math.random() * arr.length)];
