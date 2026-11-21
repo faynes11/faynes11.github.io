@@ -86,10 +86,6 @@
         .secret-btn:hover {
             border-color: rgba(225, 55, 75, 0.85);
             color: #ffffff;
-            box-shadow:
-                0 8px 22px rgba(0, 0, 0, 0.6),
-                0 0 20px rgba(205, 30, 50, 0.38),
-                inset 0 1px 0 rgba(255, 255, 255, 0.16);
         }
 
         .secret-btn:active {
@@ -100,9 +96,9 @@
             position: fixed;
             inset: 0;
             z-index: 50;
-            background: rgba(0, 0, 0, 0.72);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
+            background: rgba(0, 0, 0, 0.76);
+            backdrop-filter: blur(7px);
+            -webkit-backdrop-filter: blur(7px);
             display: none;
             justify-content: center;
             align-items: center;
@@ -115,12 +111,14 @@
         }
 
         .modal-card {
-            background: linear-gradient(180deg, rgba(38, 24, 27, 0.97) 0%, rgba(18, 18, 20, 0.99) 100%);
+            background: linear-gradient(180deg, rgba(38, 24, 27, 0.98) 0%, rgba(18, 18, 20, 0.99) 100%);
             border: 1px solid rgba(185, 34, 52, 0.5);
             border-radius: 22px;
             padding: 24px 20px;
             width: 100%;
-            max-width: 320px;
+            max-width: 360px;
+            max-height: 82vh;
+            overflow-y: auto;
             text-align: center;
             box-shadow:
                 0 25px 60px rgba(0, 0, 0, 0.9),
@@ -144,6 +142,59 @@
             text-transform: uppercase;
             color: #f3f3f4;
             margin-bottom: 20px;
+        }
+
+        .jp-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .jp-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 12px 14px;
+        }
+
+        .jp-item.unlocked {
+            border-color: rgba(242, 198, 92, 0.55);
+            background: linear-gradient(180deg, rgba(64, 48, 20, 0.35) 0%, rgba(26, 22, 16, 0.5) 100%);
+        }
+
+        .jp-item-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .jp-status-open {
+            color: #ffd875;
+        }
+
+        .jp-status-locked {
+            color: #8c848e;
+        }
+
+        .jp-combo {
+            font-size: 13px;
+            font-weight: 700;
+            color: #f4f3f6;
+            line-height: 1.35;
+            transition: filter 0.25s ease, opacity 0.25s ease;
+        }
+
+        .jp-item.locked-jp .jp-combo {
+            filter: blur(6px);
+            opacity: 0.55;
+            user-select: none;
         }
 
         .modal-close {
@@ -182,14 +233,21 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .top-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .mini-btn {
             background: linear-gradient(180deg, rgba(42, 26, 29, 0.95) 0%, rgba(20, 18, 21, 0.98) 100%);
             color: #e8d2d5;
             border: 1px solid rgba(185, 34, 52, 0.45);
-            padding: 7px 12px;
+            padding: 7px 11px;
             border-radius: 12px;
             font-size: 11px;
             font-weight: 700;
@@ -198,7 +256,7 @@
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
             box-shadow:
                 0 6px 18px rgba(0, 0, 0, 0.65),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -222,6 +280,11 @@
         .mini-btn.life-mode {
             color: #f0d79c;
             border-color: rgba(217, 182, 104, 0.45);
+        }
+
+        .mini-btn.jp-btn {
+            color: #ffe08a;
+            border-color: rgba(242, 198, 92, 0.5);
         }
 
         .widget-box {
@@ -258,22 +321,67 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             position: relative;
             z-index: 2;
+            overflow: hidden;
             transition: border-color 0.25s ease, box-shadow 0.25s ease;
         }
 
         .widget-container.jackpot {
-            border-color: rgba(242, 198, 92, 0.85);
+            border-color: rgba(255, 214, 92, 0.95);
             box-shadow:
-                0 25px 60px rgba(0, 0, 0, 0.85),
-                0 0 55px rgba(235, 178, 55, 0.45),
-                inset 0 1px 1px rgba(255, 230, 150, 0.35);
-            animation: jackpotShake 0.45s ease;
+                0 25px 65px rgba(0, 0, 0, 0.9),
+                0 0 70px rgba(255, 192, 52, 0.65),
+                inset 0 0 28px rgba(255, 208, 85, 0.25);
+            animation: jackpotPulseGold 0.9s ease-in-out 2;
         }
 
-        @keyframes jackpotShake {
-            0%, 100% { transform: scale(1); }
-            25% { transform: scale(1.015) rotate(-0.4deg); }
-            75% { transform: scale(1.015) rotate(0.4deg); }
+        .gold-flash {
+            position: absolute;
+            inset: -12px;
+            pointer-events: none;
+            z-index: 15;
+            opacity: 0;
+            background:
+                radial-gradient(circle at 50% 45%, rgba(255, 232, 145, 0.65) 0%, rgba(245, 175, 42, 0.25) 45%, transparent 75%);
+        }
+
+        .widget-container.jackpot .gold-flash {
+            animation: goldSweep 1.1s ease-out forwards;
+        }
+
+        @keyframes goldSweep {
+            0% { opacity: 0; transform: scale(0.88); }
+            25% { opacity: 1; transform: scale(1.04); }
+            100% { opacity: 0; transform: scale(1.18); }
+        }
+
+        @keyframes jackpotPulseGold {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.025) rotate(-0.6deg); }
+            60% { transform: scale(1.02) rotate(0.6deg); }
+            100% { transform: scale(1); }
+        }
+
+        .spark {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #fff7c2 0%, #ffbe2e 65%, transparent 100%);
+            box-shadow: 0 0 12px #ffd24c;
+            pointer-events: none;
+            z-index: 16;
+            animation: sparkFly 0.95s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes sparkFly {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1.2);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--dx), var(--dy)) scale(0.1);
+            }
         }
 
         .header {
@@ -325,9 +433,10 @@
         }
 
         .badge.jackpot-badge {
-            background: rgba(235, 178, 55, 0.25);
-            color: #ffe299;
-            border-color: rgba(255, 214, 102, 0.8);
+            background: linear-gradient(180deg, #ffe38a 0%, #d4941c 100%);
+            color: #1a1205;
+            border-color: rgba(255, 240, 175, 0.95);
+            box-shadow: 0 0 16px rgba(255, 200, 60, 0.75);
         }
 
         .sub-hint {
@@ -335,17 +444,19 @@
             color: #9e98a0;
             padding: 0 4px;
             margin-bottom: 16px;
-            min-height: 15px;
+            min-height: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 8px;
         }
 
         .jackpot-label {
-            color: #ffd97d;
+            color: #ffe184;
             font-weight: 800;
-            letter-spacing: 0.6px;
+            letter-spacing: 0.5px;
             text-transform: uppercase;
+            text-shadow: 0 0 12px rgba(255, 195, 50, 0.65);
         }
 
         .slots-wrapper {
@@ -544,20 +655,34 @@
 <div class="made-by">сделано михуньчиком ❤️</div>
 <button class="secret-btn" onclick="openSecret()">ТЫК 👆</button>
 
-<div class="modal-backdrop" id="secretModal" onclick="handleBackdropClick(event)">
+<div class="modal-backdrop" id="secretModal" onclick="handleBackdropClick(event, 'secretModal')">
     <div class="modal-card">
         <div class="modal-title">Секрет раскрыт</div>
         <div class="modal-text">дилюрка лох</div>
-        <button class="modal-close" onclick="closeSecret()">Закрыть</button>
+        <button class="modal-close" onclick="closeModal('secretModal')">Закрыть</button>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="jackpotsModal" onclick="handleBackdropClick(event, 'jackpotsModal')">
+    <div class="modal-card">
+        <div class="modal-title" id="jpModalTitle">Джекпоты (0/1)</div>
+        <div class="jp-list" id="jpList"></div>
+        <button class="modal-close" onclick="closeModal('jackpotsModal')">Закрыть</button>
     </div>
 </div>
 
 <div class="stage-wrap">
     <div class="top-bar">
-        <button class="mini-btn" id="toneBtn" onclick="toggleTone()" title="Переключить стиль отмазок">
-            <span id="toneIcon">🤪</span>
-            <span id="toneLabel">АБСУРД</span>
-        </button>
+        <div class="top-group">
+            <button class="mini-btn" id="toneBtn" onclick="toggleTone()" title="Переключить стиль отмазок">
+                <span id="toneIcon">🤪</span>
+                <span id="toneLabel">АБСУРД</span>
+            </button>
+            <button class="mini-btn jp-btn" id="jpBtn" onclick="openJackpotsModal()" title="Список джекпотов">
+                <span>🏆</span>
+                <span id="jpBtnLabel">ДЖЕКПОТЫ 0/1</span>
+            </button>
+        </div>
 
         <button class="mini-btn" id="soundBtn" onclick="toggleSound()" title="Переключить звук прокрутки">
             <span id="soundIcon">🔊</span>
@@ -569,6 +694,7 @@
         <canvas class="aura-canvas" id="auraCanvas"></canvas>
 
         <div class="widget-container" id="widgetCard">
+            <div class="gold-flash"></div>
             <div class="header">
                 <span class="title">Я опоздал, потому что...</span>
                 <div class="header-right">
@@ -582,11 +708,11 @@
             </div>
             <div class="slots-wrapper">
                 <div class="slot" id="slot1" onclick="toggleLock(0)">
-                    <span class="slot-text">ЦЫГАНЕ</span>
+                    <span class="slot-text">ПАНТЕЛЕЕВ</span>
                     <span class="lock-indicator" id="lockIcon0">🔓</span>
                 </div>
                 <div class="slot" id="slot2" onclick="toggleLock(1)">
-                    <span class="slot-text">УТАЩИЛИ В НОРУ</span>
+                    <span class="slot-text">УТАЩИЛ В НОРУ</span>
                     <span class="lock-indicator" id="lockIcon1">🔓</span>
                 </div>
                 <div class="slot" id="slot3" onclick="toggleLock(2)">
@@ -611,10 +737,77 @@
 </div>
 
 <script>
+    const JACKPOTS = [
+        {
+            id: 'panteleev',
+            name: 'ПАНТЕЛЕЕВ',
+            who: 'ПАНТЕЛЕЕВ',
+            action: 'УТАЩИЛ В НОРУ',
+            target: 'КЛЮЧИ ОТ КВАРТИРЫ',
+            chance: 0.16
+        }
+    ];
+
+    const STORAGE_KEY = 'excuse_slots_unlocked_jackpots_v1';
+    let unlockedIds = loadUnlockedJackpots();
+
+    function loadUnlockedJackpots() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            const parsed = raw ? JSON.parse(raw) : [];
+            return Array.isArray(parsed) ? parsed : [];
+        } catch {
+            return [];
+        }
+    }
+
+    function saveUnlockedJackpots() {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(unlockedIds));
+        } catch {}
+    }
+
+    function updateJackpotCounterUI() {
+        const total = JACKPOTS.length;
+        const found = JACKPOTS.filter(j => unlockedIds.includes(j.id)).length;
+        document.getElementById('jpBtnLabel').innerText = `ДЖЕКПОТЫ ${found}/${total}`;
+        document.getElementById('jpModalTitle').innerText = `Джекпоты (${found}/${total})`;
+    }
+
+    function renderJackpotsList() {
+        const listEl = document.getElementById('jpList');
+        listEl.innerHTML = '';
+
+        JACKPOTS.forEach((jp, idx) => {
+            const isOpen = unlockedIds.includes(jp.id);
+            const item = document.createElement('div');
+            item.className = `jp-item ${isOpen ? 'unlocked' : 'locked-jp'}`;
+
+            const statusHtml = isOpen
+                ? `<span class="jp-status-open">★ ВЫБИТ</span>`
+                : `<span class="jp-status-locked">🔒 СКРЫТ</span>`;
+
+            item.innerHTML = `
+                <div class="jp-item-top">
+                    <span>#${idx + 1} ${jp.name}</span>
+                    ${statusHtml}
+                </div>
+                <div class="jp-combo">${jp.who} • ${jp.action} • ${jp.target}</div>
+            `;
+            listEl.appendChild(item);
+        });
+    }
+
+    function openJackpotsModal() {
+        updateJackpotCounterUI();
+        renderJackpotsList();
+        document.getElementById('jackpotsModal').classList.add('active');
+    }
+
     const packs = {
         absurd: {
             who: [
-                "ДЕД", "СОСЕДКА", "КОТ", "КУРЬЕР", "ИНОПЛАНЕТЯНЕ", "МЭР ГОРОДА",
+                "ПАНТЕЛЕЕВ", "ДЕД", "СОСЕДКА", "КОТ", "КУРЬЕР", "ИНОПЛАНЕТЯНЕ", "МЭР ГОРОДА",
                 "ВОЕНКОМ", "СВЕКРОВЬ", "АЛКАШ С ДВОРА", "УЧИТЕЛЬНИЦА", "ЦЫГАНЕ",
                 "МОЙ ПЁС", "БЫВШАЯ", "ДРУГ", "ЭКСКАВАТОРЩИК", "ГЕНЕРАЛЬНЫЙ ДИРЕКТОР",
                 "БАРИСТА", "ВАХТЁР", "СОСЕД С ПЕРФОРАТОРОМ", "ГОЛУБЬ В КЕПКЕ",
@@ -670,6 +863,8 @@
     let audioCtx = null;
     let auraBoost = 0;
     let toastTimer = null;
+
+    updateJackpotCounterUI();
 
     (function initCenterRaysAura() {
         const canvas = document.getElementById('auraCanvas');
@@ -849,20 +1044,37 @@
         const ctx = ensureAudioContext();
         if (!ctx) return;
 
-        const notes = [523.25, 659.25, 783.99, 1046.5];
+        const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5];
         notes.forEach((freq, i) => {
-            const now = ctx.currentTime + i * 0.07;
+            const now = ctx.currentTime + i * 0.075;
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             osc.type = 'triangle';
             osc.frequency.setValueAtTime(freq, now);
-            gain.gain.setValueAtTime(0.12, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+            gain.gain.setValueAtTime(0.14, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
             osc.connect(gain);
             gain.connect(ctx.destination);
             osc.start(now);
-            osc.stop(now + 0.25);
+            osc.stop(now + 0.29);
         });
+    }
+
+    function spawnGoldSparks() {
+        const card = document.getElementById('widgetCard');
+        const count = 24;
+        for (let i = 0; i < count; i++) {
+            const spark = document.createElement('span');
+            spark.className = 'spark';
+            const angle = (Math.PI * 2 * i) / count + (Math.random() * 0.3 - 0.15);
+            const dist = 70 + Math.random() * 110;
+            spark.style.left = '50%';
+            spark.style.top = '48%';
+            spark.style.setProperty('--dx', `${Math.cos(angle) * dist}px`);
+            spark.style.setProperty('--dy', `${Math.sin(angle) * dist}px`);
+            card.appendChild(spark);
+            setTimeout(() => spark.remove(), 1000);
+        }
     }
 
     function toggleSound() {
@@ -922,13 +1134,13 @@
         document.getElementById('secretModal').classList.add('active');
     }
 
-    function closeSecret() {
-        document.getElementById('secretModal').classList.remove('active');
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('active');
     }
 
-    function handleBackdropClick(event) {
-        if (event.target.id === 'secretModal') {
-            closeSecret();
+    function handleBackdropClick(event, id) {
+        if (event.target.id === id) {
+            closeModal(id);
         }
     }
 
@@ -945,7 +1157,7 @@
         return candidate;
     }
 
-    function spinReel(id, array, durationMs, reelIndex) {
+    function spinReel(id, array, durationMs, reelIndex, forcedValue = null) {
         return new Promise(resolve => {
             const element = document.getElementById(id);
             const textEl = getSlotTextEl(id);
@@ -966,7 +1178,7 @@
                 const progress = Math.min(elapsed / durationMs, 1);
 
                 if (elapsed >= durationMs) {
-                    textEl.innerText = pickNextWord(array, textEl.innerText);
+                    textEl.innerText = forcedValue || pickNextWord(array, textEl.innerText);
                     element.classList.remove('spinning');
                     element.classList.add('landed');
                     playStopSound(reelIndex);
@@ -986,24 +1198,45 @@
         });
     }
 
-    function checkJackpot() {
+    function resetJackpotVisual() {
         const card = document.getElementById('widgetCard');
         const badge = document.getElementById('mainBadge');
         const banner = document.getElementById('jackpotBanner');
-
         card.classList.remove('jackpot');
         badge.classList.remove('jackpot-badge');
         badge.innerText = 'SLOTS';
         banner.innerText = '';
+    }
 
-        if (Math.random() < 0.12) {
-            card.classList.add('jackpot');
-            badge.classList.add('jackpot-badge');
-            badge.innerText = 'JACKPOT';
-            banner.innerText = '★ ДЖЕКПОТ КОМБО ★';
-            auraBoost = 1.6;
-            playJackpotSound();
+    function triggerJackpotCelebration(jp) {
+        const card = document.getElementById('widgetCard');
+        const badge = document.getElementById('mainBadge');
+        const banner = document.getElementById('jackpotBanner');
+
+        resetJackpotVisual();
+        void card.offsetWidth;
+
+        card.classList.add('jackpot');
+        badge.classList.add('jackpot-badge');
+        badge.innerText = 'JACKPOT';
+        banner.innerText = `★ ДЖЕКПОТ: ${jp.name} ★`;
+        auraBoost = 1.8;
+
+        if (!unlockedIds.includes(jp.id)) {
+            unlockedIds.push(jp.id);
+            saveUnlockedJackpots();
+            updateJackpotCounterUI();
         }
+
+        spawnGoldSparks();
+        playJackpotSound();
+    }
+
+    function evaluateMatchedJackpot() {
+        const s1 = getSlotTextEl('slot1').innerText;
+        const s2 = getSlotTextEl('slot2').innerText;
+        const s3 = getSlotTextEl('slot3').innerText;
+        return JACKPOTS.find(jp => jp.who === s1 && jp.action === s2 && jp.target === s3) || null;
     }
 
     async function spinAll() {
@@ -1012,6 +1245,7 @@
 
         isSpinning = true;
         auraBoost = 1.1;
+        resetJackpotVisual();
         ensureAudioContext();
 
         const spinBtn = document.getElementById('spinBtn');
@@ -1022,13 +1256,30 @@
 
         const dict = packs[currentTone];
 
+        // Проверяем, не выпал ли один из секретных джекпотов (например, Пантелеев)
+        let plannedJackpot = null;
+        if (currentTone === 'absurd') {
+            for (const jp of JACKPOTS) {
+                const canHitWho = !locked[0] || getSlotTextEl('slot1').innerText === jp.who;
+                const canHitAction = !locked[1] || getSlotTextEl('slot2').innerText === jp.action;
+                const canHitTarget = !locked[2] || getSlotTextEl('slot3').innerText === jp.target;
+                if (canHitWho && canHitAction && canHitTarget && Math.random() < jp.chance) {
+                    plannedJackpot = jp;
+                    break;
+                }
+            }
+        }
+
         await Promise.all([
-            spinReel('slot1', dict.who, 1100, 0),
-            spinReel('slot2', dict.action, 1550, 1),
-            spinReel('slot3', dict.target, 2000, 2)
+            spinReel('slot1', dict.who, 1100, 0, plannedJackpot ? plannedJackpot.who : null),
+            spinReel('slot2', dict.action, 1550, 1, plannedJackpot ? plannedJackpot.action : null),
+            spinReel('slot3', dict.target, 2000, 2, plannedJackpot ? plannedJackpot.target : null)
         ]);
 
-        checkJackpot();
+        const hit = evaluateMatchedJackpot();
+        if (hit) {
+            triggerJackpotCelebration(hit);
+        }
 
         spinBtn.disabled = false;
         isSpinning = false;
