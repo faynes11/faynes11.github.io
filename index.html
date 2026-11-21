@@ -829,7 +829,6 @@
         }
     ];
 
-    // Нормализуем написание АРСЕНІЙ -> АРСЕНІЙ/АРСЕНІЙ на случай кириллицы/латиницы
     JACKPOTS.forEach(j => {
         if (j.id === 'arseniy') {
             j.name = 'АРСЕНІЙ';
@@ -953,12 +952,19 @@
     let currentTone = 'absurd';
     let spinCount = 0;
     let isSpinning = false;
+    let isJackpotAnimating = false;
     let isSoundEnabled = true;
     let audioCtx = null;
     let auraBoost = 0;
     let toastTimer = null;
+    let jackpotUnlockTimer = null;
 
     updateJackpotCounterUI();
+
+    function syncSpinButtonState() {
+        const spinBtn = document.getElementById('spinBtn');
+        spinBtn.disabled = isSpinning || isJackpotAnimating;
+    }
 
     (function initCenterRaysAura() {
         const canvas = document.getElementById('auraCanvas');
@@ -1190,7 +1196,7 @@
     }
 
     function toggleTone() {
-        if (isSpinning) return;
+        if (isSpinning || isJackpotAnimating) return;
         currentTone = currentTone === 'absurd' ? 'life' : 'absurd';
         const btn = document.getElementById('toneBtn');
         const icon = document.getElementById('toneIcon');
@@ -1209,7 +1215,7 @@
     }
 
     function toggleLock(index) {
-        if (isSpinning) return;
+        if (isSpinning || isJackpotAnimating) return;
         locked[index] = !locked[index];
         const slotEl = document.getElementById(slotIds[index]);
         const iconEl = document.getElementById('lockIcon' + index);
@@ -1307,6 +1313,10 @@
         const badge = document.getElementById('mainBadge');
         const banner = document.getElementById('jackpotBanner');
 
+        clearTimeout(jackpotUnlockTimer);
+        isJackpotAnimating = true;
+        syncSpinButtonState();
+
         resetJackpotVisual();
         void card.offsetWidth;
 
@@ -1324,6 +1334,12 @@
 
         spawnGoldSparks();
         playJackpotSound();
+
+        // Блокируем повторный прокрут на время полной золотой анимации
+        jackpotUnlockTimer = setTimeout(() => {
+            isJackpotAnimating = false;
+            syncSpinButtonState();
+        }, 1850);
     }
 
     function evaluateMatchedJackpot() {
@@ -1334,16 +1350,14 @@
     }
 
     async function spinAll() {
-        if (isSpinning) return;
+        if (isSpinning || isJackpotAnimating) return;
         if (locked.every(Boolean)) return;
 
         isSpinning = true;
+        syncSpinButtonState();
         auraBoost = 1.1;
         resetJackpotVisual();
         ensureAudioContext();
-
-        const spinBtn = document.getElementById('spinBtn');
-        spinBtn.disabled = true;
 
         spinCount += 1;
         document.getElementById('spinCounter').innerText = '#' + spinCount;
@@ -1370,12 +1384,13 @@
         ]);
 
         const hit = evaluateMatchedJackpot();
+        isSpinning = false;
+
         if (hit) {
             triggerJackpotCelebration(hit);
+        } else {
+            syncSpinButtonState();
         }
-
-        spinBtn.disabled = false;
-        isSpinning = false;
     }
 
     function showToast(msg = 'Скопировано') {
