@@ -3,38 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Генератор отмазок AI</title>
+    <title>Я опоздал, потому что...</title>
     <style>
         :root {
-            --bg-color: #0f0f11;
-            --container-bg: #1a1a1d;
+            --bg-color: #121212;
+            --container-bg: #1e1e1e;
             --text-color: #ffffff;
             --accent-color: #ff3b30;
-            --slot-bg: #26262b;
-            --border-color: #3f3f46;
+            --slot-border: #333333;
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: var(--font-main);
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            height: 100vh;
             margin: 0;
-            padding: 10px;
+            padding: 15px;
             box-sizing: border-box;
         }
 
-        .widget {
+        .widget-container {
             background-color: var(--container-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 28px;
             padding: 24px;
+            border-radius: 28px;
             width: 100%;
             max-width: 420px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            box-sizing: border-box;
+            border: 1px solid var(--slot-border);
         }
 
         .header {
@@ -47,51 +48,22 @@
         .title {
             font-size: 15px;
             font-weight: 700;
+            opacity: 0.85;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            opacity: 0.9;
         }
 
         .badge {
             background-color: var(--accent-color);
             color: white;
-            font-size: 11px;
-            font-weight: 800;
             padding: 4px 10px;
             border-radius: 14px;
+            font-size: 11px;
+            font-weight: bold;
             text-transform: uppercase;
         }
 
-        .api-section {
-            background: rgba(255,255,255,0.05);
-            padding: 12px;
-            border-radius: 16px;
-            margin-bottom: 20px;
-        }
-
-        .api-input {from google import genai
-
-client = genai.Client()
-
-response = client.models.generate_content(
-    model="gemini-flash-latest",
-    contents="Explain how AI works in a few words",
-)
-
-print(response.text)
-            width: 100%;
-            background: #000;
-            border: 1px solid var(--border-color);
-            color: white;
-            padding: 10px;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-family: monospace;
-            font-size: 12px;
-            margin-top: 6px;
-        }
-
-        .slots-container {
+        .slots-wrapper {
             display: flex;
             flex-direction: column;
             gap: 12px;
@@ -99,24 +71,23 @@ print(response.text)
         }
 
         .slot {
-            background-color: var(--slot-bg);
-            border: 1px solid var(--border-color);
-            color: white;
-            padding: 16px;
+            background-color: #2a2a2a;
+            padding: 16px 20px;
             border-radius: 16px;
             text-align: center;
             font-size: 20px;
             font-weight: 800;
+            border: 1px solid var(--slot-border);
             min-height: 28px;
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: transform 0.1s, opacity 0.2s;
+            transition: all 0.2s ease;
             text-transform: uppercase;
         }
 
         .slot.spinning {
-            opacity: 0.4;
+            opacity: 0.3;
             transform: scale(0.98);
         }
 
@@ -125,119 +96,95 @@ print(response.text)
             gap: 10px;
         }
 
-        button {
-            border: none;
-            border-radius: 16px;
-            padding: 18px;
-            font-size: 16px;
-            font-weight: 800;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.2s;
-        }
-
-        button:active {
-            opacity: 0.7;
-        }
-
         .spin-btn {
             flex-grow: 1;
             background-color: var(--accent-color);
             color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
             position: relative;
         }
 
         .spin-btn::after {
             content: '';
+            display: inline-block;
             width: 12px;
             height: 12px;
-            background: white;
+            background-color: white;
             border-radius: 50%;
-            position: absolute;
-            right: 20px;
             box-shadow: 0 0 10px white;
         }
 
         .copy-btn {
-            background-color: #323237;
+            background-color: #3a3a3a;
             color: white;
+            border: none;
+            padding: 18px;
             width: 58px;
+            border-radius: 16px;
+            cursor: pointer;
             font-size: 20px;
-        }
-
-        .ai-generate-btn {
-            width: 100%;
-            background: linear-gradient(135deg, #6366f1, #a855f7);
-            color: white;
-            margin-top: 15px;
-            padding: 14px;
-            font-size: 14px;
-        }
-
-        .status {
-            text-align: center;
-            font-size: 12px;
-            color: #858591;
-            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
     </style>
 </head>
 <body>
 
-<div class="widget">
+<div class="widget-container">
     <div class="header">
         <span class="title">Я опоздал, потому что...</span>
-        <span class="badge">AI BETA</span>
+        <span class="badge">PRO</span>
     </div>
-
-    <div class="api-section">
-        <label style="font-size: 12px; color: #a1a1aa;">Gemini API Key:</label>
-        <input type="password" id="apiKey" class="api-input" placeholder="Вставьте ключ для ИИ генерации...">
+    <div class="slots-wrapper">
+        <div class="slot" id="slot1">ДЕГЕНЕРАТ</div>
+        <div class="slot" id="slot2">СЛОМАЛ</div>
+        <div class="slot" id="slot3">МОЙ АВТОБУС</div>
     </div>
-
-    <div class="slots-container">
-        <div class="slot" id="slot1">КОТ</div>
-        <div class="slot" id="slot2">СЪЕЛ</div>
-        <div class="slot" id="slot3">БУДИЛЬНИК</div>
-    </div>
-
     <div class="controls">
         <button class="spin-btn" onclick="spinAll()">КРУТИТЬ</button>
-        <button class="copy-btn" onclick="copyText()">📋</button>
+        <button class="copy-btn" onclick="copyExcuse()">📋</button>
     </div>
-
-    <button class="ai-generate-btn" onclick="generateNewBatch()">✨ Генерировать новые отмазки через ИИ</button>
-    <div class="status" id="status">Локальная база: 6x5x5 вариантов</div>
 </div>
 
 <script>
-    let dictionary = {
-        who: ["ДЕД", "СОСЕДКА", "КОТ", "КУРЬЕР", "ИНОПЛАНЕТЯНЕ", "МЭР ГОРОДА"],
-        action: ["СЛОМАЛ", "УГНАЛ", "СЪЕЛ", "ЗАБЛОКИРОВАЛ", "ПОХИТИЛ"],
-        target: ["МОЙ АВТОБУС", "БУДИЛЬНИК", "ЛИФТ", "ПРОПУСК", "ШТАНЫ"]
+    const dictionary = {
+        who: [
+            "ДЕД", "СОСЕДКА", "КОТ", "КУРЬЕР", "ИНОПЛАНЕТЯНЕ", "МЭР ГОРОДА", 
+            "ВОЕНКОМ", "СВЕКРОВЬ", "АЛКАШ С ДВЕРА", "УЧИТЕЛЬНИЦА", "ЦЫГАНЕ",
+            "МОЙ ПЁС", "БЫВШАЯ", "ДРУГ", "ЭКСКАВАТОРЩИК", "ГЕНЕРАЛЬНЫЙ ДИРЕКТОР"
+        ],
+        action: [
+            "СЛОМАЛ", "УГНАЛ", "СЪЕЛ", "ЗАБЛОКИРОВАЛ", "ПОХИТИЛ", "СПРЯТАЛ",
+            "ЗАСТАВИЛ МЕНЯ СЛУШАТЬ", "ОТМЕНИЛ", "ПЕРЕЕХАЛ", "ИСПУГАЛ", "ЗАЛИЛ КЛЕЕМ",
+            "УТАЩИЛ В НОРУ", "ИСПОРТИЛ", "ВЫКАТИЛ НА ДОРОГУ", "УДАЛИЛ"
+        ],
+        target: [
+            "МОЙ АВТОБУС", "БУДИЛЬНИК", "ЛИФТ", "ПРОПУСК", "ШТАНЫ", "ТОРМОЗА НА ВЕЛИКЕ",
+            "ВХОДНУЮ ДВЕРЬ", "МОЙ ЗАВТРАК", "МАРШРУТКУ", "КЛЮЧИ ОТ КВАРТИРЫ",
+            "ЭЛЕКТРОСАМОКАТ", "БОТИНОК", "РАСПИСАНИЕ УРОКОВ", "УТРЕННИЙ КОФЕ"
+        ]
     };
 
-    if (localStorage.getItem('excuse_dictionary')) {
-        try {
-            dictionary = JSON.parse(localStorage.getItem('excuse_dictionary'));
-            document.getElementById('status').innerText = "Загружена расширенная база";
-        } catch(e) {
-            console.error(e);
-        }
-    }
-
-    function getRandom(arr) {
+    function getRandomElement(arr) {
         return arr[Math.floor(Math.random() * arr.length)];
     }
 
-    async function spinSlot(slotId, array) {
-        const el = document.getElementById(slotId);
-        el.classList.add('spinning');
+    async function spinSlot(id, array) {
+        const element = document.getElementById(id);
+        element.classList.add('spinning');
         await new Promise(r => setTimeout(r, 150));
-        el.innerText = getRandom(array);
-        el.classList.remove('spinning');
+        element.innerText = getRandomElement(array);
+        element.classList.remove('spinning');
     }
 
     async function spinAll() {
@@ -248,61 +195,17 @@ print(response.text)
         ]);
     }
 
-    function copyText() {
+    function copyExcuse() {
         const s1 = document.getElementById('slot1').innerText;
         const s2 = document.getElementById('slot2').innerText;
         const s3 = document.getElementById('slot3').innerText;
-        const text = `Я опоздал, потому что ${s1.toLowerCase()} ${s2.toLowerCase()} ${s3.toLowerCase()}.`;
+        const fullText = `Я опоздал, потому что ${s1.toLowerCase()} ${s2.toLowerCase()} ${s3.toLowerCase()}.`;
         
-        navigator.clipboard.writeText(text).then(() => {
-            alert("Отмазка скопирована: " + text);
-        }).catch(err => {
-            prompt("Скопируйте вручную:", text);
+        navigator.clipboard.writeText(fullText).then(() => {
+            alert('Отмазка скопирована: ' + fullText);
+        }).catch(() => {
+            prompt("Скопируйте вручную:", fullText);
         });
-    }
-
-    async function generateNewBatch() {
-        const apiKey = document.getElementById('apiKey').value.trim();
-        if (!apiKey) {
-            alert("Пожалуйста, вставьте ваш Gemini API ключ в поле сверху!");
-            return;
-        }
-
-        const statusEl = document.getElementById('status');
-        statusEl.innerText = "Генерирую новые варианты через ИИ...";
-
-        const promptText = `Создай JSON объект с тремя массивами русских слов в верхнем регистре: 
-        "who" (существительные в именительном падеже: кто/что стало причиной, например: СОСЕД, БУДИЛЬНИК), 
-        "action" (глаголы прошедшего времени мужского или общего рода, например: СЛОМАЛ, УКРАЛ), 
-        "target" (существительные в винительном падеже: что пострадало, например: МОЙ ТОРТ, МАШИНУ). 
-        Сделай так, чтобы они могли складываться в смешные абсурдные отмазки про опоздание. 
-        Верни ТОЛЬКО валидный JSON без markdown форматирования и лишнего текста. В каждом массиве должно быть по 10 элементов.`;
-
-        try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: promptText }] }]
-                })
-            });
-
-            const data = await response.json();
-            const text = data.candidates[0].content.parts[0].text.replace(/```json/g, '').replace(/```/g, '').trim();
-            const newDict = JSON.parse(text);
-
-            if (newDict.who && newDict.action && newDict.target) {
-                dictionary = newDict;
-                localStorage.setItem('excuse_dictionary', JSON.stringify(dictionary));
-                statusEl.innerText = "База обновлена нейросетью!";
-                spinAll();
-            } else {
-                statusEl.innerText = "Ошибка формата ответа ИИ.";
-            }
-        } catch (error) {
-            console.error(error);
-            statusEl.innerText = "Ошибка генерации. Проверьте API ключ.";
-        }
     }
 </script>
 
