@@ -6,22 +6,27 @@
     <title>Я опоздал, потому что...</title>
     <style>
         :root {
-            --bg-color: #121212;
-            --container-bg: #1e1e1e;
+            --bg-base: #27272a;
+            --bg-surface: #3f3f46;
+            --bg-pattern: radial-gradient(#52525b 0.75px, transparent 0.75px), radial-gradient(#27272a 0.75px, var(--bg-base) 0.75px);
+            --container-bg: rgba(24, 24, 27, 0.85);
             --text-color: #ffffff;
             --accent-color: #ff3b30;
-            --slot-border: #333333;
+            --slot-border: rgba(255, 255, 255, 0.15);
             --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
-            background-color: var(--bg-color);
+            background-color: var(--bg-base);
+            background-image: var(--bg-pattern);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
             color: var(--text-color);
             font-family: var(--font-main);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             padding: 15px;
             box-sizing: border-box;
@@ -29,11 +34,13 @@
 
         .widget-container {
             background-color: var(--container-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             padding: 24px;
             border-radius: 28px;
             width: 100%;
             max-width: 420px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.2);
             box-sizing: border-box;
             border: 1px solid var(--slot-border);
         }
@@ -48,19 +55,21 @@
         .title {
             font-size: 15px;
             font-weight: 700;
-            opacity: 0.85;
+            opacity: 0.95;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
         .badge {
-            background-color: var(--accent-color);
+            background: #ff3b30;
             color: white;
             padding: 4px 10px;
             border-radius: 14px;
             font-size: 11px;
             font-weight: bold;
             text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(255, 59, 48, 0.4);
         }
 
         .slots-wrapper {
@@ -71,8 +80,8 @@
         }
 
         .slot {
-            background-color: #2a2a2a;
-            padding: 16px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 18px 20px;
             border-radius: 16px;
             text-align: center;
             font-size: 20px;
@@ -82,8 +91,9 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
             text-transform: uppercase;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
         }
 
         .slot.spinning {
@@ -98,7 +108,7 @@
 
         .spin-btn {
             flex-grow: 1;
-            background-color: var(--accent-color);
+            background: linear-gradient(135deg, #ff453a, #ff3b30);
             color: white;
             border: none;
             padding: 18px;
@@ -111,6 +121,12 @@
             align-items: center;
             gap: 10px;
             position: relative;
+            box-shadow: 0 10px 20px rgba(255, 59, 48, 0.4);
+            transition: transform 0.1s ease;
+        }
+
+        .spin-btn:active {
+            transform: scale(0.97);
         }
 
         .spin-btn::after {
@@ -124,9 +140,9 @@
         }
 
         .copy-btn {
-            background-color: #3a3a3a;
+            background: rgba(255, 255, 255, 0.12);
             color: white;
-            border: none;
+            border: 1px solid var(--slot-border);
             padding: 18px;
             width: 58px;
             border-radius: 16px;
@@ -135,6 +151,15 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .copy-btn:active {
+            transform: scale(0.97);
         }
     </style>
 </head>
@@ -170,7 +195,7 @@
         ],
         target: [
             "МОЙ АВТОБУС", "БУДИЛЬНИК", "ЛИФТ", "ПРОПУСК", "ШТАНЫ", "ТОРМОЗА НА ВЕЛИКЕ",
-            "ВХОДНУЮ ДВЕРЬ", "МОЙ ЗАВТРАК", "МАРШРУТКУ", ЛЮЧИ ОТ КВАРТИРЫ",
+            "ВХОДНУЮ ДВЕРЬ", "МОЙ ЗАВТРАК", "МАРШРУТКУ", "КЛЮЧИ ОТ КВАРТИРЫ",
             "ЭЛЕКТРОСАМОКАТ", "БОТИНОК", "РАСПИСАНИЕ УРОКОВ", "УТРЕННИЙ КОФЕ"
         ]
     };
@@ -211,4 +236,3 @@
 
 </body>
 </html>
-
