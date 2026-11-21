@@ -158,7 +158,7 @@
             padding: 24px 20px;
             border-radius: 26px;
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
             box-shadow:
                 0 25px 60px rgba(0, 0, 0, 0.85),
                 0 0 45px rgba(150, 20, 35, 0.22),
@@ -200,7 +200,7 @@
             display: flex;
             flex-direction: column;
             gap: 14px;
-            margin-bottom: 22px;
+            margin-bottom: 18px;
         }
 
         .slot {
@@ -232,50 +232,72 @@
             border-color: rgba(220, 40, 60, 0.8);
         }
 
-        .controls {
-            display: flex;
-            gap: 12px;
+        .mode-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
         }
 
-        .spin-btn {
-            flex-grow: 1;
+        .ai-btn {
             background: linear-gradient(180deg, #9c192b 0%, #78101e 100%);
             color: #ffffff;
             border: 1px solid rgba(255, 110, 130, 0.25);
-            padding: 17px;
+            padding: 15px 12px;
             border-radius: 14px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
             cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
             box-shadow:
                 0 8px 24px var(--crimson-glow),
                 inset 0 1px 0 rgba(255, 255, 255, 0.2);
             transition: all 0.15s ease;
         }
 
-        .spin-btn:active {
+        .ai-btn:active {
             transform: scale(0.97);
-            box-shadow: 0 4px 12px var(--crimson-glow);
         }
 
-        .spin-btn:disabled {
-            opacity: 0.65;
+        .ai-btn:disabled,
+        .preset-btn:disabled {
+            opacity: 0.6;
             cursor: not-allowed;
         }
 
-        .spin-btn::after {
-            content: '';
-            display: inline-block;
-            width: 11px;
-            height: 11px;
-            background-color: #ffffff;
-            border-radius: 50%;
-            box-shadow: 0 0 10px #ffffff, 0 0 18px rgba(255, 255, 255, 0.8);
+        .preset-btn {
+            background: linear-gradient(180deg, #2b272a 0%, #1c1a1d 100%);
+            color: #f0d79c;
+            border: 1px solid rgba(217, 182, 104, 0.35);
+            padding: 15px 12px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+            transition: all 0.15s ease;
+        }
+
+        .preset-btn:active {
+            transform: scale(0.97);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-line {
+            font-size: 12px;
+            color: #b7b3b8;
+            letter-spacing: 0.3px;
+            flex-grow: 1;
+            padding-left: 4px;
         }
 
         .copy-btn {
@@ -283,6 +305,7 @@
             color: #a83240;
             border: 1px solid rgba(255, 255, 255, 0.08);
             width: 58px;
+            height: 48px;
             border-radius: 14px;
             cursor: pointer;
             display: flex;
@@ -290,6 +313,7 @@
             align-items: center;
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
             transition: all 0.15s ease;
+            flex-shrink: 0;
         }
 
         .copy-btn svg {
@@ -324,15 +348,19 @@
 <div class="widget-container">
     <div class="header">
         <span class="title">Я опоздал, потому что...</span>
-        <span class="badge">PRO</span>
+        <span class="badge" id="modeBadge">РЕЖИМ</span>
     </div>
     <div class="slots-wrapper">
         <div class="slot" id="slot1">ЦЫГАНЕ</div>
         <div class="slot" id="slot2">УТАЩИЛИ В НОРУ</div>
         <div class="slot" id="slot3">КЛЮЧИ ОТ КВАРТИРЫ</div>
     </div>
+    <div class="mode-buttons">
+        <button class="ai-btn" id="aiBtn" onclick="generateWithAi()">ИИ ГЕНЕРИРОВАТЬ</button>
+        <button class="preset-btn" id="presetBtn" onclick="pickFromDictionary()">ИЗ ЗАГОТОВЛЕННЫХ</button>
+    </div>
     <div class="controls">
-        <button class="spin-btn" id="spinBtn" onclick="spinAll()">КРУТИТЬ</button>
+        <span class="status-line" id="statusLine">Выбери способ генерации</span>
         <button class="copy-btn" onclick="copyExcuse()" title="Скопировать">
             <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
@@ -352,21 +380,50 @@
         who: [
             "ДЕД", "СОСЕДКА", "КОТ", "КУРЬЕР", "ИНОПЛАНЕТЯНЕ", "МЭР ГОРОДА",
             "ВОЕНКОМ", "СВЕКРОВЬ", "АЛКАШ С ДВОРА", "УЧИТЕЛЬНИЦА", "ЦЫГАНЕ",
-            "МОЙ ПЁС", "БЫВШАЯ", "ДРУГ", "ЭКСКАВАТОРЩИК", "ГЕНЕРАЛЬНЫЙ ДИРЕКТОР"
+            "МОЙ ПЁС", "БЫВШАЯ", "ДРУГ", "ЭКСКАВАТОРЩИК", "ГЕНЕРАЛЬНЫЙ ДИРЕКТОР",
+            "БАРИСТА", "ВАХТЁР", "СОСЕД С ПЕРФОРАТОРОМ", "ГОЛУБЬ В КЕПКЕ",
+            "КУРЬЕР САМОКАТА", "НАПАРНИК", "ДОМОВОЙ", "ПОЧТАЛЬОН", "АДМИНИСТРАТОР",
+            "САНТЕХНИК", "ВОДИТЕЛЬ ГАЗЕЛИ", "УЧЁНЫЙ С РАЙОНА", "МАСТЕР МАНИКЮРА",
+            "ДЕЖУРНЫЙ ПО ПОДЪЕЗДУ", "КОТ СОСЕДЕЙ", "ТАКСИСТ БЕЗ НАВИГАТОРА"
         ],
         action: [
             "СЛОМАЛ", "УГНАЛ", "СЪЕЛ", "ЗАБЛОКИРОВАЛ", "ПОХИТИЛ", "СПРЯТАЛ",
             "ЗАСТАВИЛ МЕНЯ СЛУШАТЬ", "ОТМЕНИЛ", "ПЕРЕЕХАЛ", "ИСПУГАЛ", "ЗАЛИЛ КЛЕЕМ",
-            "УТАЩИЛ В НОРУ", "ИСПОРТИЛ", "ВЫКАТИЛ НА ДОРОГУ", "УДАЛИЛ"
+            "УТАЩИЛ В НОРУ", "ИСПОРТИЛ", "ВЫКАТИЛ НА ДОРОГУ", "УДАЛИЛ",
+            "ПЕРЕПРОШИЛ", "ЗАПЕР В ПОДВАЛЕ", "СДУЛ ВЕТРОМ", "РАЗОБРАЛ НА ЗАПЧАСТИ",
+            "ПОТЕРЯЛ В ТУМАНЕ", "ЗАМЕНИЛ НА КАМЕНЬ", "ОСТАНОВИЛ НА ПОЛПУТИ",
+            "ЗАПУТАЛ В ПРОВОДАХ", "ВЫКЛЮЧИЛ ИЗ РОЗЕТКИ", "ЗАКРЫЛ НА ЗАСОВ",
+            "УНЁС НА КРЫШУ", "ПЕРЕПУТАЛ РАСПИСАНИЕ", "ПОСАДИЛ НА ДИЕТУ",
+            "ЗАЛИЛ КОФЕ", "ОТВЁЛ В СТОРОНУ", "ПЕРЕКРЫЛ ПРОХОД"
         ],
         target: [
             "МОЙ АВТОБУС", "БУДИЛЬНИК", "ЛИФТ", "ПРОПУСК", "ШТАНЫ", "ТОРМОЗА НА ВЕЛИКЕ",
             "ВХОДНУЮ ДВЕРЬ", "МОЙ ЗАВТРАК", "МАРШРУТКУ", "КЛЮЧИ ОТ КВАРТИРЫ",
-            "ЭЛЕКТРОСАМОКАТ", "БОТИНОК", "РАСПИСАНИЕ УРОКОВ", "УТРЕННИЙ КОФЕ"
+            "ЭЛЕКТРОСАМОКАТ", "БОТИНОК", "РАСПИСАНИЕ УРОКОВ", "УТРЕННИЙ КОФЕ",
+            "ЗАРЯДКУ ТЕЛЕФОНА", "РЕЗЕРВНЫЙ КОД", "СМЕННУЮ ОБУВЬ", "ДОКУМЕНТЫ НА СТОЛЕ",
+            "КАРТУ ОПЛАТЫ", "ЛЕВЫЙ НОСОК", "КРЫШКУ ОТ ТЕРМОСА", "МОБИЛЬНЫЙ ИНТЕРНЕТ",
+            "КОД ОТ ДОМОФОНА", "РАБОЧИЙ АККАУНТ", "ЗАПАСНОЙ РЮКЗАК", "ТРАМВАЙНЫЙ ПУТЬ",
+            "ТАЛОН НА ПРОЕЗД", "ПАРОЛЬ ОТ ВХОДА", "УТРЕННИЙ СИГНАЛ", "ПАПКУ С ФАЙЛАМИ",
+            "ПОСЛЕДНИЙ ЭЛЕКТРОПОЕЗД", "КАРМАННЫЙ ФОНАРИК"
         ]
     };
 
-    let isSpinning = false;
+    const fullExcusePresets = [
+        "Я опоздал, потому что сосед с перфоратором заблокировал входную дверь ровно перед выходом.",
+        "Я опоздал, потому что кот соседей утащил в нору ключи от квартиры и спрятал второй ботинок.",
+        "Я опоздал, потому что бариста перепутал расписание и залил кофе мою зарядку телефона.",
+        "Я опоздал, потому что вахтёр закрыл на засов лифт и заставил меня слушать лекцию про погоду.",
+        "Я опоздал, потому что водитель газели переехал маршрутку и выкатил на дорогу электросамокат.",
+        "Я опоздал, потому что курьер самоката похитил мой завтрак и выключил из розетки будильник.",
+        "Я опоздал, потому что генеральный директор удалил рабочий аккаунт и отменил утренний сигнал.",
+        "Я опоздал, потому что инопланетяне сдули ветром пропуск и запутали в проводах мой автобус.",
+        "Я опоздал, потому что сантехник залил клеем тормоза на велике и запер в подвале штаны.",
+        "Я опоздал, потому что голубь в кепке остановил на полпути последний электропоезд.",
+        "Я опоздал, потому что напарник потерял в тумане карту оплаты и перепрошил код от домофона.",
+        "Я опоздал, потому что домовой посадил на диету утренний кофе и спрятал левый носок."
+    ];
+
+    let isBusy = false;
 
     function openSecret() {
         document.getElementById('secretModal').classList.add('active');
@@ -386,7 +443,7 @@
         return arr[Math.floor(Math.random() * arr.length)];
     }
 
-    function getFallbackExcuse() {
+    function getDictionaryExcuse() {
         return {
             who: getRandomElement(dictionary.who),
             action: getRandomElement(dictionary.action),
@@ -394,17 +451,17 @@
         };
     }
 
-    async function generateExcuseWithApi() {
+    async function callGeminiExcuse() {
         if (!API_KEY || API_KEY === "ВСТАВЬ_СВОЙ_API_КЛЮЧ_СЮДА") {
-            return getFallbackExcuse();
+            throw new Error("API_KEY is missing");
         }
 
         const prompt =
             'Придумай смешную, абсурдную и грамматически согласованную отмазку для опоздания на русском языке в трёх коротких частях. ' +
             'Верни ТОЛЬКО валидный JSON без markdown-оформления вида {"who":"...","action":"...","target":"..."}. ' +
-            'Правила: "who" — кто/что (1-3 слова заглавными буквами, например "СОСЕДКА" или "МЭР ГОРОДА"), ' +
-            '"action" — действие в прошедшем времени мужского рода или нейтральной форме (1-4 слова заглавными буквами, например "УГНАЛ" или "ЗАЛИЛ КЛЕЕМ"), ' +
-            '"target" — над чем действие (1-3 слова заглавными буквами, например "МОЙ АВТОБУС"). ' +
+            'Правила: "who" — кто/что (1-3 слова заглавными буквами), ' +
+            '"action" — действие в прошедшем времени (1-4 слова заглавными буквами), ' +
+            '"target" — над чем действие (1-3 слова заглавными буквами). ' +
             'Фраза "Я опоздал, потому что " + who + " " + action + " " + target должна звучать естественно.';
 
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(API_KEY)}`;
@@ -455,32 +512,53 @@
         element.classList.remove('spinning');
     }
 
-    async function spinAll() {
-        if (isSpinning) return;
-        isSpinning = true;
+    function setButtonsDisabled(disabled) {
+        document.getElementById('aiBtn').disabled = disabled;
+        document.getElementById('presetBtn').disabled = disabled;
+    }
 
-        const spinBtn = document.getElementById('spinBtn');
-        spinBtn.disabled = true;
-
-        const slots = ['slot1', 'slot2', 'slot3'];
-        slots.forEach(id => document.getElementById(id).classList.add('spinning'));
-
-        let excuse;
-        try {
-            excuse = await generateExcuseWithApi();
-        } catch (err) {
-            console.warn("API fallback:", err);
-            excuse = getFallbackExcuse();
-        }
-
+    async function renderSlots(excuse, badgeText, statusText) {
+        document.getElementById('modeBadge').innerText = badgeText;
+        document.getElementById('statusLine').innerText = statusText;
         await Promise.all([
             setSlotValue('slot1', excuse.who),
             setSlotValue('slot2', excuse.action),
             setSlotValue('slot3', excuse.target)
         ]);
+    }
 
-        spinBtn.disabled = false;
-        isSpinning = false;
+    async function generateWithAi() {
+        if (isBusy) return;
+        isBusy = true;
+        setButtonsDisabled(true);
+
+        ['slot1', 'slot2', 'slot3'].forEach(id => document.getElementById(id).classList.add('spinning'));
+        document.getElementById('statusLine').innerText = "Запрос в Gemini...";
+
+        try {
+            const excuse = await callGeminiExcuse();
+            await renderSlots(excuse, "ИИ", "Сгенерировано нейросетью");
+        } catch (err) {
+            console.warn("Gemini error:", err);
+            document.getElementById('modeBadge').innerText = "ОШИБКА ИИ";
+            document.getElementById('statusLine').innerText = `Ошибка API (${err.message}). Нажми «Из заготовленных»`;
+            ['slot1', 'slot2', 'slot3'].forEach(id => document.getElementById(id).classList.remove('spinning'));
+        } finally {
+            setButtonsDisabled(false);
+            isBusy = false;
+        }
+    }
+
+    async function pickFromDictionary() {
+        if (isBusy) return;
+        isBusy = true;
+        setButtonsDisabled(true);
+
+        const excuse = getDictionaryExcuse();
+        await renderSlots(excuse, "СЛОВАРЬ", "Вариант из заготовленных");
+
+        setButtonsDisabled(false);
+        isBusy = false;
     }
 
     function copyExcuse() {
