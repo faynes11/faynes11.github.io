@@ -11,6 +11,7 @@
             --crimson-glow: rgba(185, 28, 48, 0.35);
             --slot-border: rgba(155, 34, 48, 0.45);
             --gold-bg: rgba(145, 110, 40, 0.25);
+            --gold-color: #d9b668;
             --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
@@ -121,7 +122,7 @@
             font-weight: 700;
             letter-spacing: 0.8px;
             text-transform: uppercase;
-            color: #d9b668;
+            color: var(--gold-color);
             margin-bottom: 12px;
         }
 
@@ -161,11 +162,19 @@
             padding-top: 42px;
         }
 
-        .sound-btn {
+        .top-bar {
             position: absolute;
             top: 0;
+            left: 0;
             right: 0;
             z-index: 5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mini-btn {
             background: linear-gradient(180deg, rgba(42, 26, 29, 0.95) 0%, rgba(20, 18, 21, 0.98) 100%);
             color: #e8d2d5;
             border: 1px solid rgba(185, 34, 52, 0.45);
@@ -185,18 +194,23 @@
             transition: all 0.15s ease;
         }
 
-        .sound-btn:hover {
+        .mini-btn:hover {
             border-color: rgba(220, 50, 70, 0.75);
             color: #ffffff;
         }
 
-        .sound-btn:active {
+        .mini-btn:active {
             transform: scale(0.96);
         }
 
-        .sound-btn.muted {
+        .mini-btn.muted {
             color: #968c8e;
             border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .mini-btn.life-mode {
+            color: #f0d79c;
+            border-color: rgba(217, 182, 104, 0.45);
         }
 
         .widget-box {
@@ -231,14 +245,31 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             position: relative;
             z-index: 2;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .widget-container.jackpot {
+            border-color: rgba(242, 198, 92, 0.85);
+            box-shadow:
+                0 25px 60px rgba(0, 0, 0, 0.85),
+                0 0 55px rgba(235, 178, 55, 0.45),
+                inset 0 1px 1px rgba(255, 230, 150, 0.35);
+            animation: jackpotShake 0.45s ease;
+        }
+
+        @keyframes jackpotShake {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.015) rotate(-0.4deg); }
+            75% { transform: scale(1.015) rotate(0.4deg); }
         }
 
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 22px;
+            margin-bottom: 10px;
             padding: 0 4px;
+            gap: 8px;
         }
 
         .title {
@@ -249,15 +280,58 @@
             letter-spacing: 0.6px;
         }
 
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .spin-counter {
+            font-size: 11px;
+            font-weight: 700;
+            color: #b7b3b8;
+            letter-spacing: 0.4px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 3px 9px;
+            border-radius: 12px;
+        }
+
         .badge {
             background-color: var(--gold-bg);
-            color: #d9b668;
+            color: var(--gold-color);
             border: 1px solid rgba(217, 182, 104, 0.35);
             padding: 3px 11px;
             border-radius: 12px;
             font-size: 11px;
             font-weight: 700;
             letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+        }
+
+        .badge.jackpot-badge {
+            background: rgba(235, 178, 55, 0.25);
+            color: #ffe299;
+            border-color: rgba(255, 214, 102, 0.8);
+        }
+
+        .sub-hint {
+            font-size: 11px;
+            color: #9e98a0;
+            padding: 0 4px;
+            margin-bottom: 16px;
+            min-height: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .jackpot-label {
+            color: #ffd97d;
+            font-weight: 800;
+            letter-spacing: 0.6px;
             text-transform: uppercase;
         }
 
@@ -272,7 +346,7 @@
             background:
                 repeating-linear-gradient(90deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 3px),
                 linear-gradient(180deg, #1b1b1e 0%, #111113 100%);
-            padding: 18px 16px;
+            padding: 18px 42px 18px 16px;
             border-radius: 14px;
             text-align: center;
             font-size: 19px;
@@ -290,6 +364,39 @@
                 inset 0 2px 6px rgba(0, 0, 0, 0.85),
                 0 1px 0 rgba(255, 255, 255, 0.04);
             overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .slot:hover {
+            border-color: rgba(217, 182, 104, 0.55);
+        }
+
+        .slot.locked {
+            border-color: rgba(217, 182, 104, 0.8);
+            background:
+                repeating-linear-gradient(90deg, rgba(217,182,104,0.03) 0px, rgba(217,182,104,0.03) 1px, transparent 1px, transparent 3px),
+                linear-gradient(180deg, #241f18 0%, #16130f 100%);
+            box-shadow:
+                inset 0 0 14px rgba(217, 182, 104, 0.14),
+                0 0 12px rgba(217, 182, 104, 0.16);
+        }
+
+        .lock-indicator {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 13px;
+            opacity: 0.45;
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            pointer-events: none;
+        }
+
+        .slot.locked .lock-indicator {
+            opacity: 1;
+            transform: translateY(-50%) scale(1.1);
         }
 
         .slot.spinning {
@@ -317,6 +424,7 @@
         .controls {
             display: flex;
             gap: 12px;
+            position: relative;
         }
 
         .spin-btn {
@@ -372,6 +480,7 @@
             align-items: center;
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
             transition: all 0.15s ease;
+            position: relative;
         }
 
         .copy-btn svg {
@@ -387,6 +496,33 @@
 
         .copy-btn:active {
             transform: scale(0.96);
+        }
+
+        .toast {
+            position: absolute;
+            right: 0;
+            bottom: calc(100% + 10px);
+            background: linear-gradient(180deg, rgba(48, 34, 24, 0.98) 0%, rgba(24, 20, 18, 0.98) 100%);
+            color: #ffe39e;
+            border: 1px solid rgba(217, 182, 104, 0.55);
+            padding: 7px 12px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.75);
+            opacity: 0;
+            transform: translateY(6px);
+            pointer-events: none;
+            transition: opacity 0.18s ease, transform 0.18s ease;
+            z-index: 20;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
@@ -404,25 +540,49 @@
 </div>
 
 <div class="stage-wrap">
-    <button class="sound-btn" id="soundBtn" onclick="toggleSound()" title="Переключить звук прокрутки">
-        <span id="soundIcon">🔊</span>
-        <span id="soundLabel">ЗВУК ВКЛ</span>
-    </button>
+    <div class="top-bar">
+        <button class="mini-btn" id="toneBtn" onclick="toggleTone()" title="Переключить стиль отмазок">
+            <span id="toneIcon">🤪</span>
+            <span id="toneLabel">АБСУРД</span>
+        </button>
+
+        <button class="mini-btn" id="soundBtn" onclick="toggleSound()" title="Переключить звук прокрутки">
+            <span id="soundIcon">🔊</span>
+            <span id="soundLabel">ЗВУК ВКЛ</span>
+        </button>
+    </div>
 
     <div class="widget-box">
         <canvas class="aura-canvas" id="auraCanvas"></canvas>
 
-        <div class="widget-container">
+        <div class="widget-container" id="widgetCard">
             <div class="header">
                 <span class="title">Я опоздал, потому что...</span>
-                <span class="badge">SLOTS</span>
+                <div class="header-right">
+                    <span class="spin-counter" id="spinCounter">#0</span>
+                    <span class="badge" id="mainBadge">SLOTS</span>
+                </div>
+            </div>
+            <div class="sub-hint">
+                <span>Клик по ячейке — закрепить</span>
+                <span class="jackpot-label" id="jackpotBanner"></span>
             </div>
             <div class="slots-wrapper">
-                <div class="slot" id="slot1">ЦЫГАНЕ</div>
-                <div class="slot" id="slot2">УТАЩИЛИ В НОРУ</div>
-                <div class="slot" id="slot3">КЛЮЧИ ОТ КВАРТИРЫ</div>
+                <div class="slot" id="slot1" onclick="toggleLock(0)">
+                    <span class="slot-text">ЦЫГАНЕ</span>
+                    <span class="lock-indicator" id="lockIcon0">🔓</span>
+                </div>
+                <div class="slot" id="slot2" onclick="toggleLock(1)">
+                    <span class="slot-text">УТАЩИЛИ В НОРУ</span>
+                    <span class="lock-indicator" id="lockIcon1">🔓</span>
+                </div>
+                <div class="slot" id="slot3" onclick="toggleLock(2)">
+                    <span class="slot-text">КЛЮЧИ ОТ КВАРТИРЫ</span>
+                    <span class="lock-indicator" id="lockIcon2">🔓</span>
+                </div>
             </div>
             <div class="controls">
+                <div class="toast" id="copyToast">Скопировано</div>
                 <button class="spin-btn" id="spinBtn" onclick="spinAll()">КРУТИТЬ</button>
                 <button class="copy-btn" onclick="copyExcuse()" title="Скопировать">
                     <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -438,42 +598,65 @@
 </div>
 
 <script>
-    const dictionary = {
-        who: [
-            "ДЕД", "СОСЕДКА", "КОТ", "КУРЬЕР", "ИНОПЛАНЕТЯНЕ", "МЭР ГОРОДА",
-            "ВОЕНКОМ", "СВЕКРОВЬ", "АЛКАШ С ДВОРА", "УЧИТЕЛЬНИЦА", "ЦЫГАНЕ",
-            "МОЙ ПЁС", "БЫВШАЯ", "ДРУГ", "ЭКСКАВАТОРЩИК", "ГЕНЕРАЛЬНЫЙ ДИРЕКТОР",
-            "БАРИСТА", "ВАХТЁР", "СОСЕД С ПЕРФОРАТОРОМ", "ГОЛУБЬ В КЕПКЕ",
-            "КУРЬЕР САМОКАТА", "НАПАРНИК", "ДОМОВОЙ", "ПОЧТАЛЬОН", "АДМИНИСТРАТОР",
-            "САНТЕХНИК", "ВОДИТЕЛЬ ГАЗЕЛИ", "УЧЁНЫЙ С РАЙОНА", "МАСТЕР МАНИКЮРА",
-            "ДЕЖУРНЫЙ ПО ПОДЪЕЗДУ", "КОТ СОСЕДЕЙ", "ТАКСИСТ БЕЗ НАВИГАТОРА"
-        ],
-        action: [
-            "СЛОМАЛ", "УГНАЛ", "СЪЕЛ", "ЗАБЛОКИРОВАЛ", "ПОХИТИЛ", "СПРЯТАЛ",
-            "ЗАСТАВИЛ МЕНЯ СЛУШАТЬ", "ОТМЕНИЛ", "ПЕРЕЕХАЛ", "ИСПУГАЛ", "ЗАЛИЛ КЛЕЕМ",
-            "УТАЩИЛ В НОРУ", "ИСПОРТИЛ", "ВЫКАТИЛ НА ДОРОГУ", "УДАЛИЛ",
-            "ПЕРЕПРОШИЛ", "ЗАПЕР В ПОДВАЛЕ", "СДУЛ ВЕТРОМ", "РАЗОБРАЛ НА ЗАПЧАСТИ",
-            "ПОТЕРЯЛ В ТУМАНЕ", "ЗАМЕНИЛ НА КАМЕНЬ", "ОСТАНОВИЛ НА ПОЛПУТИ",
-            "ЗАПУТАЛ В ПРОВОДАХ", "ВЫКЛЮЧИЛ ИЗ РОЗЕТКИ", "ЗАКРЫЛ НА ЗАСОВ",
-            "УНЁС НА КРЫШУ", "ПЕРЕПУТАЛ РАСПИСАНИЕ", "ПОСАДИЛ НА ДИЕТУ",
-            "ЗАЛИЛ КОФЕ", "ОТВЁЛ В СТОРОНУ", "ПЕРЕКРЫЛ ПРОХОД"
-        ],
-        target: [
-            "МОЙ АВТОБУС", "БУДИЛЬНИК", "ЛИФТ", "ПРОПУСК", "ШТАНЫ", "ТОРМОЗА НА ВЕЛИКЕ",
-            "ВХОДНУЮ ДВЕРЬ", "МОЙ ЗАВТРАК", "МАРШРУТКУ", "КЛЮЧИ ОТ КВАРТИРЫ",
-            "ЭЛЕКТРОСАМОКАТ", "БОТИНОК", "РАСПИСАНИЕ УРОКОВ", "УТРЕННИЙ КОФЕ",
-            "ЗАРЯДКУ ТЕЛЕФОНА", "РЕЗЕРВНЫЙ КОД", "СМЕННУЮ ОБУВЬ", "ДОКУМЕНТЫ НА СТОЛЕ",
-            "КАРТУ ОПЛАТЫ", "ЛЕВЫЙ НОСОК", "КРЫШКУ ОТ ТЕРМОСА", "МОБИЛЬНЫЙ ИНТЕРНЕТ",
-            "КОД ОТ ДОМОФОНА", "РАБОЧИЙ АККАУНТ", "ЗАПАСНОЙ РЮКЗАК", "ТРАМВАЙНЫЙ ПУТЬ",
-            "ТАЛОН НА ПРОЕЗД", "ПАРОЛЬ ОТ ВХОДА", "УТРЕННИЙ СИГНАЛ", "ПАПКУ С ФАЙЛАМИ",
-            "ПОСЛЕДНИЙ ЭЛЕКТРОПОЕЗД", "КАРМАННЫЙ ФОНАРИК"
-        ]
+    const packs = {
+        absurd: {
+            who: [
+                "ДЕД", "СОСЕДКА", "КОТ", "КУРЬЕР", "ИНОПЛАНЕТЯНЕ", "МЭР ГОРОДА",
+                "ВОЕНКОМ", "СВЕКРОВЬ", "АЛКАШ С ДВОРА", "УЧИТЕЛЬНИЦА", "ЦЫГАНЕ",
+                "МОЙ ПЁС", "БЫВШАЯ", "ДРУГ", "ЭКСКАВАТОРЩИК", "ГЕНЕРАЛЬНЫЙ ДИРЕКТОР",
+                "БАРИСТА", "ВАХТЁР", "СОСЕД С ПЕРФОРАТОРОМ", "ГОЛУБЬ В КЕПКЕ",
+                "КУРЬЕР САМОКАТА", "НАПАРНИК", "ДОМОВОЙ", "ПОЧТАЛЬОН", "АДМИНИСТРАТОР",
+                "САНТЕХНИК", "ВОДИТЕЛЬ ГАЗЕЛИ", "УЧЁНЫЙ С РАЙОНА", "МАСТЕР МАНИКЮРА",
+                "ДЕЖУРНЫЙ ПО ПОДЪЕЗДУ", "КОТ СОСЕДЕЙ", "ТАКСИСТ БЕЗ НАВИГАТОРА"
+            ],
+            action: [
+                "СЛОМАЛ", "УГНАЛ", "СЪЕЛ", "ЗАБЛОКИРОВАЛ", "ПОХИТИЛ", "СПРЯТАЛ",
+                "ЗАСТАВИЛ МЕНЯ СЛУШАТЬ", "ОТМЕНИЛ", "ПЕРЕЕХАЛ", "ИСПУГАЛ", "ЗАЛИЛ КЛЕЕМ",
+                "УТАЩИЛ В НОРУ", "ИСПОРТИЛ", "ВЫКАТИЛ НА ДОРОГУ", "УДАЛИЛ",
+                "ПЕРЕПРОШИЛ", "ЗАПЕР В ПОДВАЛЕ", "СДУЛ ВЕТРОМ", "РАЗОБРАЛ НА ЗАПЧАСТИ",
+                "ПОТЕРЯЛ В ТУМАНЕ", "ЗАМЕНИЛ НА КАМЕНЬ", "ОСТАНОВИЛ НА ПОЛПУТИ",
+                "ЗАПУТАЛ В ПРОВОДАХ", "ВЫКЛЮЧИЛ ИЗ РОЗЕТКИ", "ЗАКРЫЛ НА ЗАСОВ",
+                "УНЁС НА КРЫШУ", "ПЕРЕПУТАЛ РАСПИСАНИЕ", "ПОСАДИЛ НА ДИЕТУ",
+                "ЗАЛИЛ КОФЕ", "ОТВЁЛ В СТОРОНУ", "ПЕРЕКРЫЛ ПРОХОД"
+            ],
+            target: [
+                "МОЙ АВТОБУС", "БУДИЛЬНИК", "ЛИФТ", "ПРОПУСК", "ШТАНЫ", "ТОРМОЗА НА ВЕЛИКЕ",
+                "ВХОДНУЮ ДВЕРЬ", "МОЙ ЗАВТРАК", "МАРШРУТКУ", "КЛЮЧИ ОТ КВАРТИРЫ",
+                "ЭЛЕКТРОСАМОКАТ", "БОТИНОК", "РАСПИСАНИЕ УРОКОВ", "УТРЕННИЙ КОФЕ",
+                "ЗАРЯДКУ ТЕЛЕФОНА", "РЕЗЕРВНЫЙ КОД", "СМЕННУЮ ОБУВЬ", "ДОКУМЕНТЫ НА СТОЛЕ",
+                "КАРТУ ОПЛАТЫ", "ЛЕВЫЙ НОСОК", "КРЫШКУ ОТ ТЕРМОСА", "МОБИЛЬНЫЙ ИНТЕРНЕТ",
+                "КОД ОТ ДОМОФОНА", "РАБОЧИЙ АККАУНТ", "ЗАПАСНОЙ РЮКЗАК", "ТРАМВАЙНЫЙ ПУТЬ",
+                "ТАЛОН НА ПРОЕЗД", "ПАРОЛЬ ОТ ВХОДА", "УТРЕННИЙ СИГНАЛ", "ПАПКУ С ФАЙЛАМИ",
+                "ПОСЛЕДНИЙ ЭЛЕКТРОПОЕЗД", "КАРМАННЫЙ ФОНАРИК"
+            ]
+        },
+        life: {
+            who: [
+                "АВТОБУС", "МЕТРО", "БУДИЛЬНИК", "ЛИФТ", "ПРОБКА НА МОСТУ",
+                "ДОЖДЬ", "КУРЬЕР", "КОНТРОЛЛЕР", "СОСЕД СНИЗУ", "МАРШРУТКА",
+                "СВЕТОФОР", "ОБНОВЛЕНИЕ СИСТЕМЫ", "ПОЕЗД", "ТАКСИ", "ДОМОФОН"
+            ],
+            action: [
+                "ЗАДЕРЖАЛ", "ОСТАНОВИЛ", "СБИЛ", "ПЕРЕКРЫЛ", "ОТКЛЮЧИЛ",
+                "ЗАТЯНУЛ", "ПОМЕНЯЛ", "ЗАПЕР", "ПРИТОРМОЗИЛ", "ВЫКЛЮЧИЛ"
+            ],
+            target: [
+                "УТРЕННИЙ РЕЙС", "ВЫХОД ИЗ ДОМА", "РАБОЧИЙ МАРШРУТ", "ГРАФИК ВСТРЕЧ",
+                "ПУТЬ НА СТАНЦИЮ", "ВХОД В ЗДАНИЕ", "СВЯЗЬ С ОФИСОМ", "УТРЕННИЙ ПЛАН",
+                "ПОДЪЁМ НА ЭТАЖ", "ПРОХОД ЧЕРЕЗ ДВОР"
+            ]
+        }
     };
 
+    const slotIds = ['slot1', 'slot2', 'slot3'];
+    const locked = [false, false, false];
+    let currentTone = 'absurd';
+    let spinCount = 0;
     let isSpinning = false;
     let isSoundEnabled = true;
     let audioCtx = null;
     let auraBoost = 0;
+    let toastTimer = null;
 
     (function initCenterRaysAura() {
         const canvas = document.getElementById('auraCanvas');
@@ -521,8 +704,7 @@
                 const a = ray.angle + sway;
                 pts.push({
                     x: cx + Math.cos(a) * dist,
-                    y: cy + Math.sin(a) * dist,
-                    u
+                    y: cy + Math.sin(a) * dist
                 });
             }
 
@@ -530,7 +712,6 @@
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
 
-            // Мягкий красный ореол луча
             ctx.beginPath();
             pts.forEach((p, idx) => idx === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
             ctx.strokeStyle = `rgba(215, 28, 56, ${0.42 + auraBoost * 0.18})`;
@@ -539,7 +720,6 @@
             ctx.shadowBlur = 22 + auraBoost * 12;
             ctx.stroke();
 
-            // Яркий лучевой стержень от центра наружу
             const endP = pts[pts.length - 1];
             const grad = ctx.createLinearGradient(cx, cy, endP.x, endP.y);
             grad.addColorStop(0, 'rgba(255, 210, 195, 0.95)');
@@ -572,7 +752,6 @@
 
             ctx.clearRect(0, 0, w, h);
 
-            // Ядро свечения в центре за окном
             const coreGlow = ctx.createRadialGradient(cx, cy, 4, cx, cy, maxR * 0.45);
             coreGlow.addColorStop(0, `rgba(235, 42, 70, ${0.52 + auraBoost * 0.2})`);
             coreGlow.addColorStop(0.6, `rgba(155, 18, 42, ${0.22 + auraBoost * 0.1})`);
@@ -652,6 +831,27 @@
         osc.stop(now + 0.095);
     }
 
+    function playJackpotSound() {
+        if (!isSoundEnabled) return;
+        const ctx = ensureAudioContext();
+        if (!ctx) return;
+
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((freq, i) => {
+            const now = ctx.currentTime + i * 0.07;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now);
+            gain.gain.setValueAtTime(0.12, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.25);
+        });
+    }
+
     function toggleSound() {
         isSoundEnabled = !isSoundEnabled;
         const btn = document.getElementById('soundBtn');
@@ -670,6 +870,41 @@
         }
     }
 
+    function toggleTone() {
+        if (isSpinning) return;
+        currentTone = currentTone === 'absurd' ? 'life' : 'absurd';
+        const btn = document.getElementById('toneBtn');
+        const icon = document.getElementById('toneIcon');
+        const label = document.getElementById('toneLabel');
+
+        if (currentTone === 'life') {
+            btn.classList.add('life-mode');
+            icon.innerText = '🏙️';
+            label.innerText = 'ЖИЗНЕННО';
+        } else {
+            btn.classList.remove('life-mode');
+            icon.innerText = '🤪';
+            label.innerText = 'АБСУРД';
+        }
+        playStopSound(0);
+    }
+
+    function toggleLock(index) {
+        if (isSpinning) return;
+        locked[index] = !locked[index];
+        const slotEl = document.getElementById(slotIds[index]);
+        const iconEl = document.getElementById('lockIcon' + index);
+
+        if (locked[index]) {
+            slotEl.classList.add('locked');
+            iconEl.innerText = '🔒';
+        } else {
+            slotEl.classList.remove('locked');
+            iconEl.innerText = '🔓';
+        }
+        playStopSound(index);
+    }
+
     function openSecret() {
         document.getElementById('secretModal').classList.add('active');
     }
@@ -684,6 +919,10 @@
         }
     }
 
+    function getSlotTextEl(id) {
+        return document.getElementById(id).querySelector('.slot-text');
+    }
+
     function pickNextWord(array, currentText) {
         if (array.length <= 1) return array[0];
         let candidate = array[Math.floor(Math.random() * array.length)];
@@ -696,6 +935,13 @@
     function spinReel(id, array, durationMs, reelIndex) {
         return new Promise(resolve => {
             const element = document.getElementById(id);
+            const textEl = getSlotTextEl(id);
+
+            if (locked[reelIndex]) {
+                resolve();
+                return;
+            }
+
             element.classList.remove('landed');
             element.classList.add('spinning');
 
@@ -707,7 +953,7 @@
                 const progress = Math.min(elapsed / durationMs, 1);
 
                 if (elapsed >= durationMs) {
-                    element.innerText = pickNextWord(array, element.innerText);
+                    textEl.innerText = pickNextWord(array, textEl.innerText);
                     element.classList.remove('spinning');
                     element.classList.add('landed');
                     playStopSound(reelIndex);
@@ -716,7 +962,7 @@
                     return;
                 }
 
-                element.innerText = pickNextWord(array, element.innerText);
+                textEl.innerText = pickNextWord(array, textEl.innerText);
                 playTickSound(progress);
 
                 tickDelay = 55 + Math.pow(progress, 2.2) * 145;
@@ -727,33 +973,73 @@
         });
     }
 
+    function checkJackpot() {
+        const card = document.getElementById('widgetCard');
+        const badge = document.getElementById('mainBadge');
+        const banner = document.getElementById('jackpotBanner');
+
+        card.classList.remove('jackpot');
+        badge.classList.remove('jackpot-badge');
+        badge.innerText = 'SLOTS';
+        banner.innerText = '';
+
+        // Редкий шанс джекпота (~12%) либо совпадение длин/индексов
+        if (Math.random() < 0.12) {
+            card.classList.add('jackpot');
+            badge.classList.add('jackpot-badge');
+            badge.innerText = 'JACKPOT';
+            banner.innerText = '★ ДЖЕКПОТ КОМБО ★';
+            auraBoost = 1.6;
+            playJackpotSound();
+        }
+    }
+
     async function spinAll() {
         if (isSpinning) return;
+        if (locked.every(Boolean)) return;
+
         isSpinning = true;
-        auraBoost = 1;
+        auraBoost = 1.1;
         ensureAudioContext();
 
         const spinBtn = document.getElementById('spinBtn');
         spinBtn.disabled = true;
 
+        spinCount += 1;
+        document.getElementById('spinCounter').innerText = '#' + spinCount;
+
+        const dict = packs[currentTone];
+
         await Promise.all([
-            spinReel('slot1', dictionary.who, 1100, 0),
-            spinReel('slot2', dictionary.action, 1550, 1),
-            spinReel('slot3', dictionary.target, 2000, 2)
+            spinReel('slot1', dict.who, 1100, 0),
+            spinReel('slot2', dict.action, 1550, 1),
+            spinReel('slot3', dict.target, 2000, 2)
         ]);
+
+        checkJackpot();
 
         spinBtn.disabled = false;
         isSpinning = false;
     }
 
+    function showToast(msg = 'Скопировано') {
+        const toast = document.getElementById('copyToast');
+        toast.innerText = msg;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+            toast.classList.remove('show');
+        }, 1500);
+    }
+
     function copyExcuse() {
-        const s1 = document.getElementById('slot1').innerText;
-        const s2 = document.getElementById('slot2').innerText;
-        const s3 = document.getElementById('slot3').innerText;
+        const s1 = getSlotTextEl('slot1').innerText;
+        const s2 = getSlotTextEl('slot2').innerText;
+        const s3 = getSlotTextEl('slot3').innerText;
         const fullText = `Я опоздал, потому что ${s1.toLowerCase()} ${s2.toLowerCase()} ${s3.toLowerCase()}.`;
 
         navigator.clipboard.writeText(fullText).then(() => {
-            alert('Отмазка скопирована: ' + fullText);
+            showToast('Скопировано');
         }).catch(() => {
             prompt("Скопируйте вручную:", fullText);
         });
