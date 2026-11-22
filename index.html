@@ -526,6 +526,11 @@
             user-select: none;
         }
 
+        .slot.empty .slot-text {
+            color: #6e6973;
+            letter-spacing: 2px;
+        }
+
         .slot:hover {
             border-color: rgba(217, 182, 104, 0.55);
         }
@@ -740,16 +745,16 @@
                 <span class="jackpot-label" id="jackpotBanner"></span>
             </div>
             <div class="slots-wrapper">
-                <div class="slot" id="slot1" onclick="toggleLock(0)">
-                    <span class="slot-text">ПАНТЕЛЕЕВ</span>
+                <div class="slot empty" id="slot1" onclick="toggleLock(0)">
+                    <span class="slot-text">—</span>
                     <span class="lock-indicator" id="lockIcon0">🔓</span>
                 </div>
-                <div class="slot" id="slot2" onclick="toggleLock(1)">
-                    <span class="slot-text">УТАЩИЛ В НОРУ</span>
+                <div class="slot empty" id="slot2" onclick="toggleLock(1)">
+                    <span class="slot-text">—</span>
                     <span class="lock-indicator" id="lockIcon1">🔓</span>
                 </div>
-                <div class="slot" id="slot3" onclick="toggleLock(2)">
-                    <span class="slot-text">КЛЮЧИ ОТ КВАРТИРЫ</span>
+                <div class="slot empty" id="slot3" onclick="toggleLock(2)">
+                    <span class="slot-text">—</span>
                     <span class="lock-indicator" id="lockIcon2">🔓</span>
                 </div>
             </div>
@@ -829,65 +834,7 @@
         }
     ];
 
-    const STORAGE_KEY = 'excuse_slots_unlocked_jackpots_v3';
-    let unlockedIds = loadUnlockedJackpots();
-
-    function loadUnlockedJackpots() {
-        try {
-            const raw = localStorage.getItem(STORAGE_KEY);
-            const parsed = raw ? JSON.parse(raw) : [];
-            return Array.isArray(parsed) ? parsed : [];
-        } catch {
-            return [];
-        }
-    }
-
-    function saveUnlockedJackpots() {
-        try {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(unlockedIds));
-        } catch {}
-    }
-
-    function updateJackpotCounterUI() {
-        const total = JACKPOTS.length;
-        const found = JACKPOTS.filter(j => unlockedIds.includes(j.id)).length;
-        document.getElementById('jpBtnLabel').innerText = `ДЖЕКПОТЫ ${found}/${total}`;
-        document.getElementById('jpModalTitle').innerText = `Джекпоты (${found}/${total})`;
-    }
-
-    function renderJackpotsList() {
-        const listEl = document.getElementById('jpList');
-        listEl.innerHTML = '';
-
-        JACKPOTS.forEach((jp, idx) => {
-            const isOpen = unlockedIds.includes(jp.id);
-            const item = document.createElement('div');
-            item.className = `jp-item ${isOpen ? 'unlocked' : 'locked-jp'}`;
-
-            const titleText = isOpen ? `#${idx + 1} ${jp.name}` : `#${idx + 1} СЕКРЕТНЫЙ ДЖЕКПОТ`;
-            const statusHtml = isOpen
-                ? `<span class="jp-status-open">★ ВЫБИТ</span>`
-                : `<span class="jp-status-locked">🔒 СКРЫТ</span>`;
-
-            item.innerHTML = `
-                <div class="jp-item-top">
-                    <span>${titleText}</span>
-                    ${statusHtml}
-                </div>
-                <div class="jp-secret-box">
-                    <div class="jp-combo">${jp.who} • ${jp.action} • ${jp.target}</div>
-                    <div class="jp-blur-veil">Ещё не выбит</div>
-                </div>
-            `;
-            listEl.appendChild(item);
-        });
-    }
-
-    function openJackpotsModal() {
-        updateJackpotCounterUI();
-        renderJackpotsList();
-        document.getElementById('jackpotsModal').classList.add('active');
-    }
+    const MEMORY_KEY = 'excuse_slots_memory_v1';
 
     const packs = {
         absurd: {
@@ -953,19 +900,157 @@
     };
 
     const slotIds = ['slot1', 'slot2', 'slot3'];
-    const locked = [false, false, false];
+    const EMPTY_SYMBOL = '—';
+
+    function loadMemory() {
+        try {
+            const raw = localStorage.getItem(MEMORY_KEY);
+            return raw ? JSON.parse(raw) : {};
+        } catch {
+            return {};
+        }
+    }
+
+    const savedMem = loadMemory();
+    let unlockedIds = Array.isArray(savedMem.unlockedIds) ? savedMem.unlockedIds : [];
+    let currentTone = savedMem.tone === 'life' ? 'life' : 'absurd';
+    let spinCount = Number.isFinite(savedMem.spinCount) ? Math.max(0, savedMem.spinCount) : 0;
+    let locked = Array.isArray(savedMem.locked) && savedMem.locked.length === 3
+        ? savedMem.locked.map(Boolean)
+        : [false, false, false];
+    let slotValues = Array.isArray(savedMem.slotValues) && savedMem.slotValues.length === 3
+        ? savedMem.slotValues.map(v => (typeof v === 'string' && v.trim() ? v : EMPTY_SYMBOL))
+        : [EMPTY_SYMBOL, EMPTY_SYMBOL, EMPTY_SYMBOL];
+    let isSoundEnabled = typeof savedMem.sound === 'boolean' ? savedMem.sound : true;
+
     const recentHistory = [[], [], []];
-    let currentTone = 'absurd';
-    let spinCount = 0;
     let isSpinning = false;
     let isJackpotAnimating = false;
-    let isSoundEnabled = true;
     let audioCtx = null;
     let auraBoost = 0;
     let toastTimer = null;
     let jackpotUnlockTimer = null;
 
+    function saveMemory() {
+        try {
+            const payload = {
+                unlockedIds,
+                tone: currentTone,
+                spinCount,
+                locked,
+                slotValues,
+                sound: isSoundEnabled
+            };
+            localStorage.setItem(MEMORY_KEY, JSON.stringify(payload));
+        } catch {}
+    }
+
+    function applyToneUI() {
+        const btn = document.getElementById('toneBtn');
+        const icon = document.getElementById('toneIcon');
+        const label = document.getElementById('toneLabel');
+
+        if (currentTone === 'life') {
+            btn.classList.add('life-mode');
+            icon.innerText = '🏙️';
+            label.innerText = 'ЖИЗНЕННО';
+        } else {
+            btn.classList.remove('life-mode');
+            icon.innerText = '🤪';
+            label.innerText = 'АБСУРД';
+        }
+    }
+
+    function applySoundUI() {
+        const btn = document.getElementById('soundBtn');
+        const icon = document.getElementById('soundIcon');
+        const label = document.getElementById('soundLabel');
+
+        if (isSoundEnabled) {
+            btn.classList.remove('muted');
+            icon.innerText = '🔊';
+            label.innerText = 'ЗВУК ВКЛ';
+        } else {
+            btn.classList.add('muted');
+            icon.innerText = '🔇';
+            label.innerText = 'ЗВУК ВЫКЛ';
+        }
+    }
+
+    function setSlotDisplay(index, value) {
+        const cleaned = value && value.trim() ? value : EMPTY_SYMBOL;
+        slotValues[index] = cleaned;
+        const slotEl = document.getElementById(slotIds[index]);
+        const textEl = slotEl.querySelector('.slot-text');
+        textEl.innerText = cleaned;
+        if (cleaned === EMPTY_SYMBOL) {
+            slotEl.classList.add('empty');
+        } else {
+            slotEl.classList.remove('empty');
+        }
+    }
+
+    function applySlotsAndLocksUI() {
+        for (let i = 0; i < 3; i++) {
+            setSlotDisplay(i, slotValues[i]);
+            const slotEl = document.getElementById(slotIds[i]);
+            const iconEl = document.getElementById('lockIcon' + i);
+            if (locked[i]) {
+                slotEl.classList.add('locked');
+                iconEl.innerText = '🔒';
+            } else {
+                slotEl.classList.remove('locked');
+                iconEl.innerText = '🔓';
+            }
+        }
+        document.getElementById('spinCounter').innerText = '#' + spinCount;
+    }
+
+    function updateJackpotCounterUI() {
+        const total = JACKPOTS.length;
+        const found = JACKPOTS.filter(j => unlockedIds.includes(j.id)).length;
+        document.getElementById('jpBtnLabel').innerText = `ДЖЕКПОТЫ ${found}/${total}`;
+        document.getElementById('jpModalTitle').innerText = `Джекпоты (${found}/${total})`;
+    }
+
+    applyToneUI();
+    applySoundUI();
+    applySlotsAndLocksUI();
     updateJackpotCounterUI();
+
+    function renderJackpotsList() {
+        const listEl = document.getElementById('jpList');
+        listEl.innerHTML = '';
+
+        JACKPOTS.forEach((jp, idx) => {
+            const isOpen = unlockedIds.includes(jp.id);
+            const item = document.createElement('div');
+            item.className = `jp-item ${isOpen ? 'unlocked' : 'locked-jp'}`;
+
+            const titleText = isOpen ? `#${idx + 1} ${jp.name}` : `#${idx + 1} СЕКРЕТНЫЙ ДЖЕКПОТ`;
+            const statusHtml = isOpen
+                ? `<span class="jp-status-open">★ ВЫБИТ</span>`
+                : `<span class="jp-status-locked">🔒 СКРЫТ</span>`;
+
+            item.innerHTML = `
+                <div class="jp-item-top">
+                    <span>${titleText}</span>
+                    ${statusHtml}
+                </div>
+                <div class="jp-secret-box">
+                    <div class="jp-combo">${jp.who} • ${jp.action} • ${jp.target}</div>
+                    <div class="jp-blur-veil">Ещё не выбит</div>
+                </div>
+            `;
+            listEl.appendChild(item);
+        });
+    }
+
+    function openJackpotsModal() {
+        updateJackpotCounterUI();
+        renderJackpotsList();
+        document.getElementById('jackpotsModal').classList.add('active');
+    }
 
     function syncSpinButtonState() {
         const spinBtn = document.getElementById('spinBtn');
@@ -1185,38 +1270,18 @@
 
     function toggleSound() {
         isSoundEnabled = !isSoundEnabled;
-        const btn = document.getElementById('soundBtn');
-        const icon = document.getElementById('soundIcon');
-        const label = document.getElementById('soundLabel');
-
+        applySoundUI();
+        saveMemory();
         if (isSoundEnabled) {
-            btn.classList.remove('muted');
-            icon.innerText = '🔊';
-            label.innerText = 'ЗВУК ВКЛ';
             playStopSound(1);
-        } else {
-            btn.classList.add('muted');
-            icon.innerText = '🔇';
-            label.innerText = 'ЗВУК ВЫКЛ';
         }
     }
 
     function toggleTone() {
         if (isSpinning || isJackpotAnimating) return;
         currentTone = currentTone === 'absurd' ? 'life' : 'absurd';
-        const btn = document.getElementById('toneBtn');
-        const icon = document.getElementById('toneIcon');
-        const label = document.getElementById('toneLabel');
-
-        if (currentTone === 'life') {
-            btn.classList.add('life-mode');
-            icon.innerText = '🏙️';
-            label.innerText = 'ЖИЗНЕННО';
-        } else {
-            btn.classList.remove('life-mode');
-            icon.innerText = '🤪';
-            label.innerText = 'АБСУРД';
-        }
+        applyToneUI();
+        saveMemory();
         playStopSound(0);
     }
 
@@ -1233,6 +1298,7 @@
             slotEl.classList.remove('locked');
             iconEl.innerText = '🔓';
         }
+        saveMemory();
         playStopSound(index);
     }
 
@@ -1280,7 +1346,7 @@
                 return;
             }
 
-            element.classList.remove('landed');
+            element.classList.remove('empty', 'landed');
             element.classList.add('spinning');
 
             const startTime = performance.now();
@@ -1292,7 +1358,7 @@
 
                 if (elapsed >= durationMs) {
                     const finalWord = pickNextWord(array, textEl.innerText, recentHistory[reelIndex]);
-                    textEl.innerText = finalWord;
+                    setSlotDisplay(reelIndex, finalWord);
                     recordHistory(reelIndex, finalWord);
                     element.classList.remove('spinning');
                     element.classList.add('landed');
@@ -1343,9 +1409,9 @@
 
         if (!unlockedIds.includes(jp.id)) {
             unlockedIds.push(jp.id);
-            saveUnlockedJackpots();
             updateJackpotCounterUI();
         }
+        saveMemory();
 
         spawnGoldSparks();
         playJackpotSound();
@@ -1358,14 +1424,14 @@
 
     function evaluateMatchedJackpot() {
         if (currentTone !== 'absurd') return null;
-        const s1 = getSlotTextEl('slot1').innerText;
-        const s2 = getSlotTextEl('slot2').innerText;
-        const s3 = getSlotTextEl('slot3').innerText;
+        const s1 = slotValues[0];
+        const s2 = slotValues[1];
+        const s3 = slotValues[2];
+        if (s1 === EMPTY_SYMBOL || s2 === EMPTY_SYMBOL || s3 === EMPTY_SYMBOL) return null;
 
         const exact = JACKPOTS.find(jp => jp.who === s1 && jp.action === s2 && jp.target === s3);
         if (exact) return exact;
 
-        // Редкий редкий шанс поймать джекпот при совпадении ключевого героя и редким проком
         const heroMatch = JACKPOTS.find(jp => jp.who === s1);
         if (heroMatch && Math.random() < heroMatch.chance) {
             return heroMatch;
@@ -1385,6 +1451,7 @@
 
         spinCount += 1;
         document.getElementById('spinCounter').innerText = '#' + spinCount;
+        saveMemory();
 
         const dict = packs[currentTone];
 
@@ -1393,6 +1460,8 @@
             spinReel('slot2', dict.action, 1550, 1),
             spinReel('slot3', dict.target, 2000, 2)
         ]);
+
+        saveMemory();
 
         const hit = evaluateMatchedJackpot();
         isSpinning = false;
@@ -1415,9 +1484,13 @@
     }
 
     function copyExcuse() {
-        const s1 = getSlotTextEl('slot1').innerText;
-        const s2 = getSlotTextEl('slot2').innerText;
-        const s3 = getSlotTextEl('slot3').innerText;
+        const s1 = slotValues[0];
+        const s2 = slotValues[1];
+        const s3 = slotValues[2];
+        if (s1 === EMPTY_SYMBOL || s2 === EMPTY_SYMBOL || s3 === EMPTY_SYMBOL) {
+            showToast('Сначала покрути');
+            return;
+        }
         const fullText = `Я опоздал, потому что ${s1.toLowerCase()} ${s2.toLowerCase()} ${s3.toLowerCase()}.`;
 
         navigator.clipboard.writeText(fullText).then(() => {
