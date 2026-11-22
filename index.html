@@ -775,12 +775,14 @@
 </div>
 
 <script>
+    // g: 'm' (муж. род), 'f' (жен. род), 'n' (ср. род), 'pl' (мн. число)
     const JACKPOTS = [
         {
             id: 'panteleev',
             name: 'ПАНТЕЛЕЕВ',
             who: 'ПАНТЕЛЕЕВ',
-            action: 'УТАЩИЛ В НОРУ',
+            whoGender: 'm',
+            actionBase: 'УТАЩИЛ В НОРУ',
             target: 'КЛЮЧИ ОТ КВАРТИРЫ',
             chance: 0.025
         },
@@ -788,7 +790,8 @@
             id: 'gozyava',
             name: 'ГОЗЯВА',
             who: 'ГОЗЯВА',
-            action: 'ЗАБЛОКИРОВАЛ',
+            whoGender: 'm',
+            actionBase: 'ЗАБЛОКИРОВАЛ',
             target: 'ВХОДНУЮ ДВЕРЬ',
             chance: 0.025
         },
@@ -796,7 +799,8 @@
             id: 'hrumki',
             name: 'ХРУМКИ',
             who: 'ХРУМКИ',
-            action: 'СЪЕЛ',
+            whoGender: 'm',
+            actionBase: 'СЪЕЛ',
             target: 'МОЙ ЗАВТРАК',
             chance: 0.025
         },
@@ -804,7 +808,8 @@
             id: 'polad',
             name: 'ПОЛАД',
             who: 'ПОЛАД',
-            action: 'УГНАЛ',
+            whoGender: 'm',
+            actionBase: 'УГНАЛ',
             target: 'МОЙ АВТОБУС',
             chance: 0.025
         },
@@ -812,7 +817,8 @@
             id: 'david',
             name: 'ДАВИД',
             who: 'ДАВИД',
-            action: 'ПЕРЕПРОШИЛ',
+            whoGender: 'm',
+            actionBase: 'ПЕРЕПРОШИЛ',
             target: 'БУДИЛЬНИК',
             chance: 0.025
         },
@@ -820,7 +826,8 @@
             id: 'arseniy',
             name: 'АРСЕНІЙ',
             who: 'АРСЕНІЙ',
-            action: 'ЗАПЕР В ПОДВАЛЕ',
+            whoGender: 'm',
+            actionBase: 'ЗАПЕР В ПОДВАЛЕ',
             target: 'РАБОЧИЙ АККАУНТ',
             chance: 0.025
         },
@@ -828,41 +835,71 @@
             id: 'kira',
             name: 'КИРА',
             who: 'КИРА',
-            action: 'СПРЯТАЛ',
+            whoGender: 'f',
+            actionBase: 'СПРЯТАЛ',
             target: 'ПРОПУСК',
             chance: 0.025
         }
     ];
 
-    const MEMORY_KEY = 'excuse_slots_memory_v1';
+    const MEMORY_KEY = 'excuse_slots_memory_v2';
 
     const packs = {
         absurd: {
             who: [
-                "ПАНТЕЛЕЕВ", "ГОЗЯВА", "ХРУМКИ", "ПОЛАД", "ДАВИД", "АРСЕНІЙ", "КИРА",
-                "ДЕД", "СОСЕДКА", "КОТ", "КУРЬЕР", "ИНОПЛАНЕТЯНЕ", "МЭР ГОРОДА",
-                "ВОЕНКОМ", "СВЕКРОВЬ", "АЛКАШ С ДВОРА", "УЧИТЕЛЬНИЦА", "ЦЫГАНЕ",
-                "МОЙ ПЁС", "БЫВШАЯ", "ДРУГ", "ЭКСКАВАТОРЩИК", "ГЕНЕРАЛЬНЫЙ ДИРЕКТОР",
-                "БАРИСТА", "ВАХТЁР", "СОСЕД С ПЕРФОРАТОРОМ", "ГОЛУБЬ В КЕПКЕ",
-                "КУРЬЕР САМОКАТА", "НАПАРНИК", "ДОМОВОЙ", "ПОЧТАЛЬОН", "АДМИНИСТРАТОР",
-                "САНТЕХНИК", "ВОДИТЕЛЬ ГАЗЕЛИ", "УЧЁНЫЙ С РАЙОНА", "МАСТЕР МАНИКЮРА",
-                "ДЕЖУРНЫЙ ПО ПОДЪЕЗДУ", "КОТ СОСЕДЕЙ", "ТАКСИСТ БЕЗ НАВИГАТОРА",
-                "ЕНОТ В ПАЛЬТО", "РОБОТ-ПЫЛЕСОС", "ШАВЕРМЕН", "ДИДЖЕЙ ИЗ МАРШРУТКИ",
-                "КАПИТАН ОЧЕВИДНОСТЬ", "ПАПА РИМСКИЙ", "СОСЕД С САКСОФОНОМ",
-                "ОХРАННИК НА ПРОХОДНОЙ", "БЕЛКА-СТРЕЛЯЛКА", "КОЛЛЕГА С ПЯТОГО"
+                { text: "ПАНТЕЛЕЕВ", g: "m" }, { text: "ГОЗЯВА", g: "m" }, { text: "ХРУМКИ", g: "m" },
+                { text: "ПОЛАД", g: "m" }, { text: "ДАВИД", g: "m" }, { text: "АРСЕНІЙ", g: "m" },
+                { text: "КИРА", g: "f" }, { text: "ДЕД", g: "m" }, { text: "СОСЕДКА", g: "f" },
+                { text: "КОТ", g: "m" }, { text: "КУРЬЕР", g: "m" }, { text: "ИНОПЛАНЕТЯНЕ", g: "pl" },
+                { text: "МЭР ГОРОДА", g: "m" }, { text: "ВОЕНКОМ", g: "m" }, { text: "СВЕКРОВЬ", g: "f" },
+                { text: "АЛКАШ С ДВОРА", g: "m" }, { text: "УЧИТЕЛЬНИЦА", g: "f" }, { text: "ЦЫГАНЕ", g: "pl" },
+                { text: "МОЙ ПЁС", g: "m" }, { text: "БЫВШАЯ", g: "f" }, { text: "ДРУГ", g: "m" },
+                { text: "ЭКСКАВАТОРЩИК", g: "m" }, { text: "ГЕНЕРАЛЬНЫЙ ДИРЕКТОР", g: "m" },
+                { text: "БАРИСТА", g: "m" }, { text: "ВАХТЁР", g: "m" }, { text: "СОСЕД С ПЕРФОРАТОРОМ", g: "m" },
+                { text: "ГОЛУБЬ В КЕПКЕ", g: "m" }, { text: "КУРЬЕР САМОКАТА", g: "m" }, { text: "НАПАРНИК", g: "m" },
+                { text: "ДОМОВОЙ", g: "m" }, { text: "ПОЧТАЛЬОН", g: "m" }, { text: "АДМИНИСТРАТОР", g: "m" },
+                { text: "САНТЕХНИК", g: "m" }, { text: "ВОДИТЕЛЬ ГАЗЕЛИ", g: "m" }, { text: "УЧЁНЫЙ С РАЙОНА", g: "m" },
+                { text: "МАСТЕР МАНИКЮРА", g: "m" }, { text: "ДЕЖУРНЫЙ ПО ПОДЪЕЗДУ", g: "m" },
+                { text: "КОТ СОСЕДЕЙ", g: "m" }, { text: "ТАКСИСТ БЕЗ НАВИГАТОРА", g: "m" },
+                { text: "ЕНОТ В ПАЛЬТО", g: "m" }, { text: "РОБОТ-ПЫЛЕСОС", g: "m" }, { text: "ШАВЕРМЕН", g: "m" },
+                { text: "ДИДЖЕЙ ИЗ МАРШРУТКИ", g: "m" }, { text: "КАПИТАН ОЧЕВИДНОСТЬ", g: "m" },
+                { text: "СОСЕД С САКСОФОНОМ", g: "m" }, { text: "ОХРАННИК НА ПРОХОДНОЙ", g: "m" },
+                { text: "БЕЛКА-СТРЕЛЯЛКА", g: "f" }, { text: "КОЛЛЕГА С ПЯТОГО", g: "m" }
             ],
             action: [
-                "СЛОМАЛ", "УГНАЛ", "СЪЕЛ", "ЗАБЛОКИРОВАЛ", "ПОХИТИЛ", "СПРЯТАЛ",
-                "ЗАСТАВИЛ МЕНЯ СЛУШАТЬ", "ОТМЕНИЛ", "ПЕРЕЕХАЛ", "ИСПУГАЛ", "ЗАЛИЛ КЛЕЕМ",
-                "УТАЩИЛ В НОРУ", "ИСПОРТИЛ", "ВЫКАТИЛ НА ДОРОГУ", "УДАЛИЛ",
-                "ПЕРЕПРОШИЛ", "ЗАПЕР В ПОДВАЛЕ", "СДУЛ ВЕТРОМ", "РАЗОБРАЛ НА ЗАПЧАСТИ",
-                "ПОТЕРЯЛ В ТУМАНЕ", "ЗАМЕНИЛ НА КАМЕНЬ", "ОСТАНОВИЛ НА ПОЛПУТИ",
-                "ЗАПУТАЛ В ПРОВОДАХ", "ВЫКЛЮЧИЛ ИЗ РОЗЕТКИ", "ЗАКРЫЛ НА ЗАСОВ",
-                "УНЁС НА КРЫШУ", "ПЕРЕПУТАЛ РАСПИСАНИЕ", "ПОСАДИЛ НА ДИЕТУ",
-                "ЗАЛИЛ КОФЕ", "ОТВЁЛ В СТОРОНУ", "ПЕРЕКРЫЛ ПРОХОД",
-                "ПЕРЕВЁРНУЛ ВВЕРХ ДНОМ", "ЗАГИПНОТИЗИРОВАЛ", "ПРИКЛЕИЛ К ПОЛУ",
-                "ЗАКОПАЛ В ПЕСОЧНИЦЕ", "УВЕЛИЧИЛ НАЛОГ НА", "СБРОСИЛ НА ЗАВОДСКИЕ",
-                "ПРЕВРАТИЛ В ТЫКВУ", "ВЫЗВАЛ НА ДУЭЛЬ", "ПОДМЕНИЛ НА"
+                { m: "СЛОМАЛ", f: "СЛОМАЛА", n: "СЛОМАЛО", pl: "СЛОМАЛИ" },
+                { m: "УГНАЛ", f: "УГНАЛА", n: "УГНАЛО", pl: "УГНАЛИ" },
+                { m: "СЪЕЛ", f: "СЪЕЛА", n: "СЪЕЛО", pl: "СЪЕЛИ" },
+                { m: "ЗАБЛОКИРОВАЛ", f: "ЗАБЛОКИРОВАЛА", n: "ЗАБЛОКИРОВАЛО", pl: "ЗАБЛОКИРОВАЛИ" },
+                { m: "ПОХИТИЛ", f: "ПОХИТИЛА", n: "ПОХИТИЛО", pl: "ПОХИТИЛИ" },
+                { m: "СПРЯТАЛ", f: "СПРЯТАЛА", n: "СПРЯТАЛО", pl: "СПРЯТАЛИ" },
+                { m: "ОТМЕНИЛ", f: "ОТМЕНИЛА", n: "ОТМЕНИЛО", pl: "ОТМЕНИЛИ" },
+                { m: "ПЕРЕЕХАЛ", f: "ПЕРЕЕХАЛА", n: "ПЕРЕЕХАЛО", pl: "ПЕРЕЕХАЛИ" },
+                { m: "ИСПУГАЛ", f: "ИСПУГАЛА", n: "ИСПУГАЛО", pl: "ИСПУГАЛИ" },
+                { m: "ЗАЛИЛ КЛЕЕМ", f: "ЗАЛИЛА КЛЕЕМ", n: "ЗАЛИЛО КЛЕЕМ", pl: "ЗАЛИЛИ КЛЕЕМ" },
+                { m: "УТАЩИЛ В НОРУ", f: "УТАЩИЛА В НОРУ", n: "УТАЩИЛО В НОРУ", pl: "УТАЩИЛИ В НОРУ" },
+                { m: "ИСПОРТИЛ", f: "ИСПОРТИЛА", n: "ИСПОРТИЛО", pl: "ИСПОРТИЛИ" },
+                { m: "ВЫКАТИЛ НА ДОРОГУ", f: "ВЫКАТИЛА НА ДОРОГУ", n: "ВЫКАТИЛО НА ДОРОГУ", pl: "ВЫКАТИЛИ НА ДОРОГУ" },
+                { m: "УДАЛИЛ", f: "УДАЛИЛА", n: "УДАЛИЛО", pl: "УДАЛИЛИ" },
+                { m: "ПЕРЕПРОШИЛ", f: "ПЕРЕПРОШИЛА", n: "ПЕРЕПРОШИЛО", pl: "ПЕРЕПРОШИЛИ" },
+                { m: "ЗАПЕР В ПОДВАЛЕ", f: "ЗАПЕРЛА В ПОДВАЛЕ", n: "ЗАПЕРЛО В ПОДВАЛЕ", pl: "ЗАПЕРЛИ В ПОДВАЛЕ" },
+                { m: "СДУЛ ВЕТРОМ", f: "СДУЛА ВЕТРОМ", n: "СДУЛО ВЕТРОМ", pl: "СДУЛИ ВЕТРОМ" },
+                { m: "РАЗОБРАЛ НА ЗАПЧАСТИ", f: "РАЗОБРАЛА НА ЗАПЧАСТИ", n: "РАЗОБРАЛО НА ЗАПЧАСТИ", pl: "РАЗОБРАЛИ НА ЗАПЧАСТИ" },
+                { m: "ПОТЕРЯЛ В ТУМАНЕ", f: "ПОТЕРЯЛА В ТУМАНЕ", n: "ПОТЕРЯЛО В ТУМАНЕ", pl: "ПОТЕРЯЛИ В ТУМАНЕ" },
+                { m: "ЗАМЕНИЛ НА КАМЕНЬ", f: "ЗАМЕНИЛА НА КАМЕНЬ", n: "ЗАМЕНИЛО НА КАМЕНЬ", pl: "ЗАМЕНИЛИ НА КАМЕНЬ" },
+                { m: "ОСТАНОВИЛ НА ПОЛПУТИ", f: "ОСТАНОВИЛА НА ПОЛПУТИ", n: "ОСТАНОВИЛО НА ПОЛПУТИ", pl: "ОСТАНОВИЛИ НА ПОЛПУТИ" },
+                { m: "ЗАПУТАЛ В ПРОВОДАХ", f: "ЗАПУТАЛА В ПРОВОДАХ", n: "ЗАПУТАЛО В ПРОВОДАХ", pl: "ЗАПУТАЛИ В ПРОВОДАХ" },
+                { m: "ВЫКЛЮЧИЛ ИЗ РОЗЕТКИ", f: "ВЫКЛЮЧИЛА ИЗ РОЗЕТКИ", n: "ВЫКЛЮЧИЛО ИЗ РОЗЕТКИ", pl: "ВЫКЛЮЧИЛИ ИЗ РОЗЕТКИ" },
+                { m: "ЗАКРЫЛ НА ЗАСОВ", f: "ЗАКРЫЛА НА ЗАСОВ", n: "ЗАКРЫЛО НА ЗАСОВ", pl: "ЗАКРЫЛИ НА ЗАСОВ" },
+                { m: "УНЁС НА КРЫШУ", f: "УНЕСЛА НА КРЫШУ", n: "УНЕСЛО НА КРЫШУ", pl: "УНЕСЛИ НА КРЫШУ" },
+                { m: "ПЕРЕПУТАЛ РАСПИСАНИЕ", f: "ПЕРЕПУТАЛА РАСПИСАНИЕ", n: "ПЕРЕПУТАЛО РАСПИСАНИЕ", pl: "ПЕРЕПУТАЛИ РАСПИСАНИЕ" },
+                { m: "ЗАЛИЛ КОФЕ", f: "ЗАЛИЛА КОФЕ", n: "ЗАЛИЛО КОФЕ", pl: "ЗАЛИЛИ КОФЕ" },
+                { m: "ПЕРЕКРЫЛ ПРОХОД", f: "ПЕРЕКРЫЛА ПРОХОД", n: "ПЕРЕКРЫЛО ПРОХОД", pl: "ПЕРЕКРЫЛИ ПРОХОД" },
+                { m: "ПЕРЕВЁРНУЛ ВВЕРХ ДНОМ", f: "ПЕРЕВЕРНУЛА ВВЕРХ ДНОМ", n: "ПЕРЕВЕРНУЛО ВВЕРХ ДНОМ", pl: "ПЕРЕВЕРНУЛИ ВВЕРХ ДНОМ" },
+                { m: "ПРИКЛЕИЛ К ПОЛУ", f: "ПРИКЛЕИЛА К ПОЛУ", n: "ПРИКЛЕИЛО К ПОЛУ", pl: "ПРИКЛЕИЛИ К ПОЛУ" },
+                { m: "ЗАКОПАЛ В ПЕСОЧНИЦЕ", f: "ЗАКОПАЛА В ПЕСОЧНИЦЕ", n: "ЗАКОПАЛО В ПЕСОЧНИЦЕ", pl: "ЗАКОПАЛИ В ПЕСОЧНИЦЕ" },
+                { m: "СБРОСИЛ НА ЗАВОДСКИЕ", f: "СБРОСИЛА НА ЗАВОДСКИЕ", n: "СБРОСИЛО НА ЗАВОДСКИЕ", pl: "СБРОСИЛИ НА ЗАВОДСКИЕ" },
+                { m: "ПРЕВРАТИЛ В ТЫКВУ", f: "ПРЕВРАТИЛА В ТЫКВУ", n: "ПРЕВРАТИЛО В ТЫКВУ", pl: "ПРЕВРАТИЛИ В ТЫКВУ" }
             ],
             target: [
                 "МОЙ АВТОБУС", "БУДИЛЬНИК", "ЛИФТ", "ПРОПУСК", "ШТАНЫ", "ТОРМОЗА НА ВЕЛИКЕ",
@@ -874,21 +911,36 @@
                 "ТАЛОН НА ПРОЕЗД", "ПАРОЛЬ ОТ ВХОДА", "УТРЕННИЙ СИГНАЛ", "ПАПКУ С ФАЙЛАМИ",
                 "ПОСЛЕДНИЙ ЭЛЕКТРОПОЕЗД", "КАРМАННЫЙ ФОНАРИК",
                 "ШАУРМУ НА УГЛУ", "КАРШЕРИНГ", "ПОДПИСКУ НА ПЛЮС", "СЕЙВ В ИГРЕ",
-                "ЧЕХИ ОТ НАУШНИКОВ", "ЧЕТВЕРГОВЫЙ ПЛАН", "ПРАВЫЙ ШНУРОК", "КОД ДОСТУПА"
+                "ЧЕХЛЫ ОТ НАУШНИКОВ", "ЧЕТВЕРГОВЫЙ ПЛАН", "ПРАВЫЙ ШНУРОК", "КОД ДОСТУПА"
             ]
         },
         life: {
             who: [
-                "АВТОБУС", "МЕТРО", "БУДИЛЬНИК", "ЛИФТ", "ПРОБКА НА МОСТУ",
-                "ДОЖДЬ", "КУРЬЕР", "КОНТРОЛЛЕР", "СОСЕД СНИЗУ", "МАРШРУТКА",
-                "СВЕТОФОР", "ОБНОВЛЕНИЕ СИСТЕМЫ", "ПОЕЗД", "ТАКСИ", "ДОМОФОН",
-                "ЛИВЕНЬ", "РЕМОНТ ДОРОГИ", "БАТАРЕЯ ТЕЛЕФОНА", "ОЧЕРЕДЬ НА КАССЕ",
-                "СБОЙ СЕТИ", "КОММУНАЛЬЩИКИ", "ЭСКАЛАТОР", "ТУМАН", "ГОЛОЛЁД"
+                { text: "АВТОБУС", g: "m" }, { text: "МЕТРО", g: "n" }, { text: "БУДИЛЬНИК", g: "m" },
+                { text: "ЛИФТ", g: "m" }, { text: "ПРОБКА НА МОСТУ", g: "f" }, { text: "ДОЖДЬ", g: "m" },
+                { text: "КУРЬЕР", g: "m" }, { text: "КОНТРОЛЛЕР", g: "m" }, { text: "СОСЕД СНИЗУ", g: "m" },
+                { text: "МАРШРУТКА", g: "f" }, { text: "СВЕТОФОР", g: "m" }, { text: "ОБНОВЛЕНИЕ СИСТЕМЫ", g: "n" },
+                { text: "ПОЕЗД", g: "m" }, { text: "ТАКСИ", g: "n" }, { text: "ДОМОФОН", g: "m" },
+                { text: "ЛИВЕНЬ", g: "m" }, { text: "РЕМОНТ ДОРОГИ", g: "m" }, { text: "БАТАРЕЯ ТЕЛЕФОНА", g: "f" },
+                { text: "ОЧЕРЕДЬ НА КАССЕ", g: "f" }, { text: "СБОЙ СЕТИ", g: "m" },
+                { text: "КОММУНАЛЬЩИКИ", g: "pl" }, { text: "ЭСКАЛАТОР", g: "m" }, { text: "ТУМАН", g: "m" },
+                { text: "ГОЛОЛЁД", g: "m" }
             ],
             action: [
-                "ЗАДЕРЖАЛ", "ОСТАНОВИЛ", "СБИЛ", "ПЕРЕКРЫЛ", "ОТКЛЮЧИЛ",
-                "ЗАТЯНУЛ", "ПОМЕНЯЛ", "ЗАПЕР", "ПРИТОРМОЗИЛ", "ВЫКЛЮЧИЛ",
-                "СДВИНУЛ", "ПОРТИЛ", "ЗАТРУДНИЛ", "ПЕРЕЗАПУСТИЛ", "ЗАДЕРЖАЛ НА СТАРТЕ"
+                { m: "ЗАДЕРЖАЛ", f: "ЗАДЕРЖАЛА", n: "ЗАДЕРЖАЛО", pl: "ЗАДЕРЖАЛИ" },
+                { m: "ОСТАНОВИЛ", f: "ОСТАНОВИЛА", n: "ОСТАНОВИЛО", pl: "ОСТАНОВИЛИ" },
+                { m: "СБИЛ", f: "СБИЛА", n: "СБИЛО", pl: "СБИЛИ" },
+                { m: "ПЕРЕКРЫЛ", f: "ПЕРЕКРЫЛА", n: "ПЕРЕКРЫЛО", pl: "ПЕРЕКРЫЛИ" },
+                { m: "ОТКЛЮЧИЛ", f: "ОТКЛЮЧИЛА", n: "ОТКЛЮЧИЛО", pl: "ОТКЛЮЧИЛИ" },
+                { m: "ЗАТЯНУЛ", f: "ЗАТЯНУЛА", n: "ЗАТЯНУЛО", pl: "ЗАТЯНУЛИ" },
+                { m: "ПОМЕНЯЛ", f: "ПОМЕНЯЛА", n: "ПОМЕНЯЛО", pl: "ПОМЕНЯЛИ" },
+                { m: "ЗАПЕР", f: "ЗАПЕРЛА", n: "ЗАПЕРЛО", pl: "ЗАПЕРЛИ" },
+                { m: "ПРИТОРМОЗИЛ", f: "ПРИТОРМОЗИЛА", n: "ПРИТОРМОЗИЛО", pl: "ПРИТОРМОЗИЛИ" },
+                { m: "ВЫКЛЮЧИЛ", f: "ВЫКЛЮЧИЛА", n: "ВЫКЛЮЧИЛО", pl: "ВЫКЛЮЧИЛИ" },
+                { m: "СДВИНУЛ", f: "СДВИНУЛА", n: "СДВИНУЛО", pl: "СДВИНУЛИ" },
+                { m: "ИСПОРТИЛ", f: "ИСПОРТИЛА", n: "ИСПОРТИЛО", pl: "ИСПОРТИЛИ" },
+                { m: "ЗАТРУДНИЛ", f: "ЗАТРУДНИЛА", n: "ЗАТРУДНИЛО", pl: "ЗАТРУДНИЛИ" },
+                { m: "ПЕРЕЗАПУСТИЛ", f: "ПЕРЕЗАПУСТИЛА", n: "ПЕРЕЗАПУСТИЛО", pl: "ПЕРЕЗАПУСТИЛИ" }
             ],
             target: [
                 "УТРЕННИЙ РЕЙС", "ВЫХОД ИЗ ДОМА", "РАБОЧИЙ МАРШРУТ", "ГРАФИК ВСТРЕЧ",
@@ -901,6 +953,29 @@
 
     const slotIds = ['slot1', 'slot2', 'slot3'];
     const EMPTY_SYMBOL = '—';
+
+    function findWhoGender(whoText) {
+        for (const toneKey of Object.keys(packs)) {
+            const found = packs[toneKey].who.find(w => w.text === whoText);
+            if (found) return found.g;
+        }
+        return 'm';
+    }
+
+    function findActionVerbObj(verbText) {
+        for (const toneKey of Object.keys(packs)) {
+            const found = packs[toneKey].action.find(a =>
+                a.m === verbText || a.f === verbText || a.n === verbText || a.pl === verbText
+            );
+            if (found) return found;
+        }
+        return null;
+    }
+
+    function inflectVerb(verbObj, gender) {
+        if (!verbObj) return EMPTY_SYMBOL;
+        return verbObj[gender] || verbObj.m;
+    }
 
     function loadMemory() {
         try {
@@ -921,6 +996,8 @@
     let slotValues = Array.isArray(savedMem.slotValues) && savedMem.slotValues.length === 3
         ? savedMem.slotValues.map(v => (typeof v === 'string' && v.trim() ? v : EMPTY_SYMBOL))
         : [EMPTY_SYMBOL, EMPTY_SYMBOL, EMPTY_SYMBOL];
+    let currentGender = ['m', 'f', 'n', 'pl'].includes(savedMem.currentGender) ? savedMem.currentGender : 'm';
+    let currentVerbObj = savedMem.currentVerbObj || null;
     let isSoundEnabled = typeof savedMem.sound === 'boolean' ? savedMem.sound : true;
 
     const recentHistory = [[], [], []];
@@ -939,6 +1016,8 @@
                 spinCount,
                 locked,
                 slotValues,
+                currentGender,
+                currentVerbObj,
                 sound: isSoundEnabled
             };
             localStorage.setItem(MEMORY_KEY, JSON.stringify(payload));
@@ -990,6 +1069,15 @@
         }
     }
 
+    function syncSecondSlotGender() {
+        if (slotValues[1] === EMPTY_SYMBOL) return;
+        const verbObj = currentVerbObj || findActionVerbObj(slotValues[1]);
+        if (verbObj) {
+            currentVerbObj = verbObj;
+            setSlotDisplay(1, inflectVerb(verbObj, currentGender));
+        }
+    }
+
     function applySlotsAndLocksUI() {
         for (let i = 0; i < 3; i++) {
             setSlotDisplay(i, slotValues[i]);
@@ -1032,13 +1120,15 @@
                 ? `<span class="jp-status-open">★ ВЫБИТ</span>`
                 : `<span class="jp-status-locked">🔒 СКРЫТ</span>`;
 
+            const matchedVerb = inflectVerb(findActionVerbObj(jp.actionBase), jp.whoGender);
+
             item.innerHTML = `
                 <div class="jp-item-top">
                     <span>${titleText}</span>
                     ${statusHtml}
                 </div>
                 <div class="jp-secret-box">
-                    <div class="jp-combo">${jp.who} • ${jp.action} • ${jp.target}</div>
+                    <div class="jp-combo">${jp.who} • ${matchedVerb} • ${jp.target}</div>
                     <div class="jp-blur-veil">Ещё не выбит</div>
                 </div>
             `;
@@ -1320,12 +1410,25 @@
         return document.getElementById(id).querySelector('.slot-text');
     }
 
-    function pickNextWord(array, currentText, history = null) {
-        if (array.length <= 1) return array[0];
-        const blocked = new Set([currentText, ...(history || [])]);
-        const pool = array.filter(item => !blocked.has(item));
-        const source = pool.length > 0 ? pool : array.filter(item => item !== currentText);
-        return source[Math.floor(Math.random() * source.length)];
+    function getOptionLabel(item, gender = 'm') {
+        if (typeof item === 'string') return item;
+        if (item && typeof item.text === 'string') return item.text;
+        if (item && typeof item.m === 'string') return inflectVerb(item, gender);
+        return EMPTY_SYMBOL;
+    }
+
+    function pickNextItem(array, currentLabel, history = null, gender = 'm') {
+        if (!array || array.length === 0) return { label: EMPTY_SYMBOL, raw: null };
+        if (array.length === 1) {
+            const raw = array[0];
+            return { label: getOptionLabel(raw, gender), raw };
+        }
+        const blocked = new Set([currentLabel, ...(history || [])]);
+        const filtered = array.filter(item => !blocked.has(getOptionLabel(item, gender)));
+        const fallback = array.filter(item => getOptionLabel(item, gender) !== currentLabel);
+        const source = filtered.length > 0 ? filtered : (fallback.length > 0 ? fallback : array);
+        const raw = source[Math.floor(Math.random() * source.length)];
+        return { label: getOptionLabel(raw, gender), raw };
     }
 
     function recordHistory(reelIndex, value) {
@@ -1336,13 +1439,13 @@
         }
     }
 
-    function spinReel(id, array, durationMs, reelIndex) {
+    function spinReel(id, array, durationMs, reelIndex, getGenderFn = null) {
         return new Promise(resolve => {
             const element = document.getElementById(id);
             const textEl = getSlotTextEl(id);
 
             if (locked[reelIndex]) {
-                resolve();
+                resolve({ raw: null, label: textEl.innerText });
                 return;
             }
 
@@ -1355,20 +1458,22 @@
             function step() {
                 const elapsed = performance.now() - startTime;
                 const progress = Math.min(elapsed / durationMs, 1);
+                const g = getGenderFn ? getGenderFn() : currentGender;
 
                 if (elapsed >= durationMs) {
-                    const finalWord = pickNextWord(array, textEl.innerText, recentHistory[reelIndex]);
-                    setSlotDisplay(reelIndex, finalWord);
-                    recordHistory(reelIndex, finalWord);
+                    const picked = pickNextItem(array, textEl.innerText, recentHistory[reelIndex], g);
+                    setSlotDisplay(reelIndex, picked.label);
+                    recordHistory(reelIndex, picked.label);
                     element.classList.remove('spinning');
                     element.classList.add('landed');
                     playStopSound(reelIndex);
                     setTimeout(() => element.classList.remove('landed'), 220);
-                    resolve();
+                    resolve(picked);
                     return;
                 }
 
-                textEl.innerText = pickNextWord(array, textEl.innerText);
+                const tickPicked = pickNextItem(array, textEl.innerText, null, g);
+                textEl.innerText = tickPicked.label;
                 playTickSound(progress);
 
                 tickDelay = 55 + Math.pow(progress, 2.2) * 145;
@@ -1429,7 +1534,10 @@
         const s3 = slotValues[2];
         if (s1 === EMPTY_SYMBOL || s2 === EMPTY_SYMBOL || s3 === EMPTY_SYMBOL) return null;
 
-        const exact = JACKPOTS.find(jp => jp.who === s1 && jp.action === s2 && jp.target === s3);
+        const exact = JACKPOTS.find(jp => {
+            const jpVerb = inflectVerb(findActionVerbObj(jp.actionBase), jp.whoGender);
+            return jp.who === s1 && jpVerb === s2 && jp.target === s3;
+        });
         if (exact) return exact;
 
         const heroMatch = JACKPOTS.find(jp => jp.who === s1);
@@ -1455,11 +1563,28 @@
 
         const dict = packs[currentTone];
 
-        await Promise.all([
+        const [res1, res2, res3] = await Promise.all([
             spinReel('slot1', dict.who, 1100, 0),
-            spinReel('slot2', dict.action, 1550, 1),
+            spinReel('slot2', dict.action, 1550, 1, () => currentGender),
             spinReel('slot3', dict.target, 2000, 2)
         ]);
+
+        if (!locked[0] && res1 && res1.raw) {
+            currentGender = res1.raw.g || 'm';
+        } else if (slotValues[0] !== EMPTY_SYMBOL) {
+            currentGender = findWhoGender(slotValues[0]);
+        }
+
+        if (!locked[1] && res2 && res2.raw) {
+            currentVerbObj = res2.raw;
+            setSlotDisplay(1, inflectVerb(currentVerbObj, currentGender));
+        } else if (!locked[1] && slotValues[1] !== EMPTY_SYMBOL) {
+            syncSecondSlotGender();
+        }
+
+        if (!locked[2] && res3 && res3.label) {
+            setSlotDisplay(2, res3.label);
+        }
 
         saveMemory();
 
@@ -1502,4 +1627,4 @@
 </script>
 
 </body>
-</html>
+    </html>
