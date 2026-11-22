@@ -343,7 +343,7 @@
 
         .widget-container {
             background: linear-gradient(180deg, rgba(34, 24, 26, 0.92) 0%, rgba(20, 20, 22, 0.96) 35%, rgba(18, 18, 20, 0.98) 100%);
-            padding: 24px 20px;
+            padding: 24px 20px 20px;
             border-radius: 26px;
             width: 100%;
             box-shadow:
@@ -588,7 +588,7 @@
             border: 1px solid rgba(255, 255, 255, 0.07);
             border-radius: 13px;
             padding: 10px 12px;
-            margin-bottom: 18px;
+            margin-bottom: 16px;
         }
 
         .credibility-top {
@@ -704,6 +704,63 @@
 
         .copy-btn:active {
             transform: scale(0.96);
+        }
+
+        .context-bar {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .context-title {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            color: #8f8994;
+            padding: 0 2px;
+        }
+
+        .context-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .context-chip {
+            background: rgba(255, 255, 255, 0.03);
+            color: #b8b2bd;
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            padding: 6px 10px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.14s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .context-chip:hover {
+            border-color: rgba(217, 182, 104, 0.45);
+            color: #f3f3f4;
+        }
+
+        .context-chip:active {
+            transform: scale(0.96);
+        }
+
+        .context-chip.active {
+            background: linear-gradient(180deg, rgba(145, 110, 40, 0.34) 0%, rgba(65, 48, 20, 0.45) 100%);
+            color: #ffe299;
+            border-color: rgba(217, 182, 104, 0.75);
+            box-shadow: 0 0 12px rgba(217, 182, 104, 0.16);
         }
 
         .toast {
@@ -827,6 +884,17 @@
                     </svg>
                 </button>
             </div>
+
+            <div class="context-bar">
+                <div class="context-title">Куда должна подойти отмазка</div>
+                <div class="context-chips" id="contextChips">
+                    <button type="button" class="context-chip active" data-ctx="any" onclick="selectContext('any')">✨ ЛЮБОЕ</button>
+                    <button type="button" class="context-chip" data-ctx="school" onclick="selectContext('school')">🎒 ШКОЛА</button>
+                    <button type="button" class="context-chip" data-ctx="work" onclick="selectContext('work')">💼 РАБОТА</button>
+                    <button type="button" class="context-chip" data-ctx="friends" onclick="selectContext('friends')">🍻 ДРУЗЬЯ</button>
+                    <button type="button" class="context-chip" data-ctx="date" onclick="selectContext('date')">💘 СВИДАНИЕ</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -898,198 +966,206 @@
         }
     ];
 
-    const MEMORY_KEY = 'excuse_slots_memory_v4';
+    const CONTEXT_META = {
+        any: { label: 'любое', fitTags: [] },
+        school: { label: 'для школы', fitTags: ['school', 'time', 'road', 'home', 'people'] },
+        work: { label: 'для работы', fitTags: ['work', 'road', 'tech', 'time'] },
+        friends: { label: 'для друзей', fitTags: ['friends', 'road', 'home', 'people', 'weather'] },
+        date: { label: 'для свидания', fitTags: ['date', 'road', 'home', 'weather', 'time'] }
+    };
 
-    // tags: 'road' | 'tech' | 'home' | 'people' | 'weather' | 'time'
+    const MEMORY_KEY = 'excuse_slots_memory_v5';
+
+    // tags: 'road' | 'tech' | 'home' | 'people' | 'weather' | 'time' | 'school' | 'work' | 'friends' | 'date'
     const packs = {
         absurd: {
             who: [
-                { text: "ПАНТЕЛЕЕВ", g: "m", r: 0.16, tags: ["home", "people"] },
-                { text: "ГОЗЯВА", g: "m", r: 0.14, tags: ["home"] },
-                { text: "ХРУМКИ", g: "m", r: 0.15, tags: ["home", "people"] },
-                { text: "ПОЛАД", g: "m", r: 0.22, tags: ["road", "people"] },
-                { text: "ДАВИД", g: "m", r: 0.28, tags: ["tech", "time"] },
-                { text: "АРСЕНІЙ", g: "m", r: 0.25, tags: ["tech", "home"] },
-                { text: "КИРА", g: "f", r: 0.26, tags: ["people", "home"] },
-                { text: "ДЕД", g: "m", r: 0.45, tags: ["home", "road"] },
-                { text: "СОСЕДКА", g: "f", r: 0.48, tags: ["home", "people"] },
-                { text: "КОТ", g: "m", r: 0.34, tags: ["home", "time"] },
-                { text: "КУРЬЕР", g: "m", r: 0.55, tags: ["road", "home"] },
-                { text: "ИНОПЛАНЕТЯНЕ", g: "pl", r: 0.02, tags: ["weather", "road"] },
-                { text: "МЭР ГОРОДА", g: "m", r: 0.1, tags: ["road", "time"] },
-                { text: "ВОЕНКОМ", g: "m", r: 0.24, tags: ["people", "time"] },
-                { text: "СВЕКРОВЬ", g: "f", r: 0.44, tags: ["home", "people"] },
-                { text: "АЛКАШ С ДВОРА", g: "m", r: 0.36, tags: ["home", "road"] },
-                { text: "УЧИТЕЛЬНИЦА", g: "f", r: 0.4, tags: ["people", "time"] },
-                { text: "ЦЫГАНЕ", g: "pl", r: 0.18, tags: ["people", "road"] },
-                { text: "МОЙ ПЁС", g: "m", r: 0.32, tags: ["home", "people"] },
-                { text: "БЫВШАЯ", g: "f", r: 0.38, tags: ["people", "time"] },
-                { text: "ДРУГ", g: "m", r: 0.52, tags: ["people", "road"] },
-                { text: "ЭКСКАВАТОРЩИК", g: "m", r: 0.35, tags: ["road"] },
-                { text: "ГЕНЕРАЛЬНЫЙ ДИРЕКТОР", g: "m", r: 0.2, tags: ["people", "time"] },
-                { text: "БАРИСТА", g: "m", r: 0.5, tags: ["people", "time"] },
-                { text: "ВАХТЁР", g: "m", r: 0.46, tags: ["home", "people"] },
-                { text: "СОСЕД С ПЕРФОРАТОРОМ", g: "m", r: 0.42, tags: ["home"] },
-                { text: "ГОЛУБЬ В КЕПКЕ", g: "m", r: 0.04, tags: ["road", "weather"] },
-                { text: "КУРЬЕР САМОКАТА", g: "m", r: 0.52, tags: ["road"] },
-                { text: "НАПАРНИК", g: "m", r: 0.54, tags: ["people", "tech"] },
-                { text: "ДОМОВОЙ", g: "m", r: 0.06, tags: ["home"] },
-                { text: "ПОЧТАЛЬОН", g: "m", r: 0.42, tags: ["home", "people"] },
-                { text: "АДМИНИСТРАТОР", g: "m", r: 0.5, tags: ["tech", "people"] },
-                { text: "САНТЕХНИК", g: "m", r: 0.47, tags: ["home"] },
-                { text: "ВОДИТЕЛЬ ГАЗЕЛИ", g: "m", r: 0.45, tags: ["road"] },
-                { text: "УЧЁНЫЙ С РАЙОНА", g: "m", r: 0.14, tags: ["tech"] },
-                { text: "МАСТЕР МАНИКЮРА", g: "m", r: 0.35, tags: ["people", "time"] },
-                { text: "ДЕЖУРНЫЙ ПО ПОДЪЕЗДУ", g: "m", r: 0.38, tags: ["home"] },
-                { text: "КОТ СОСЕДЕЙ", g: "m", r: 0.26, tags: ["home"] },
-                { text: "ТАКСИСТ БЕЗ НАВИГАТОРА", g: "m", r: 0.49, tags: ["road"] },
-                { text: "ЕНОТ В ПАЛЬТО", g: "m", r: 0.03, tags: ["home", "road"] },
-                { text: "РОБОТ-ПЫЛЕСОС", g: "m", r: 0.19, tags: ["home", "tech"] },
-                { text: "ШАВЕРМЕН", g: "m", r: 0.44, tags: ["people", "time"] },
-                { text: "ДИДЖЕЙ ИЗ МАРШРУТКИ", g: "m", r: 0.22, tags: ["road"] },
-                { text: "КАПИТАН ОЧЕВИДНОСТЬ", g: "m", r: 0.08, tags: ["people", "time"] },
-                { text: "СОСЕД С САКСОФОНОМ", g: "m", r: 0.24, tags: ["home", "time"] },
-                { text: "ОХРАННИК НА ПРОХОДНОЙ", g: "m", r: 0.48, tags: ["home", "people"] },
-                { text: "БЕЛКА-СТРЕЛЯЛКА", g: "f", r: 0.04, tags: ["weather", "road"] },
-                { text: "КОЛЛЕГА С ПЯТОГО", g: "m", r: 0.54, tags: ["people", "time"] }
+                { text: "ПАНТЕЛЕЕВ", g: "m", r: 0.16, tags: ["home", "people", "friends"] },
+                { text: "ГОЗЯВА", g: "m", r: 0.14, tags: ["home", "friends"] },
+                { text: "ХРУМКИ", g: "m", r: 0.15, tags: ["home", "people", "friends"] },
+                { text: "ПОЛАД", g: "m", r: 0.22, tags: ["road", "people", "friends"] },
+                { text: "ДАВИД", g: "m", r: 0.28, tags: ["tech", "time", "school", "work"] },
+                { text: "АРСЕНІЙ", g: "m", r: 0.25, tags: ["tech", "home", "work"] },
+                { text: "КИРА", g: "f", r: 0.26, tags: ["people", "home", "friends", "date"] },
+                { text: "ДЕД", g: "m", r: 0.45, tags: ["home", "road", "school"] },
+                { text: "СОСЕДКА", g: "f", r: 0.48, tags: ["home", "people", "date"] },
+                { text: "КОТ", g: "m", r: 0.34, tags: ["home", "time", "school", "date"] },
+                { text: "КУРЬЕР", g: "m", r: 0.55, tags: ["road", "home", "work", "date"] },
+                { text: "ИНОПЛАНЕТЯНЕ", g: "pl", r: 0.02, tags: ["weather", "road", "friends"] },
+                { text: "МЭР ГОРОДА", g: "m", r: 0.1, tags: ["road", "time", "work"] },
+                { text: "ВОЕНКОМ", g: "m", r: 0.24, tags: ["people", "time", "work"] },
+                { text: "СВЕКРОВЬ", g: "f", r: 0.44, tags: ["home", "people", "date"] },
+                { text: "АЛКАШ С ДВОРА", g: "m", r: 0.36, tags: ["home", "road", "friends"] },
+                { text: "УЧИТЕЛЬНИЦА", g: "f", r: 0.4, tags: ["people", "time", "school"] },
+                { text: "ЦЫГАНЕ", g: "pl", r: 0.18, tags: ["people", "road", "friends"] },
+                { text: "МОЙ ПЁС", g: "m", r: 0.32, tags: ["home", "people", "school", "date"] },
+                { text: "БЫВШАЯ", g: "f", r: 0.38, tags: ["people", "time", "date", "friends"] },
+                { text: "ДРУГ", g: "m", r: 0.52, tags: ["people", "road", "friends", "date"] },
+                { text: "ЭКСКАВАТОРЩИК", g: "m", r: 0.35, tags: ["road", "work"] },
+                { text: "ГЕНЕРАЛЬНЫЙ ДИРЕКТОР", g: "m", r: 0.2, tags: ["people", "time", "work"] },
+                { text: "БАРИСТА", g: "m", r: 0.5, tags: ["people", "time", "work", "date"] },
+                { text: "ВАХТЁР", g: "m", r: 0.46, tags: ["home", "people", "school", "work"] },
+                { text: "СОСЕД С ПЕРФОРАТОРОМ", g: "m", r: 0.42, tags: ["home", "work", "date"] },
+                { text: "ГОЛУБЬ В КЕПКЕ", g: "m", r: 0.04, tags: ["road", "weather", "friends"] },
+                { text: "КУРЬЕР САМОКАТА", g: "m", r: 0.52, tags: ["road", "friends", "date"] },
+                { text: "НАПАРНИК", g: "m", r: 0.54, tags: ["people", "tech", "work"] },
+                { text: "ДОМОВОЙ", g: "m", r: 0.06, tags: ["home", "friends"] },
+                { text: "ПОЧТАЛЬОН", g: "m", r: 0.42, tags: ["home", "people", "work"] },
+                { text: "АДМИНИСТРАТОР", g: "m", r: 0.5, tags: ["tech", "people", "work"] },
+                { text: "САНТЕХНИК", g: "m", r: 0.47, tags: ["home", "work", "date"] },
+                { text: "ВОДИТЕЛЬ ГАЗЕЛИ", g: "m", r: 0.45, tags: ["road", "work"] },
+                { text: "УЧЁНЫЙ С РАЙОНА", g: "m", r: 0.14, tags: ["tech", "friends"] },
+                { text: "МАСТЕР МАНИКЮРА", g: "m", r: 0.35, tags: ["people", "time", "date"] },
+                { text: "ДЕЖУРНЫЙ ПО ПОДЪЕЗДУ", g: "m", r: 0.38, tags: ["home", "school"] },
+                { text: "КОТ СОСЕДЕЙ", g: "m", r: 0.26, tags: ["home", "date"] },
+                { text: "ТАКСИСТ БЕЗ НАВИГАТОРА", g: "m", r: 0.49, tags: ["road", "work", "date"] },
+                { text: "ЕНОТ В ПАЛЬТО", g: "m", r: 0.03, tags: ["home", "road", "friends"] },
+                { text: "РОБОТ-ПЫЛЕСОС", g: "m", r: 0.19, tags: ["home", "tech", "friends"] },
+                { text: "ШАВЕРМЕН", g: "m", r: 0.44, tags: ["people", "time", "friends", "school"] },
+                { text: "ДИДЖЕЙ ИЗ МАРШРУТКИ", g: "m", r: 0.22, tags: ["road", "friends"] },
+                { text: "КАПИТАН ОЧЕВИДНОСТЬ", g: "m", r: 0.08, tags: ["people", "time", "friends"] },
+                { text: "СОСЕД С САКСОФОНОМ", g: "m", r: 0.24, tags: ["home", "time", "friends", "date"] },
+                { text: "ОХРАННИК НА ПРОХОДНОЙ", g: "m", r: 0.48, tags: ["home", "people", "work", "school"] },
+                { text: "БЕЛКА-СТРЕЛЯЛКА", g: "f", r: 0.04, tags: ["weather", "road", "friends"] },
+                { text: "КОЛЛЕГА С ПЯТОГО", g: "m", r: 0.54, tags: ["people", "time", "work"] }
             ],
             action: [
-                { m: "СЛОМАЛ", f: "СЛОМАЛА", n: "СЛОМАЛО", pl: "СЛОМАЛИ", r: 0.45, tags: ["home", "tech", "road"] },
-                { m: "УГНАЛ", f: "УГНАЛА", n: "УГНАЛО", pl: "УГНАЛИ", r: 0.16, tags: ["road"] },
-                { m: "СЪЕЛ", f: "СЪЕЛА", n: "СЪЕЛО", pl: "СЪЕЛИ", r: 0.22, tags: ["home", "people"] },
-                { m: "ЗАБЛОКИРОВАЛ", f: "ЗАБЛОКИРОВАЛА", n: "ЗАБЛОКИРОВАЛО", pl: "ЗАБЛОКИРОВАЛИ", r: 0.56, tags: ["home", "road", "tech"] },
-                { m: "ПОХИТИЛ", f: "ПОХИТИЛА", n: "ПОХИТИЛО", pl: "ПОХИТИЛИ", r: 0.06, tags: ["people", "home"] },
-                { m: "СПРЯТАЛ", f: "СПРЯТАЛА", n: "СПРЯТАЛО", pl: "СПРЯТАЛИ", r: 0.44, tags: ["home", "people"] },
-                { m: "ОТМЕНИЛ", f: "ОТМЕНИЛА", n: "ОТМЕНИЛО", pl: "ОТМЕНИЛИ", r: 0.52, tags: ["road", "time"] },
-                { m: "ПЕРЕЕХАЛ", f: "ПЕРЕЕХАЛА", n: "ПЕРЕЕХАЛО", pl: "ПЕРЕЕХАЛИ", r: 0.15, tags: ["road", "home"] },
-                { m: "ИСПУГАЛ", f: "ИСПУГАЛА", n: "ИСПУГАЛО", pl: "ИСПУГАЛИ", r: 0.36, tags: ["people", "home"] },
-                { m: "ЗАЛИЛ КЛЕЕМ", f: "ЗАЛИЛА КЛЕЕМ", n: "ЗАЛИЛО КЛЕЕМ", pl: "ЗАЛИЛИ КЛЕЕМ", r: 0.12, tags: ["home", "tech"] },
-                { m: "УТАЩИЛ В НОРУ", f: "УТАЩИЛА В НОРУ", n: "УТАЩИЛО В НОРУ", pl: "УТАЩИЛИ В НОРУ", r: 0.05, tags: ["home"] },
-                { m: "ИСПОРТИЛ", f: "ИСПОРТИЛА", n: "ИСПОРТИЛО", pl: "ИСПОРТИЛИ", r: 0.5, tags: ["home", "time", "people"] },
-                { m: "ВЫКАТИЛ НА ДОРОГУ", f: "ВЫКАТИЛА НА ДОРОГУ", n: "ВЫКАТИЛО НА ДОРОГУ", pl: "ВЫКАТИЛИ НА ДОРОГУ", r: 0.25, tags: ["road"] },
-                { m: "УДАЛИЛ", f: "УДАЛИЛА", n: "УДАЛИЛО", pl: "УДАЛИЛИ", r: 0.42, tags: ["tech", "time"] },
-                { m: "ПЕРЕПРОШИЛ", f: "ПЕРЕПРОШИЛА", n: "ПЕРЕПРОШИЛО", pl: "ПЕРЕПРОШИЛИ", r: 0.14, tags: ["tech"] },
-                { m: "ЗАПЕР В ПОДВАЛЕ", f: "ЗАПЕРЛА В ПОДВАЛЕ", n: "ЗАПЕРЛО В ПОДВАЛЕ", pl: "ЗАПЕРЛИ В ПОДВАЛЕ", r: 0.08, tags: ["home", "people"] },
-                { m: "СДУЛ ВЕТРОМ", f: "СДУЛА ВЕТРОМ", n: "СДУЛО ВЕТРОМ", pl: "СДУЛИ ВЕТРОМ", r: 0.28, tags: ["weather", "road"] },
-                { m: "РАЗОБРАЛ НА ЗАПЧАСТИ", f: "РАЗОБРАЛА НА ЗАПЧАСТИ", n: "РАЗОБРАЛО НА ЗАПЧАСТИ", pl: "РАЗОБРАЛИ НА ЗАПЧАСТИ", r: 0.11, tags: ["tech", "road"] },
-                { m: "ПОТЕРЯЛ В ТУМАНЕ", f: "ПОТЕРЯЛА В ТУМАНЕ", n: "ПОТЕРЯЛО В ТУМАНЕ", pl: "ПОТЕРЯЛИ В ТУМАНЕ", r: 0.24, tags: ["weather", "road"] },
-                { m: "ЗАМЕНИЛ НА КАМЕНЬ", f: "ЗАМЕНИЛА НА КАМЕНЬ", n: "ЗАМЕНИЛО НА КАМЕНЬ", pl: "ЗАМЕНИЛИ НА КАМЕНЬ", r: 0.07, tags: ["home", "road"] },
-                { m: "ОСТАНОВИЛ НА ПОЛПУТИ", f: "ОСТАНОВИЛА НА ПОЛПУТИ", n: "ОСТАНОВИЛО НА ПОЛПУТИ", pl: "ОСТАНОВИЛИ НА ПОЛПУТИ", r: 0.52, tags: ["road", "time"] },
-                { m: "ЗАПУТАЛ В ПРОВОДАХ", f: "ЗАПУТАЛА В ПРОВОДАХ", n: "ЗАПУТАЛО В ПРОВОДАХ", pl: "ЗАПУТАЛИ В ПРОВОДАХ", r: 0.34, tags: ["tech", "home"] },
-                { m: "ВЫКЛЮЧИЛ ИЗ РОЗЕТКИ", f: "ВЫКЛЮЧИЛА ИЗ РОЗЕТКИ", n: "ВЫКЛЮЧИЛО ИЗ РОЗЕТКИ", pl: "ВЫКЛЮЧИЛИ ИЗ РОЗЕТКИ", r: 0.46, tags: ["tech", "home"] },
-                { m: "ЗАКРЫЛ НА ЗАСОВ", f: "ЗАКРЫЛА НА ЗАСОВ", n: "ЗАКРЫЛО НА ЗАСОВ", pl: "ЗАКРЫЛИ НА ЗАСОВ", r: 0.43, tags: ["home"] },
-                { m: "УНЁС НА КРЫШУ", f: "УНЕСЛА НА КРЫШУ", n: "УНЕСЛО НА КРЫШУ", pl: "УНЕСЛИ НА КРЫШУ", r: 0.09, tags: ["weather", "home"] },
-                { m: "ПЕРЕПУТАЛ РАСПИСАНИЕ", f: "ПЕРЕПУТАЛА РАСПИСАНИЕ", n: "ПЕРЕПУТАЛО РАСПИСАНИЕ", pl: "ПЕРЕПУТАЛИ РАСПИСАНИЕ", r: 0.54, tags: ["time", "road"] },
-                { m: "ЗАЛИЛ КОФЕ", f: "ЗАЛИЛА КОФЕ", n: "ЗАЛИЛО КОФЕ", pl: "ЗАЛИЛИ КОФЕ", r: 0.49, tags: ["home", "tech"] },
-                { m: "ПЕРЕКРЫЛ ПРОХОД", f: "ПЕРЕКРЫЛА ПРОХОД", n: "ПЕРЕКРЫЛО ПРОХОД", pl: "ПЕРЕКРЫЛИ ПРОХОД", r: 0.58, tags: ["road", "home"] },
-                { m: "ПЕРЕВЁРНУЛ ВВЕРХ ДНОМ", f: "ПЕРЕВЕРНУЛА ВВЕРХ ДНОМ", n: "ПЕРЕВЕРНУЛО ВВЕРХ ДНОМ", pl: "ПЕРЕВЕРНУЛИ ВВЕРХ ДНОМ", r: 0.21, tags: ["home", "time"] },
-                { m: "ПРИКЛЕИЛ К ПОЛУ", f: "ПРИКЛЕИЛА К ПОЛУ", n: "ПРИКЛЕИЛО К ПОЛУ", pl: "ПРИКЛЕИЛИ К ПОЛУ", r: 0.1, tags: ["home"] },
-                { m: "ЗАКОПАЛ В ПЕСОЧНИЦЕ", f: "ЗАКОПАЛА В ПЕСОЧНИЦЕ", n: "ЗАКОПАЛО В ПЕСОЧНИЦЕ", pl: "ЗАКОПАЛИ В ПЕСОЧНИЦЕ", r: 0.09, tags: ["home", "road"] },
-                { m: "СБРОСИЛ НА ЗАВОДСКИЕ", f: "СБРОСИЛА НА ЗАВОДСКИЕ", n: "СБРОСИЛО НА ЗАВОДСКИЕ", pl: "СБРОСИЛИ НА ЗАВОДСКИЕ", r: 0.27, tags: ["tech", "time"] },
-                { m: "ПРЕВРАТИЛ В ТЫКВУ", f: "ПРЕВРАТИЛА В ТЫКВУ", n: "ПРЕВРАТИЛО В ТЫКВУ", pl: "ПРЕВРАТИЛИ В ТЫКВУ", r: 0.02, tags: ["time", "road"] }
+                { m: "СЛОМАЛ", f: "СЛОМАЛА", n: "СЛОМАЛО", pl: "СЛОМАЛИ", r: 0.45, tags: ["home", "tech", "road", "school", "work"] },
+                { m: "УГНАЛ", f: "УГНАЛА", n: "УГНАЛО", pl: "УГНАЛИ", r: 0.16, tags: ["road", "friends"] },
+                { m: "СЪЕЛ", f: "СЪЕЛА", n: "СЪЕЛО", pl: "СЪЕЛИ", r: 0.22, tags: ["home", "people", "school", "friends"] },
+                { m: "ЗАБЛОКИРОВАЛ", f: "ЗАБЛОКИРОВАЛА", n: "ЗАБЛОКИРОВАЛО", pl: "ЗАБЛОКИРОВАЛИ", r: 0.56, tags: ["home", "road", "tech", "work"] },
+                { m: "ПОХИТИЛ", f: "ПОХИТИЛА", n: "ПОХИТИЛО", pl: "ПОХИТИЛИ", r: 0.06, tags: ["people", "home", "friends"] },
+                { m: "СПРЯТАЛ", f: "СПРЯТАЛА", n: "СПРЯТАЛО", pl: "СПРЯТАЛИ", r: 0.44, tags: ["home", "people", "school", "friends"] },
+                { m: "ОТМЕНИЛ", f: "ОТМЕНИЛА", n: "ОТМЕНИЛО", pl: "ОТМЕНИЛИ", r: 0.52, tags: ["road", "time", "work", "date"] },
+                { m: "ПЕРЕЕХАЛ", f: "ПЕРЕЕХАЛА", n: "ПЕРЕЕХАЛО", pl: "ПЕРЕЕХАЛИ", r: 0.15, tags: ["road", "home", "friends"] },
+                { m: "ИСПУГАЛ", f: "ИСПУГАЛА", n: "ИСПУГАЛО", pl: "ИСПУГАЛИ", r: 0.36, tags: ["people", "home", "date", "friends"] },
+                { m: "ЗАЛИЛ КЛЕЕМ", f: "ЗАЛИЛА КЛЕЕМ", n: "ЗАЛИЛО КЛЕЕМ", pl: "ЗАЛИЛИ КЛЕЕМ", r: 0.12, tags: ["home", "tech", "school"] },
+                { m: "УТАЩИЛ В НОРУ", f: "УТАЩИЛА В НОРУ", n: "УТАЩИЛО В НОРУ", pl: "УТАЩИЛИ В НОРУ", r: 0.05, tags: ["home", "friends"] },
+                { m: "ИСПОРТИЛ", f: "ИСПОРТИЛА", n: "ИСПОРТИЛО", pl: "ИСПОРТИЛИ", r: 0.5, tags: ["home", "time", "people", "date"] },
+                { m: "ВЫКАТИЛ НА ДОРОГУ", f: "ВЫКАТИЛА НА ДОРОГУ", n: "ВЫКАТИЛО НА ДОРОГУ", pl: "ВЫКАТИЛИ НА ДОРОГУ", r: 0.25, tags: ["road", "friends"] },
+                { m: "УДАЛИЛ", f: "УДАЛИЛА", n: "УДАЛИЛО", pl: "УДАЛИЛИ", r: 0.42, tags: ["tech", "time", "work", "school"] },
+                { m: "ПЕРЕПРОШИЛ", f: "ПЕРЕПРОШИЛА", n: "ПЕРЕПРОШИЛО", pl: "ПЕРЕПРОШИЛИ", r: 0.14, tags: ["tech", "friends"] },
+                { m: "ЗАПЕР В ПОДВАЛЕ", f: "ЗАПЕРЛА В ПОДВАЛЕ", n: "ЗАПЕРЛО В ПОДВАЛЕ", pl: "ЗАПЕРЛИ В ПОДВАЛЕ", r: 0.08, tags: ["home", "people", "friends"] },
+                { m: "СДУЛ ВЕТРОМ", f: "СДУЛА ВЕТРОМ", n: "СДУЛО ВЕТРОМ", pl: "СДУЛИ ВЕТРОМ", r: 0.28, tags: ["weather", "road", "date"] },
+                { m: "РАЗОБРАЛ НА ЗАПЧАСТИ", f: "РАЗОБРАЛА НА ЗАПЧАСТИ", n: "РАЗОБРАЛО НА ЗАПЧАСТИ", pl: "РАЗОБРАЛИ НА ЗАПЧАСТИ", r: 0.11, tags: ["tech", "road", "friends"] },
+                { m: "ПОТЕРЯЛ В ТУМАНЕ", f: "ПОТЕРЯЛА В ТУМАНЕ", n: "ПОТЕРЯЛО В ТУМАНЕ", pl: "ПОТЕРЯЛИ В ТУМАНЕ", r: 0.24, tags: ["weather", "road", "friends"] },
+                { m: "ЗАМЕНИЛ НА КАМЕНЬ", f: "ЗАМЕНИЛА НА КАМЕНЬ", n: "ЗАМЕНИЛО НА КАМЕНЬ", pl: "ЗАМЕНИЛИ НА КАМЕНЬ", r: 0.07, tags: ["home", "road", "friends"] },
+                { m: "ОСТАНОВИЛ НА ПОЛПУТИ", f: "ОСТАНОВИЛА НА ПОЛПУТИ", n: "ОСТАНОВИЛО НА ПОЛПУТИ", pl: "ОСТАНОВИЛИ НА ПОЛПУТИ", r: 0.52, tags: ["road", "time", "work", "date"] },
+                { m: "ЗАПУТАЛ В ПРОВОДАХ", f: "ЗАПУТАЛА В ПРОВОДАХ", n: "ЗАПУТАЛО В ПРОВОДАХ", pl: "ЗАПУТАЛИ В ПРОВОДАХ", r: 0.34, tags: ["tech", "home", "work"] },
+                { m: "ВЫКЛЮЧИЛ ИЗ РОЗЕТКИ", f: "ВЫКЛЮЧИЛА ИЗ РОЗЕТКИ", n: "ВЫКЛЮЧИЛО ИЗ РОЗЕТКИ", pl: "ВЫКЛЮЧИЛИ ИЗ РОЗЕТКИ", r: 0.46, tags: ["tech", "home", "work"] },
+                { m: "ЗАКРЫЛ НА ЗАСОВ", f: "ЗАКРЫЛА НА ЗАСОВ", n: "ЗАКРЫЛО НА ЗАСОВ", pl: "ЗАКРЫЛИ НА ЗАСОВ", r: 0.43, tags: ["home", "date"] },
+                { m: "УНЁС НА КРЫШУ", f: "УНЕСЛА НА КРЫШУ", n: "УНЕСЛО НА КРЫШУ", pl: "УНЕСЛИ НА КРЫШУ", r: 0.09, tags: ["weather", "home", "friends"] },
+                { m: "ПЕРЕПУТАЛ РАСПИСАНИЕ", f: "ПЕРЕПУТАЛА РАСПИСАНИЕ", n: "ПЕРЕПУТАЛО РАСПИСАНИЕ", pl: "ПЕРЕПУТАЛИ РАСПИСАНИЕ", r: 0.54, tags: ["time", "road", "school", "work", "date"] },
+                { m: "ЗАЛИЛ КОФЕ", f: "ЗАЛИЛА КОФЕ", n: "ЗАЛИЛО КОФЕ", pl: "ЗАЛИЛИ КОФЕ", r: 0.49, tags: ["home", "tech", "work", "date"] },
+                { m: "ПЕРЕКРЫЛ ПРОХОД", f: "ПЕРЕКРЫЛА ПРОХОД", n: "ПЕРЕКРЫЛО ПРОХОД", pl: "ПЕРЕКРЫЛИ ПРОХОД", r: 0.58, tags: ["road", "home", "work", "school"] },
+                { m: "ПЕРЕВЁРНУЛ ВВЕРХ ДНОМ", f: "ПЕРЕВЕРНУЛА ВВЕРХ ДНОМ", n: "ПЕРЕВЕРНУЛО ВВЕРХ ДНОМ", pl: "ПЕРЕВЕРНУЛИ ВВЕРХ ДНОМ", r: 0.21, tags: ["home", "time", "friends", "date"] },
+                { m: "ПРИКЛЕИЛ К ПОЛУ", f: "ПРИКЛЕИЛА К ПОЛУ", n: "ПРИКЛЕИЛО К ПОЛУ", pl: "ПРИКЛЕИЛИ К ПОЛУ", r: 0.1, tags: ["home", "friends"] },
+                { m: "ЗАКОПАЛ В ПЕСОЧНИЦЕ", f: "ЗАКОПАЛА В ПЕСОЧНИЦЕ", n: "ЗАКОПАЛО В ПЕСОЧНИЦЕ", pl: "ЗАКОПАЛИ В ПЕСОЧНИЦЕ", r: 0.09, tags: ["home", "road", "school", "friends"] },
+                { m: "СБРОСИЛ НА ЗАВОДСКИЕ", f: "СБРОСИЛА НА ЗАВОДСКИЕ", n: "СБРОСИЛО НА ЗАВОДСКИЕ", pl: "СБРОСИЛИ НА ЗАВОДСКИЕ", r: 0.27, tags: ["tech", "time", "work"] },
+                { m: "ПРЕВРАТИЛ В ТЫКВУ", f: "ПРЕВРАТИЛА В ТЫКВУ", n: "ПРЕВРАТИЛО В ТЫКВУ", pl: "ПРЕВРАТИЛИ В ТЫКВУ", r: 0.02, tags: ["time", "road", "date", "friends"] }
             ],
             target: [
-                { text: "МОЙ АВТОБУС", r: 0.62, tags: ["road", "time"] },
-                { text: "БУДИЛЬНИК", r: 0.65, tags: ["tech", "time", "home"] },
-                { text: "ЛИФТ", r: 0.66, tags: ["home", "tech"] },
-                { text: "ПРОПУСК", r: 0.64, tags: ["people", "home"] },
-                { text: "ШТАНЫ", r: 0.36, tags: ["home", "people"] },
-                { text: "ТОРМОЗА НА ВЕЛИКЕ", r: 0.34, tags: ["road"] },
-                { text: "ВХОДНУЮ ДВЕРЬ", r: 0.58, tags: ["home"] },
-                { text: "МОЙ ЗАВТРАК", r: 0.45, tags: ["home", "time"] },
-                { text: "МАРШРУТКУ", r: 0.63, tags: ["road", "time"] },
-                { text: "КЛЮЧИ ОТ КВАРТИРЫ", r: 0.67, tags: ["home"] },
-                { text: "ЭЛЕКТРОСАМОКАТ", r: 0.55, tags: ["road", "tech"] },
-                { text: "БОТИНОК", r: 0.44, tags: ["home", "road"] },
-                { text: "РАСПИСАНИЕ УРОКОВ", r: 0.48, tags: ["time", "people"] },
-                { text: "УТРЕННИЙ КОФЕ", r: 0.52, tags: ["home", "time"] },
-                { text: "ЗАРЯДКУ ТЕЛЕФОНА", r: 0.6, tags: ["tech", "home"] },
-                { text: "РЕЗЕРВНЫЙ КОД", r: 0.47, tags: ["tech"] },
-                { text: "СМЕННУЮ ОБУВЬ", r: 0.46, tags: ["home", "people"] },
-                { text: "ДОКУМЕНТЫ НА СТОЛЕ", r: 0.56, tags: ["home", "people"] },
-                { text: "КАРТУ ОПЛАТЫ", r: 0.59, tags: ["road", "tech"] },
-                { text: "ЛЕВЫЙ НОСОК", r: 0.25, tags: ["home"] },
-                { text: "КРЫШКУ ОТ ТЕРМОСА", r: 0.38, tags: ["home", "road"] },
-                { text: "МОБИЛЬНЫЙ ИНТЕРНЕТ", r: 0.57, tags: ["tech"] },
-                { text: "КОД ОТ ДОМОФОНА", r: 0.58, tags: ["home", "tech"] },
-                { text: "РАБОЧИЙ АККАУНТ", r: 0.61, tags: ["tech", "people"] },
-                { text: "ЗАПАСНОЙ РЮКЗАК", r: 0.49, tags: ["home", "road"] },
-                { text: "ТРАМВАЙНЫЙ ПУТЬ", r: 0.45, tags: ["road", "weather"] },
-                { text: "ТАЛОН НА ПРОЕЗД", r: 0.5, tags: ["road"] },
-                { text: "ПАРОЛЬ ОТ ВХОДА", r: 0.55, tags: ["tech", "home"] },
-                { text: "УТРЕННИЙ СИГНАЛ", r: 0.53, tags: ["tech", "time"] },
-                { text: "ПАПКУ С ФАЙЛАМИ", r: 0.54, tags: ["tech", "people"] },
-                { text: "ПОСЛЕДНИЙ ЭЛЕКТРОПОЕЗД", r: 0.57, tags: ["road", "time"] },
-                { text: "КАРМАННЫЙ ФОНАРИК", r: 0.31, tags: ["home", "weather"] },
-                { text: "ШАУРМУ НА УГЛУ", r: 0.28, tags: ["road", "people"] },
-                { text: "КАРШЕРИНГ", r: 0.56, tags: ["road", "tech"] },
-                { text: "ПОДПИСКУ НА ПЛЮС", r: 0.22, tags: ["tech"] },
-                { text: "СЕЙВ В ИГРЕ", r: 0.18, tags: ["tech", "time"] },
-                { text: "ЧЕХЛЫ ОТ НАУШНИКОВ", r: 0.33, tags: ["tech", "home"] },
-                { text: "ЧЕТВЕРГОВЫЙ ПЛАН", r: 0.35, tags: ["time", "people"] },
-                { text: "ПРАВЫЙ ШНУРОК", r: 0.24, tags: ["home", "road"] },
-                { text: "КОД ДОСТУПА", r: 0.58, tags: ["tech", "home"] }
+                { text: "МОЙ АВТОБУС", r: 0.62, tags: ["road", "time", "school", "work"] },
+                { text: "БУДИЛЬНИК", r: 0.65, tags: ["tech", "time", "home", "school", "work", "date"] },
+                { text: "ЛИФТ", r: 0.66, tags: ["home", "tech", "work", "date", "friends"] },
+                { text: "ПРОПУСК", r: 0.64, tags: ["people", "home", "work", "school"] },
+                { text: "ШТАНЫ", r: 0.36, tags: ["home", "people", "date", "friends"] },
+                { text: "ТОРМОЗА НА ВЕЛИКЕ", r: 0.34, tags: ["road", "school", "friends"] },
+                { text: "ВХОДНУЮ ДВЕРЬ", r: 0.58, tags: ["home", "date", "friends"] },
+                { text: "МОЙ ЗАВТРАК", r: 0.45, tags: ["home", "time", "school", "work"] },
+                { text: "МАРШРУТКУ", r: 0.63, tags: ["road", "time", "school", "work", "friends"] },
+                { text: "КЛЮЧИ ОТ КВАРТИРЫ", r: 0.67, tags: ["home", "work", "date", "friends"] },
+                { text: "ЭЛЕКТРОСАМОКАТ", r: 0.55, tags: ["road", "tech", "friends", "date"] },
+                { text: "БОТИНОК", r: 0.44, tags: ["home", "road", "date", "school"] },
+                { text: "РАСПИСАНИЕ УРОКОВ", r: 0.48, tags: ["time", "people", "school"] },
+                { text: "УТРЕННИЙ КОФЕ", r: 0.52, tags: ["home", "time", "work", "date"] },
+                { text: "ЗАРЯДКУ ТЕЛЕФОНА", r: 0.6, tags: ["tech", "home", "school", "work", "friends", "date"] },
+                { text: "РЕЗЕРВНЫЙ КОД", r: 0.47, tags: ["tech", "work"] },
+                { text: "СМЕННУЮ ОБУВЬ", r: 0.46, tags: ["home", "people", "school"] },
+                { text: "ДОКУМЕНТЫ НА СТОЛЕ", r: 0.56, tags: ["home", "people", "work"] },
+                { text: "КАРТУ ОПЛАТЫ", r: 0.59, tags: ["road", "tech", "work", "school", "friends"] },
+                { text: "ЛЕВЫЙ НОСОК", r: 0.25, tags: ["home", "friends", "date"] },
+                { text: "КРЫШКУ ОТ ТЕРМОСА", r: 0.38, tags: ["home", "road", "school", "friends"] },
+                { text: "МОБИЛЬНЫЙ ИНТЕРНЕТ", r: 0.57, tags: ["tech", "work", "friends", "date"] },
+                { text: "КОД ОТ ДОМОФОНА", r: 0.58, tags: ["home", "tech", "date", "friends"] },
+                { text: "РАБОЧИЙ АККАУНТ", r: 0.61, tags: ["tech", "people", "work"] },
+                { text: "ЗАПАСНОЙ РЮКЗАК", r: 0.49, tags: ["home", "road", "school", "friends"] },
+                { text: "ТРАМВАЙНЫЙ ПУТЬ", r: 0.45, tags: ["road", "weather", "school", "work"] },
+                { text: "ТАЛОН НА ПРОЕЗД", r: 0.5, tags: ["road", "school", "work"] },
+                { text: "ПАРОЛЬ ОТ ВХОДА", r: 0.55, tags: ["tech", "home", "work"] },
+                { text: "УТРЕННИЙ СИГНАЛ", r: 0.53, tags: ["tech", "time", "school", "work"] },
+                { text: "ПАПКУ С ФАЙЛАМИ", r: 0.54, tags: ["tech", "people", "work", "school"] },
+                { text: "ПОСЛЕДНИЙ ЭЛЕКТРОПОЕЗД", r: 0.57, tags: ["road", "time", "friends", "date"] },
+                { text: "КАРМАННЫЙ ФОНАРИК", r: 0.31, tags: ["home", "weather", "friends"] },
+                { text: "ШАУРМУ НА УГЛУ", r: 0.28, tags: ["road", "people", "friends", "school"] },
+                { text: "КАРШЕРИНГ", r: 0.56, tags: ["road", "tech", "work", "date", "friends"] },
+                { text: "ПОДПИСКУ НА ПЛЮС", r: 0.22, tags: ["tech", "friends"] },
+                { text: "СЕЙВ В ИГРЕ", r: 0.18, tags: ["tech", "time", "school", "friends"] },
+                { text: "ЧЕХЛЫ ОТ НАУШНИКОВ", r: 0.33, tags: ["tech", "home", "school", "friends"] },
+                { text: "ЧЕТВЕРГОВЫЙ ПЛАН", r: 0.35, tags: ["time", "people", "work", "friends"] },
+                { text: "ПРАВЫЙ ШНУРОК", r: 0.24, tags: ["home", "road", "date", "school"] },
+                { text: "КОД ДОСТУПА", r: 0.58, tags: ["tech", "home", "work"] }
             ]
         },
         life: {
             who: [
-                { text: "АВТОБУС", g: "m", r: 0.92, tags: ["road", "time"] },
-                { text: "МЕТРО", g: "n", r: 0.9, tags: ["road", "time"] },
-                { text: "БУДИЛЬНИК", g: "m", r: 0.94, tags: ["tech", "time", "home"] },
-                { text: "ЛИФТ", g: "m", r: 0.88, tags: ["home", "tech"] },
-                { text: "ПРОБКА НА МОСТУ", g: "f", r: 0.95, tags: ["road", "time"] },
-                { text: "ДОЖДЬ", g: "m", r: 0.86, tags: ["weather", "road"] },
-                { text: "КУРЬЕР", g: "m", r: 0.78, tags: ["home", "people"] },
-                { text: "КОНТРОЛЛЕР", g: "m", r: 0.72, tags: ["road", "people"] },
-                { text: "СОСЕД СНИЗУ", g: "m", r: 0.68, tags: ["home", "people"] },
-                { text: "МАРШРУТКА", g: "f", r: 0.91, tags: ["road", "time"] },
-                { text: "СВЕТОФОР", g: "m", r: 0.84, tags: ["road", "tech"] },
-                { text: "ОБНОВЛЕНИЕ СИСТЕМЫ", g: "n", r: 0.85, tags: ["tech"] },
-                { text: "ПОЕЗД", g: "m", r: 0.89, tags: ["road", "time"] },
-                { text: "ТАКСИ", g: "n", r: 0.87, tags: ["road", "time"] },
-                { text: "ДОМОФОН", g: "m", r: 0.82, tags: ["home", "tech"] },
-                { text: "ЛИВЕНЬ", g: "m", r: 0.87, tags: ["weather", "road"] },
-                { text: "РЕМОНТ ДОРОГИ", g: "m", r: 0.93, tags: ["road"] },
-                { text: "БАТАРЕЯ ТЕЛЕФОНА", g: "f", r: 0.86, tags: ["tech", "time"] },
-                { text: "ОЧЕРЕДЬ НА КАССЕ", g: "f", r: 0.76, tags: ["people", "time"] },
-                { text: "СБОЙ СЕТИ", g: "m", r: 0.88, tags: ["tech"] },
-                { text: "КОММУНАЛЬЩИКИ", g: "pl", r: 0.85, tags: ["home", "road"] },
-                { text: "ЭСКАЛАТОР", g: "m", r: 0.8, tags: ["road", "tech"] },
-                { text: "ТУМАН", g: "m", r: 0.81, tags: ["weather", "road"] },
-                { text: "ГОЛОЛЁД", g: "m", r: 0.89, tags: ["weather", "road"] }
+                { text: "АВТОБУС", g: "m", r: 0.92, tags: ["road", "time", "school", "work", "friends"] },
+                { text: "МЕТРО", g: "n", r: 0.9, tags: ["road", "time", "work", "school", "friends", "date"] },
+                { text: "БУДИЛЬНИК", g: "m", r: 0.94, tags: ["tech", "time", "home", "school", "work", "date"] },
+                { text: "ЛИФТ", g: "m", r: 0.88, tags: ["home", "tech", "work", "date", "friends"] },
+                { text: "ПРОБКА НА МОСТУ", g: "f", r: 0.95, tags: ["road", "time", "work", "school", "date", "friends"] },
+                { text: "ДОЖДЬ", g: "m", r: 0.86, tags: ["weather", "road", "date", "friends", "school"] },
+                { text: "КУРЬЕР", g: "m", r: 0.78, tags: ["home", "people", "work", "date", "friends"] },
+                { text: "КОНТРОЛЛЕР", g: "m", r: 0.72, tags: ["road", "people", "school", "friends"] },
+                { text: "СОСЕД СНИЗУ", g: "m", r: 0.68, tags: ["home", "people", "date"] },
+                { text: "МАРШРУТКА", g: "f", r: 0.91, tags: ["road", "time", "school", "work", "friends"] },
+                { text: "СВЕТОФОР", g: "m", r: 0.84, tags: ["road", "tech", "work", "date"] },
+                { text: "ОБНОВЛЕНИЕ СИСТЕМЫ", g: "n", r: 0.85, tags: ["tech", "work"] },
+                { text: "ПОЕЗД", g: "m", r: 0.89, tags: ["road", "time", "work", "friends"] },
+                { text: "ТАКСИ", g: "n", r: 0.87, tags: ["road", "time", "date", "friends", "work"] },
+                { text: "ДОМОФОН", g: "m", r: 0.82, tags: ["home", "tech", "date", "friends"] },
+                { text: "ЛИВЕНЬ", g: "m", r: 0.87, tags: ["weather", "road", "date", "friends", "school"] },
+                { text: "РЕМОНТ ДОРОГИ", g: "m", r: 0.93, tags: ["road", "work", "school", "date"] },
+                { text: "БАТАРЕЯ ТЕЛЕФОНА", g: "f", r: 0.86, tags: ["tech", "time", "date", "friends", "work"] },
+                { text: "ОЧЕРЕДЬ НА КАССЕ", g: "f", r: 0.76, tags: ["people", "time", "friends", "school", "date"] },
+                { text: "СБОЙ СЕТИ", g: "m", r: 0.88, tags: ["tech", "work"] },
+                { text: "КОММУНАЛЬЩИКИ", g: "pl", r: 0.85, tags: ["home", "road", "work", "date"] },
+                { text: "ЭСКАЛАТОР", g: "m", r: 0.8, tags: ["road", "tech", "school", "work", "friends"] },
+                { text: "ТУМАН", g: "m", r: 0.81, tags: ["weather", "road", "date", "friends"] },
+                { text: "ГОЛОЛЁД", g: "m", r: 0.89, tags: ["weather", "road", "school", "work", "date"] }
             ],
             action: [
-                { m: "ЗАДЕРЖАЛ", f: "ЗАДЕРЖАЛА", n: "ЗАДЕРЖАЛО", pl: "ЗАДЕРЖАЛИ", r: 0.95, tags: ["road", "time", "people", "weather"] },
-                { m: "ОСТАНОВИЛ", f: "ОСТАНОВИЛА", n: "ОСТАНОВИЛО", pl: "ОСТАНОВИЛИ", r: 0.9, tags: ["road", "tech", "weather"] },
-                { m: "СБИЛ", f: "СБИЛА", n: "СБИЛО", pl: "СБИЛИ", r: 0.78, tags: ["time", "tech", "people"] },
-                { m: "ПЕРЕКРЫЛ", f: "ПЕРЕКРЫЛА", n: "ПЕРЕКРЫЛО", pl: "ПЕРЕКРЫЛИ", r: 0.92, tags: ["road", "home"] },
-                { m: "ОТКЛЮЧИЛ", f: "ОТКЛЮЧИЛА", n: "ОТКЛЮЧИЛО", pl: "ОТКЛЮЧИЛИ", r: 0.86, tags: ["tech", "home"] },
-                { m: "ЗАТЯНУЛ", f: "ЗАТЯНУЛА", n: "ЗАТЯНУЛО", pl: "ЗАТЯНУЛИ", r: 0.84, tags: ["time", "people", "road"] },
-                { m: "ПОМЕНЯЛ", f: "ПОМЕНЯЛА", n: "ПОМЕНЯЛО", pl: "ПОМЕНЯЛИ", r: 0.79, tags: ["time", "road", "people"] },
-                { m: "ЗАПЕР", f: "ЗАПЕРЛА", n: "ЗАПЕРЛО", pl: "ЗАПЕРЛИ", r: 0.72, tags: ["home", "people"] },
-                { m: "ПРИТОРМОЗИЛ", f: "ПРИТОРМОЗИЛА", n: "ПРИТОРМОЗИЛО", pl: "ПРИТОРМОЗИЛИ", r: 0.88, tags: ["road", "weather", "tech"] },
-                { m: "ВЫКЛЮЧИЛ", f: "ВЫКЛЮЧИЛА", n: "ВЫКЛЮЧИЛО", pl: "ВЫКЛЮЧИЛИ", r: 0.85, tags: ["tech", "home"] },
-                { m: "СДВИНУЛ", f: "СДВИНУЛА", n: "СДВИНУЛО", pl: "СДВИНУЛИ", r: 0.83, tags: ["time", "road"] },
-                { m: "ИСПОРТИЛ", f: "ИСПОРТИЛА", n: "ИСПОРТИЛО", pl: "ИСПОРТИЛИ", r: 0.77, tags: ["time", "home", "people"] },
-                { m: "ЗАТРУДНИЛ", f: "ЗАТРУДНИЛА", n: "ЗАТРУДНИЛО", pl: "ЗАТРУДНИЛИ", r: 0.89, tags: ["road", "weather", "home"] },
-                { m: "ПЕРЕЗАПУСТИЛ", f: "ПЕРЕЗАПУСТИЛА", n: "ПЕРЕЗАПУСТИЛО", pl: "ПЕРЕЗАПУСТИЛИ", r: 0.82, tags: ["tech"] }
+                { m: "ЗАДЕРЖАЛ", f: "ЗАДЕРЖАЛА", n: "ЗАДЕРЖАЛО", pl: "ЗАДЕРЖАЛИ", r: 0.95, tags: ["road", "time", "people", "weather", "school", "work", "friends", "date"] },
+                { m: "ОСТАНОВИЛ", f: "ОСТАНОВИЛА", n: "ОСТАНОВИЛО", pl: "ОСТАНОВИЛИ", r: 0.9, tags: ["road", "tech", "weather", "work", "school", "date"] },
+                { m: "СБИЛ", f: "СБИЛА", n: "СБИЛО", pl: "СБИЛИ", r: 0.78, tags: ["time", "tech", "people", "school", "work", "date"] },
+                { m: "ПЕРЕКРЫЛ", f: "ПЕРЕКРЫЛА", n: "ПЕРЕКРЫЛО", pl: "ПЕРЕКРЫЛИ", r: 0.92, tags: ["road", "home", "work", "school", "date"] },
+                { m: "ОТКЛЮЧИЛ", f: "ОТКЛЮЧИЛА", n: "ОТКЛЮЧИЛО", pl: "ОТКЛЮЧИЛИ", r: 0.86, tags: ["tech", "home", "work", "date"] },
+                { m: "ЗАТЯНУЛ", f: "ЗАТЯНУЛА", n: "ЗАТЯНУЛО", pl: "ЗАТЯНУЛИ", r: 0.84, tags: ["time", "people", "road", "friends", "date", "work"] },
+                { m: "ПОМЕНЯЛ", f: "ПОМЕНЯЛА", n: "ПОМЕНЯЛО", pl: "ПОМЕНЯЛИ", r: 0.79, tags: ["time", "road", "people", "school", "work", "friends"] },
+                { m: "ЗАПЕР", f: "ЗАПЕРЛА", n: "ЗАПЕРЛО", pl: "ЗАПЕРЛИ", r: 0.72, tags: ["home", "people", "date", "friends"] },
+                { m: "ПРИТОРМОЗИЛ", f: "ПРИТОРМОЗИЛА", n: "ПРИТОРМОЗИЛО", pl: "ПРИТОРМОЗИЛИ", r: 0.88, tags: ["road", "weather", "tech", "work", "school", "date", "friends"] },
+                { m: "ВЫКЛЮЧИЛ", f: "ВЫКЛЮЧИЛА", n: "ВЫКЛЮЧИЛО", pl: "ВЫКЛЮЧИЛИ", r: 0.85, tags: ["tech", "home", "work", "date"] },
+                { m: "СДВИНУЛ", f: "СДВИНУЛА", n: "СДВИНУЛО", pl: "СДВИНУЛИ", r: 0.83, tags: ["time", "road", "work", "friends", "date"] },
+                { m: "ИСПОРТИЛ", f: "ИСПОРТИЛА", n: "ИСПОРТИЛО", pl: "ИСПОРТИЛИ", r: 0.77, tags: ["time", "home", "people", "date", "friends"] },
+                { m: "ЗАТРУДНИЛ", f: "ЗАТРУДНИЛА", n: "ЗАТРУДНИЛО", pl: "ЗАТРУДНИЛИ", r: 0.89, tags: ["road", "weather", "home", "work", "school", "date"] },
+                { m: "ПЕРЕЗАПУСТИЛ", f: "ПЕРЕЗАПУСТИЛА", n: "ПЕРЕЗАПУСТИЛО", pl: "ПЕРЕЗАПУСТИЛИ", r: 0.82, tags: ["tech", "work"] }
             ],
             target: [
-                { text: "УТРЕННИЙ РЕЙС", r: 0.94, tags: ["road", "time", "weather"] },
-                { text: "ВЫХОД ИЗ ДОМА", r: 0.92, tags: ["home", "time", "people"] },
-                { text: "РАБОЧИЙ МАРШРУТ", r: 0.9, tags: ["road", "weather", "time"] },
-                { text: "ГРАФИК ВСТРЕЧ", r: 0.87, tags: ["time", "people", "tech"] },
-                { text: "ПУТЬ НА СТАНЦИЮ", r: 0.91, tags: ["road", "weather", "time"] },
-                { text: "ВХОД В ЗДАНИЕ", r: 0.86, tags: ["home", "people", "road"] },
-                { text: "СВЯЗЬ С ОФИСОМ", r: 0.85, tags: ["tech", "people"] },
-                { text: "УТРЕННИЙ ПЛАН", r: 0.82, tags: ["time", "people", "tech"] },
-                { text: "ПОДЪЁМ НА ЭТАЖ", r: 0.84, tags: ["home", "tech"] },
-                { text: "ПРОХОД ЧЕРЕЗ ДВОР", r: 0.88, tags: ["home", "road", "weather"] },
-                { text: "ПОЕЗДКУ УТРОМ", r: 0.93, tags: ["road", "time", "weather"] },
-                { text: "ВРЕМЯ ВЫХОДА", r: 0.9, tags: ["time", "home", "tech"] },
-                { text: "ПЕРЕСАДКУ", r: 0.89, tags: ["road", "time"] },
-                { text: "УТРЕННИЙ ГРАФИК", r: 0.91, tags: ["time", "tech", "people"] },
-                { text: "ДОРОГУ НА РАБОТУ", r: 0.95, tags: ["road", "weather", "time"] }
+                { text: "УТРЕННИЙ РЕЙС", r: 0.94, tags: ["road", "time", "weather", "work", "school"] },
+                { text: "ВЫХОД ИЗ ДОМА", r: 0.92, tags: ["home", "time", "people", "school", "work", "date", "friends"] },
+                { text: "РАБОЧИЙ МАРШРУТ", r: 0.9, tags: ["road", "weather", "time", "work"] },
+                { text: "ГРАФИК ВСТРЕЧ", r: 0.87, tags: ["time", "people", "tech", "work", "date"] },
+                { text: "ПУТЬ НА СТАНЦИЮ", r: 0.91, tags: ["road", "weather", "time", "work", "school", "friends"] },
+                { text: "ВХОД В ЗДАНИЕ", r: 0.86, tags: ["home", "people", "road", "work", "school", "date"] },
+                { text: "СВЯЗЬ С ОФИСОМ", r: 0.85, tags: ["tech", "people", "work"] },
+                { text: "УТРЕННИЙ ПЛАН", r: 0.82, tags: ["time", "people", "tech", "work", "school"] },
+                { text: "ПОДЪЁМ НА ЭТАЖ", r: 0.84, tags: ["home", "tech", "work", "date"] },
+                { text: "ПРОХОД ЧЕРЕЗ ДВОР", r: 0.88, tags: ["home", "road", "weather", "school", "date", "friends"] },
+                { text: "ПОЕЗДКУ УТРОМ", r: 0.93, tags: ["road", "time", "weather", "work", "school", "friends"] },
+                { text: "ВРЕМЯ ВЫХОДА", r: 0.9, tags: ["time", "home", "tech", "school", "work", "date", "friends"] },
+                { text: "ПЕРЕСАДКУ", r: 0.89, tags: ["road", "time", "work", "school", "friends"] },
+                { text: "УТРЕННИЙ ГРАФИК", r: 0.91, tags: ["time", "tech", "people", "work", "school"] },
+                { text: "ДОРОГУ НА РАБОТУ", r: 0.95, tags: ["road", "weather", "time", "work"] }
             ]
         }
     };
@@ -1143,6 +1219,18 @@
         return shared;
     }
 
+    function getContextFitScore(itemTags = [], ctxKey = 'any') {
+        if (!ctxKey || ctxKey === 'any' || !CONTEXT_META[ctxKey]) return 0.75;
+        const fitTags = CONTEXT_META[ctxKey].fitTags || [];
+        if (fitTags.length === 0) return 0.75;
+        const hasDirectCtx = itemTags.includes(ctxKey);
+        const shared = countSharedTags(itemTags, fitTags);
+        if (hasDirectCtx) return 1.0;
+        if (shared >= 2) return 0.85;
+        if (shared === 1) return 0.65;
+        return 0.25;
+    }
+
     function computeCredibility() {
         const s1 = slotValues[0];
         const s2 = slotValues[1];
@@ -1172,14 +1260,23 @@
         const match23 = countSharedTags(t2, t3) > 0;
         const match13 = countSharedTags(t1, t3) > 0;
         const coherence = (match12 ? 0.4 : 0) + (match23 ? 0.4 : 0) + (match13 ? 0.2 : 0);
+        const coherenceModifier = (coherence - 0.5) * 0.34;
 
-        // Когерентность от 0 до 1: связка без общих тегов получает ощутимый штраф
-        const coherenceModifier = (coherence - 0.5) * 0.36;
+        let ctxModifier = 0;
+        if (currentContext !== 'any') {
+            const fitAvg = (
+                getContextFitScore(t1, currentContext) +
+                getContextFitScore(t2, currentContext) +
+                getContextFitScore(t3, currentContext)
+            ) / 3;
+            ctxModifier = (fitAvg - 0.55) * 0.28;
+        }
+
         const modeModifier = currentTone === 'life' ? 0.04 : -0.14;
         const minPenalty = Math.min(r1, r2, r3) < 0.14 ? -0.12 : 0;
 
         const baseScore = r1 * 0.32 + r2 * 0.36 + r3 * 0.32;
-        const raw = baseScore + coherenceModifier + modeModifier + minPenalty;
+        const raw = baseScore + coherenceModifier + ctxModifier + modeModifier + minPenalty;
         const percent = Math.max(2, Math.min(97, Math.round(raw * 100)));
 
         let verdict = 'СОМНИТЕЛЬНО';
@@ -1244,6 +1341,7 @@
     const savedMem = loadMemory();
     let unlockedIds = Array.isArray(savedMem.unlockedIds) ? savedMem.unlockedIds : [];
     let currentTone = savedMem.tone === 'life' ? 'life' : 'absurd';
+    let currentContext = CONTEXT_META[savedMem.context] ? savedMem.context : 'any';
     let spinCount = Number.isFinite(savedMem.spinCount) ? Math.max(0, savedMem.spinCount) : 0;
     let locked = Array.isArray(savedMem.locked) && savedMem.locked.length === 3
         ? savedMem.locked.map(Boolean)
@@ -1268,6 +1366,7 @@
             const payload = {
                 unlockedIds,
                 tone: currentTone,
+                context: currentContext,
                 spinCount,
                 locked,
                 slotValues,
@@ -1293,6 +1392,27 @@
             icon.innerText = '🤪';
             label.innerText = 'АБСУРД';
         }
+    }
+
+    function applyContextUI() {
+        const chips = document.querySelectorAll('#contextChips .context-chip');
+        chips.forEach(chip => {
+            if (chip.dataset.ctx === currentContext) {
+                chip.classList.add('active');
+            } else {
+                chip.classList.remove('active');
+            }
+        });
+    }
+
+    function selectContext(ctxKey) {
+        if (isSpinning || isJackpotAnimating) return;
+        if (!CONTEXT_META[ctxKey]) return;
+        currentContext = ctxKey;
+        applyContextUI();
+        updateCredibilityUI();
+        saveMemory();
+        playStopSound(1);
     }
 
     function applySoundUI() {
@@ -1358,6 +1478,7 @@
     }
 
     applyToneUI();
+    applyContextUI();
     applySoundUI();
     applySlotsAndLocksUI();
     updateJackpotCounterUI();
@@ -1674,15 +1795,24 @@
         return EMPTY_SYMBOL;
     }
 
-    function pickWeightedFromPool(pool, contextTags = []) {
-        if (!Array.isArray(contextTags) || contextTags.length === 0) {
-            return pool[Math.floor(Math.random() * pool.length)];
-        }
+    function pickWeightedFromPool(pool, contextTags = [], ctxKey = 'any') {
+        const fitTags = (ctxKey && ctxKey !== 'any' && CONTEXT_META[ctxKey])
+            ? CONTEXT_META[ctxKey].fitTags
+            : [];
 
         const weights = pool.map(item => {
-            const shared = countSharedTags(item.tags || [], contextTags);
-            // Совпадающие по смыслу слова получают заметно больший вес, но остальные тоже остаются в пуле
-            return shared > 0 ? 1 + shared * 3.5 : 0.45;
+            const itemTags = item.tags || [];
+            let w = 1;
+            if (Array.isArray(contextTags) && contextTags.length > 0) {
+                const shared = countSharedTags(itemTags, contextTags);
+                w *= shared > 0 ? 1 + shared * 3.2 : 0.45;
+            }
+            if (fitTags.length > 0) {
+                const ctxShared = countSharedTags(itemTags, fitTags);
+                const direct = itemTags.includes(ctxKey) ? 2.2 : 0;
+                w *= (ctxShared > 0 || direct > 0) ? 1 + ctxShared * 1.6 + direct : 0.35;
+            }
+            return w;
         });
 
         const totalWeight = weights.reduce((acc, w) => acc + w, 0);
@@ -1694,7 +1824,7 @@
         return pool[pool.length - 1];
     }
 
-    function pickNextItem(array, currentLabel, history = null, gender = 'm', contextTags = []) {
+    function pickNextItem(array, currentLabel, history = null, gender = 'm', contextTags = [], ctxKey = 'any') {
         if (!array || array.length === 0) return { label: EMPTY_SYMBOL, raw: null };
         if (array.length === 1) {
             const raw = array[0];
@@ -1704,7 +1834,7 @@
         const filtered = array.filter(item => !blocked.has(getOptionLabel(item, gender)));
         const fallback = array.filter(item => getOptionLabel(item, gender) !== currentLabel);
         const source = filtered.length > 0 ? filtered : (fallback.length > 0 ? fallback : array);
-        const raw = pickWeightedFromPool(source, contextTags);
+        const raw = pickWeightedFromPool(source, contextTags, ctxKey);
         return { label: getOptionLabel(raw, gender), raw };
     }
 
@@ -1735,12 +1865,13 @@
             function step() {
                 const elapsed = performance.now() - startTime;
                 const progress = Math.min(elapsed / durationMs, 1);
-                const opts = getOptionsFn ? getOptionsFn() : { gender: currentGender, tags: [] };
+                const opts = getOptionsFn ? getOptionsFn() : { gender: currentGender, tags: [], ctxKey: currentContext };
                 const g = opts.gender || currentGender;
                 const tags = opts.tags || [];
+                const ctxKey = opts.ctxKey || currentContext;
 
                 if (elapsed >= durationMs) {
-                    const picked = pickNextItem(array, textEl.innerText, recentHistory[reelIndex], g, tags);
+                    const picked = pickNextItem(array, textEl.innerText, recentHistory[reelIndex], g, tags, ctxKey);
                     setSlotDisplay(reelIndex, picked.label);
                     recordHistory(reelIndex, picked.label);
                     element.classList.remove('spinning');
@@ -1751,7 +1882,7 @@
                     return;
                 }
 
-                const tickPicked = pickNextItem(array, textEl.innerText, null, g, tags);
+                const tickPicked = pickNextItem(array, textEl.innerText, null, g, tags, ctxKey);
                 textEl.innerText = tickPicked.label;
                 playTickSound(progress);
 
@@ -1847,8 +1978,11 @@
         let activeGender = activeWhoObj ? activeWhoObj.g : currentGender;
         let activeTags = activeWhoObj ? (activeWhoObj.tags || []) : [];
 
-        // Первый барабан останавливается быстрее, чтобы задать контекст следующим двум
-        const res1 = await spinReel('slot1', dict.who, 950, 0);
+        const res1 = await spinReel('slot1', dict.who, 950, 0, () => ({
+            gender: activeGender,
+            tags: [],
+            ctxKey: currentContext
+        }));
         if (!locked[0] && res1 && res1.raw) {
             activeWhoObj = res1.raw;
             activeGender = res1.raw.g || 'm';
@@ -1857,10 +1991,18 @@
         }
 
         const [res2, res3] = await Promise.all([
-            spinReel('slot2', dict.action, 1350, 1, () => ({ gender: activeGender, tags: activeTags })),
+            spinReel('slot2', dict.action, 1350, 1, () => ({
+                gender: activeGender,
+                tags: activeTags,
+                ctxKey: currentContext
+            })),
             spinReel('slot3', dict.target, 1750, 2, () => {
                 const verbTags = (!locked[1] && currentVerbObj?.tags) ? currentVerbObj.tags : [];
-                return { gender: activeGender, tags: [...activeTags, ...verbTags] };
+                return {
+                    gender: activeGender,
+                    tags: [...activeTags, ...verbTags],
+                    ctxKey: currentContext
+                };
             })
         ]);
 
@@ -1907,7 +2049,10 @@
             return;
         }
         const cred = computeCredibility();
-        const fullText = `Я опоздал, потому что ${s1.toLowerCase()} ${s2.toLowerCase()} ${s3.toLowerCase()} (правдоподобность: ${cred.percent}%).`;
+        const ctxLabel = (CONTEXT_META[currentContext] && currentContext !== 'any')
+            ? `${CONTEXT_META[currentContext].label}, `
+            : '';
+        const fullText = `Я опоздал, потому что ${s1.toLowerCase()} ${s2.toLowerCase()} ${s3.toLowerCase()} (${ctxLabel}правдоподобность: ${cred.percent}%).`;
 
         navigator.clipboard.writeText(fullText).then(() => {
             showToast('Скопировано');
