@@ -777,7 +777,7 @@
             who: 'ПАНТЕЛЕЕВ',
             action: 'УТАЩИЛ В НОРУ',
             target: 'КЛЮЧИ ОТ КВАРТИРЫ',
-            chance: 0.14
+            chance: 0.025
         },
         {
             id: 'gozyava',
@@ -785,7 +785,7 @@
             who: 'ГОЗЯВА',
             action: 'ЗАБЛОКИРОВАЛ',
             target: 'ВХОДНУЮ ДВЕРЬ',
-            chance: 0.14
+            chance: 0.025
         },
         {
             id: 'hrumki',
@@ -793,7 +793,7 @@
             who: 'ХРУМКИ',
             action: 'СЪЕЛ',
             target: 'МОЙ ЗАВТРАК',
-            chance: 0.14
+            chance: 0.025
         },
         {
             id: 'polad',
@@ -801,7 +801,7 @@
             who: 'ПОЛАД',
             action: 'УГНАЛ',
             target: 'МОЙ АВТОБУС',
-            chance: 0.14
+            chance: 0.025
         },
         {
             id: 'david',
@@ -809,7 +809,7 @@
             who: 'ДАВИД',
             action: 'ПЕРЕПРОШИЛ',
             target: 'БУДИЛЬНИК',
-            chance: 0.14
+            chance: 0.025
         },
         {
             id: 'arseniy',
@@ -817,7 +817,7 @@
             who: 'АРСЕНІЙ',
             action: 'ЗАПЕР В ПОДВАЛЕ',
             target: 'РАБОЧИЙ АККАУНТ',
-            chance: 0.14
+            chance: 0.025
         },
         {
             id: 'kira',
@@ -825,18 +825,11 @@
             who: 'КИРА',
             action: 'СПРЯТАЛ',
             target: 'ПРОПУСК',
-            chance: 0.14
+            chance: 0.025
         }
     ];
 
-    JACKPOTS.forEach(j => {
-        if (j.id === 'arseniy') {
-            j.name = 'АРСЕНІЙ';
-            j.who = 'АРСЕНІЙ';
-        }
-    });
-
-    const STORAGE_KEY = 'excuse_slots_unlocked_jackpots_v2';
+    const STORAGE_KEY = 'excuse_slots_unlocked_jackpots_v3';
     let unlockedIds = loadUnlockedJackpots();
 
     function loadUnlockedJackpots() {
@@ -961,6 +954,7 @@
 
     const slotIds = ['slot1', 'slot2', 'slot3'];
     const locked = [false, false, false];
+    const recentHistory = [[], [], []];
     let currentTone = 'absurd';
     let spinCount = 0;
     let isSpinning = false;
@@ -1260,16 +1254,23 @@
         return document.getElementById(id).querySelector('.slot-text');
     }
 
-    function pickNextWord(array, currentText) {
+    function pickNextWord(array, currentText, history = null) {
         if (array.length <= 1) return array[0];
-        let candidate = array[Math.floor(Math.random() * array.length)];
-        while (candidate === currentText) {
-            candidate = array[Math.floor(Math.random() * array.length)];
-        }
-        return candidate;
+        const blocked = new Set([currentText, ...(history || [])]);
+        const pool = array.filter(item => !blocked.has(item));
+        const source = pool.length > 0 ? pool : array.filter(item => item !== currentText);
+        return source[Math.floor(Math.random() * source.length)];
     }
 
-    function spinReel(id, array, durationMs, reelIndex, forcedValue = null) {
+    function recordHistory(reelIndex, value) {
+        const hist = recentHistory[reelIndex];
+        hist.push(value);
+        if (hist.length > 4) {
+            hist.shift();
+        }
+    }
+
+    function spinReel(id, array, durationMs, reelIndex) {
         return new Promise(resolve => {
             const element = document.getElementById(id);
             const textEl = getSlotTextEl(id);
@@ -1290,7 +1291,9 @@
                 const progress = Math.min(elapsed / durationMs, 1);
 
                 if (elapsed >= durationMs) {
-                    textEl.innerText = forcedValue || pickNextWord(array, textEl.innerText);
+                    const finalWord = pickNextWord(array, textEl.innerText, recentHistory[reelIndex]);
+                    textEl.innerText = finalWord;
+                    recordHistory(reelIndex, finalWord);
                     element.classList.remove('spinning');
                     element.classList.add('landed');
                     playStopSound(reelIndex);
@@ -1354,10 +1357,20 @@
     }
 
     function evaluateMatchedJackpot() {
+        if (currentTone !== 'absurd') return null;
         const s1 = getSlotTextEl('slot1').innerText;
         const s2 = getSlotTextEl('slot2').innerText;
         const s3 = getSlotTextEl('slot3').innerText;
-        return JACKPOTS.find(jp => jp.who === s1 && jp.action === s2 && jp.target === s3) || null;
+
+        const exact = JACKPOTS.find(jp => jp.who === s1 && jp.action === s2 && jp.target === s3);
+        if (exact) return exact;
+
+        // Редкий редкий шанс поймать джекпот при совпадении ключевого героя и редким проком
+        const heroMatch = JACKPOTS.find(jp => jp.who === s1);
+        if (heroMatch && Math.random() < heroMatch.chance) {
+            return heroMatch;
+        }
+        return null;
     }
 
     async function spinAll() {
@@ -1375,23 +1388,10 @@
 
         const dict = packs[currentTone];
 
-        let plannedJackpot = null;
-        if (currentTone === 'absurd') {
-            for (const jp of JACKPOTS) {
-                const canHitWho = !locked[0] || getSlotTextEl('slot1').innerText === jp.who;
-                const canHitAction = !locked[1] || getSlotTextEl('slot2').innerText === jp.action;
-                const canHitTarget = !locked[2] || getSlotTextEl('slot3').innerText === jp.target;
-                if (canHitWho && canHitAction && canHitTarget && Math.random() < jp.chance) {
-                    plannedJackpot = jp;
-                    break;
-                }
-            }
-        }
-
         await Promise.all([
-            spinReel('slot1', dict.who, 1100, 0, plannedJackpot ? plannedJackpot.who : null),
-            spinReel('slot2', dict.action, 1550, 1, plannedJackpot ? plannedJackpot.action : null),
-            spinReel('slot3', dict.target, 2000, 2, plannedJackpot ? plannedJackpot.target : null)
+            spinReel('slot1', dict.who, 1100, 0),
+            spinReel('slot2', dict.action, 1550, 1),
+            spinReel('slot3', dict.target, 2000, 2)
         ]);
 
         const hit = evaluateMatchedJackpot();
