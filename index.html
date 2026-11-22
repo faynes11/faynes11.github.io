@@ -898,117 +898,198 @@
         }
     ];
 
-    const MEMORY_KEY = 'excuse_slots_memory_v3';
+    const MEMORY_KEY = 'excuse_slots_memory_v4';
 
-    // r: реалистичность слова (0..1)
+    // tags: 'road' | 'tech' | 'home' | 'people' | 'weather' | 'time'
     const packs = {
         absurd: {
             who: [
-                { text: "ПАНТЕЛЕЕВ", g: "m", r: 0.15 }, { text: "ГОЗЯВА", g: "m", r: 0.12 }, { text: "ХРУМКИ", g: "m", r: 0.14 },
-                { text: "ПОЛАД", g: "m", r: 0.22 }, { text: "ДАВИД", g: "m", r: 0.28 }, { text: "АРСЕНІЙ", g: "m", r: 0.25 },
-                { text: "КИРА", g: "f", r: 0.26 }, { text: "ДЕД", g: "m", r: 0.45 }, { text: "СОСЕДКА", g: "f", r: 0.48 },
-                { text: "КОТ", g: "m", r: 0.34 }, { text: "КУРЬЕР", g: "m", r: 0.55 }, { text: "ИНОПЛАНЕТЯНЕ", g: "pl", r: 0.02 },
-                { text: "МЭР ГОРОДА", g: "m", r: 0.1 }, { text: "ВОЕНКОМ", g: "m", r: 0.24 }, { text: "СВЕКРОВЬ", g: "f", r: 0.44 },
-                { text: "АЛКАШ С ДВОРА", g: "m", r: 0.36 }, { text: "УЧИТЕЛЬНИЦА", g: "f", r: 0.4 }, { text: "ЦЫГАНЕ", g: "pl", r: 0.18 },
-                { text: "МОЙ ПЁС", g: "m", r: 0.32 }, { text: "БЫВШАЯ", g: "f", r: 0.38 }, { text: "ДРУГ", g: "m", r: 0.52 },
-                { text: "ЭКСКАВАТОРЩИК", g: "m", r: 0.35 }, { text: "ГЕНЕРАЛЬНЫЙ ДИРЕКТОР", g: "m", r: 0.2 },
-                { text: "БАРИСТА", g: "m", r: 0.5 }, { text: "ВАХТЁР", g: "m", r: 0.46 }, { text: "СОСЕД С ПЕРФОРАТОРОМ", g: "m", r: 0.42 },
-                { text: "ГОЛУБЬ В КЕПКЕ", g: "m", r: 0.04 }, { text: "КУРЬЕР САМОКАТА", g: "m", r: 0.52 }, { text: "НАПАРНИК", g: "m", r: 0.54 },
-                { text: "ДОМОВОЙ", g: "m", r: 0.06 }, { text: "ПОЧТАЛЬОН", g: "m", r: 0.42 }, { text: "АДМИНИСТРАТОР", g: "m", r: 0.5 },
-                { text: "САНТЕХНИК", g: "m", r: 0.47 }, { text: "ВОДИТЕЛЬ ГАЗЕЛИ", g: "m", r: 0.45 }, { text: "УЧЁНЫЙ С РАЙОНА", g: "m", r: 0.14 },
-                { text: "МАСТЕР МАНИКЮРА", g: "m", r: 0.35 }, { text: "ДЕЖУРНЫЙ ПО ПОДЪЕЗДУ", g: "m", r: 0.38 },
-                { text: "КОТ СОСЕДЕЙ", g: "m", r: 0.26 }, { text: "ТАКСИСТ БЕЗ НАВИГАТОРА", g: "m", r: 0.49 },
-                { text: "ЕНОТ В ПАЛЬТО", g: "m", r: 0.03 }, { text: "РОБОТ-ПЫЛЕСОС", g: "m", r: 0.19 }, { text: "ШАВЕРМЕН", g: "m", r: 0.44 },
-                { text: "ДИДЖЕЙ ИЗ МАРШРУТКИ", g: "m", r: 0.22 }, { text: "КАПИТАН ОЧЕВИДНОСТЬ", g: "m", r: 0.08 },
-                { text: "СОСЕД С САКСОФОНОМ", g: "m", r: 0.24 }, { text: "ОХРАННИК НА ПРОХОДНОЙ", g: "m", r: 0.48 },
-                { text: "БЕЛКА-СТРЕЛЯЛКА", g: "f", r: 0.04 }, { text: "КОЛЛЕГА С ПЯТОГО", g: "m", r: 0.54 }
+                { text: "ПАНТЕЛЕЕВ", g: "m", r: 0.16, tags: ["home", "people"] },
+                { text: "ГОЗЯВА", g: "m", r: 0.14, tags: ["home"] },
+                { text: "ХРУМКИ", g: "m", r: 0.15, tags: ["home", "people"] },
+                { text: "ПОЛАД", g: "m", r: 0.22, tags: ["road", "people"] },
+                { text: "ДАВИД", g: "m", r: 0.28, tags: ["tech", "time"] },
+                { text: "АРСЕНІЙ", g: "m", r: 0.25, tags: ["tech", "home"] },
+                { text: "КИРА", g: "f", r: 0.26, tags: ["people", "home"] },
+                { text: "ДЕД", g: "m", r: 0.45, tags: ["home", "road"] },
+                { text: "СОСЕДКА", g: "f", r: 0.48, tags: ["home", "people"] },
+                { text: "КОТ", g: "m", r: 0.34, tags: ["home", "time"] },
+                { text: "КУРЬЕР", g: "m", r: 0.55, tags: ["road", "home"] },
+                { text: "ИНОПЛАНЕТЯНЕ", g: "pl", r: 0.02, tags: ["weather", "road"] },
+                { text: "МЭР ГОРОДА", g: "m", r: 0.1, tags: ["road", "time"] },
+                { text: "ВОЕНКОМ", g: "m", r: 0.24, tags: ["people", "time"] },
+                { text: "СВЕКРОВЬ", g: "f", r: 0.44, tags: ["home", "people"] },
+                { text: "АЛКАШ С ДВОРА", g: "m", r: 0.36, tags: ["home", "road"] },
+                { text: "УЧИТЕЛЬНИЦА", g: "f", r: 0.4, tags: ["people", "time"] },
+                { text: "ЦЫГАНЕ", g: "pl", r: 0.18, tags: ["people", "road"] },
+                { text: "МОЙ ПЁС", g: "m", r: 0.32, tags: ["home", "people"] },
+                { text: "БЫВШАЯ", g: "f", r: 0.38, tags: ["people", "time"] },
+                { text: "ДРУГ", g: "m", r: 0.52, tags: ["people", "road"] },
+                { text: "ЭКСКАВАТОРЩИК", g: "m", r: 0.35, tags: ["road"] },
+                { text: "ГЕНЕРАЛЬНЫЙ ДИРЕКТОР", g: "m", r: 0.2, tags: ["people", "time"] },
+                { text: "БАРИСТА", g: "m", r: 0.5, tags: ["people", "time"] },
+                { text: "ВАХТЁР", g: "m", r: 0.46, tags: ["home", "people"] },
+                { text: "СОСЕД С ПЕРФОРАТОРОМ", g: "m", r: 0.42, tags: ["home"] },
+                { text: "ГОЛУБЬ В КЕПКЕ", g: "m", r: 0.04, tags: ["road", "weather"] },
+                { text: "КУРЬЕР САМОКАТА", g: "m", r: 0.52, tags: ["road"] },
+                { text: "НАПАРНИК", g: "m", r: 0.54, tags: ["people", "tech"] },
+                { text: "ДОМОВОЙ", g: "m", r: 0.06, tags: ["home"] },
+                { text: "ПОЧТАЛЬОН", g: "m", r: 0.42, tags: ["home", "people"] },
+                { text: "АДМИНИСТРАТОР", g: "m", r: 0.5, tags: ["tech", "people"] },
+                { text: "САНТЕХНИК", g: "m", r: 0.47, tags: ["home"] },
+                { text: "ВОДИТЕЛЬ ГАЗЕЛИ", g: "m", r: 0.45, tags: ["road"] },
+                { text: "УЧЁНЫЙ С РАЙОНА", g: "m", r: 0.14, tags: ["tech"] },
+                { text: "МАСТЕР МАНИКЮРА", g: "m", r: 0.35, tags: ["people", "time"] },
+                { text: "ДЕЖУРНЫЙ ПО ПОДЪЕЗДУ", g: "m", r: 0.38, tags: ["home"] },
+                { text: "КОТ СОСЕДЕЙ", g: "m", r: 0.26, tags: ["home"] },
+                { text: "ТАКСИСТ БЕЗ НАВИГАТОРА", g: "m", r: 0.49, tags: ["road"] },
+                { text: "ЕНОТ В ПАЛЬТО", g: "m", r: 0.03, tags: ["home", "road"] },
+                { text: "РОБОТ-ПЫЛЕСОС", g: "m", r: 0.19, tags: ["home", "tech"] },
+                { text: "ШАВЕРМЕН", g: "m", r: 0.44, tags: ["people", "time"] },
+                { text: "ДИДЖЕЙ ИЗ МАРШРУТКИ", g: "m", r: 0.22, tags: ["road"] },
+                { text: "КАПИТАН ОЧЕВИДНОСТЬ", g: "m", r: 0.08, tags: ["people", "time"] },
+                { text: "СОСЕД С САКСОФОНОМ", g: "m", r: 0.24, tags: ["home", "time"] },
+                { text: "ОХРАННИК НА ПРОХОДНОЙ", g: "m", r: 0.48, tags: ["home", "people"] },
+                { text: "БЕЛКА-СТРЕЛЯЛКА", g: "f", r: 0.04, tags: ["weather", "road"] },
+                { text: "КОЛЛЕГА С ПЯТОГО", g: "m", r: 0.54, tags: ["people", "time"] }
             ],
             action: [
-                { m: "СЛОМАЛ", f: "СЛОМАЛА", n: "СЛОМАЛО", pl: "СЛОМАЛИ", r: 0.45 },
-                { m: "УГНАЛ", f: "УГНАЛА", n: "УГНАЛО", pl: "УГНАЛИ", r: 0.16 },
-                { m: "СЪЕЛ", f: "СЪЕЛА", n: "СЪЕЛО", pl: "СЪЕЛИ", r: 0.22 },
-                { m: "ЗАБЛОКИРОВАЛ", f: "ЗАБЛОКИРОВАЛА", n: "ЗАБЛОКИРОВАЛО", pl: "ЗАБЛОКИРОВАЛИ", r: 0.56 },
-                { m: "ПОХИТИЛ", f: "ПОХИТИЛА", n: "ПОХИТИЛО", pl: "ПОХИТИЛИ", r: 0.06 },
-                { m: "СПРЯТАЛ", f: "СПРЯТАЛА", n: "СПРЯТАЛО", pl: "СПРЯТАЛИ", r: 0.44 },
-                { m: "ОТМЕНИЛ", f: "ОТМЕНИЛА", n: "ОТМЕНИЛО", pl: "ОТМЕНИЛИ", r: 0.52 },
-                { m: "ПЕРЕЕХАЛ", f: "ПЕРЕЕХАЛА", n: "ПЕРЕЕХАЛО", pl: "ПЕРЕЕХАЛИ", r: 0.15 },
-                { m: "ИСПУГАЛ", f: "ИСПУГАЛА", n: "ИСПУГАЛО", pl: "ИСПУГАЛИ", r: 0.36 },
-                { m: "ЗАЛИЛ КЛЕЕМ", f: "ЗАЛИЛА КЛЕЕМ", n: "ЗАЛИЛО КЛЕЕМ", pl: "ЗАЛИЛИ КЛЕЕМ", r: 0.12 },
-                { m: "УТАЩИЛ В НОРУ", f: "УТАЩИЛА В НОРУ", n: "УТАЩИЛО В НОРУ", pl: "УТАЩИЛИ В НОРУ", r: 0.05 },
-                { m: "ИСПОРТИЛ", f: "ИСПОРТИЛА", n: "ИСПОРТИЛО", pl: "ИСПОРТИЛИ", r: 0.5 },
-                { m: "ВЫКАТИЛ НА ДОРОГУ", f: "ВЫКАТИЛА НА ДОРОГУ", n: "ВЫКАТИЛО НА ДОРОГУ", pl: "ВЫКАТИЛИ НА ДОРОГУ", r: 0.25 },
-                { m: "УДАЛИЛ", f: "УДАЛИЛА", n: "УДАЛИЛО", pl: "УДАЛИЛИ", r: 0.42 },
-                { m: "ПЕРЕПРОШИЛ", f: "ПЕРЕПРОШИЛА", n: "ПЕРЕПРОШИЛО", pl: "ПЕРЕПРОШИЛИ", r: 0.14 },
-                { m: "ЗАПЕР В ПОДВАЛЕ", f: "ЗАПЕРЛА В ПОДВАЛЕ", n: "ЗАПЕРЛО В ПОДВАЛЕ", pl: "ЗАПЕРЛИ В ПОДВАЛЕ", r: 0.08 },
-                { m: "СДУЛ ВЕТРОМ", f: "СДУЛА ВЕТРОМ", n: "СДУЛО ВЕТРОМ", pl: "СДУЛИ ВЕТРОМ", r: 0.28 },
-                { m: "РАЗОБРАЛ НА ЗАПЧАСТИ", f: "РАЗОБРАЛА НА ЗАПЧАСТИ", n: "РАЗОБРАЛО НА ЗАПЧАСТИ", pl: "РАЗОБРАЛИ НА ЗАПЧАСТИ", r: 0.11 },
-                { m: "ПОТЕРЯЛ В ТУМАНЕ", f: "ПОТЕРЯЛА В ТУМАНЕ", n: "ПОТЕРЯЛО В ТУМАНЕ", pl: "ПОТЕРЯЛИ В ТУМАНЕ", r: 0.24 },
-                { m: "ЗАМЕНИЛ НА КАМЕНЬ", f: "ЗАМЕНИЛА НА КАМЕНЬ", n: "ЗАМЕНИЛО НА КАМЕНЬ", pl: "ЗАМЕНИЛИ НА КАМЕНЬ", r: 0.07 },
-                { m: "ОСТАНОВИЛ НА ПОЛПУТИ", f: "ОСТАНОВИЛА НА ПОЛПУТИ", n: "ОСТАНОВИЛО НА ПОЛПУТИ", pl: "ОСТАНОВИЛИ НА ПОЛПУТИ", r: 0.52 },
-                { m: "ЗАПУТАЛ В ПРОВОДАХ", f: "ЗАПУТАЛА В ПРОВОДАХ", n: "ЗАПУТАЛО В ПРОВОДАХ", pl: "ЗАПУТАЛИ В ПРОВОДАХ", r: 0.34 },
-                { m: "ВЫКЛЮЧИЛ ИЗ РОЗЕТКИ", f: "ВЫКЛЮЧИЛА ИЗ РОЗЕТКИ", n: "ВЫКЛЮЧИЛО ИЗ РОЗЕТКИ", pl: "ВЫКЛЮЧИЛИ ИЗ РОЗЕТКИ", r: 0.46 },
-                { m: "ЗАКРЫЛ НА ЗАСОВ", f: "ЗАКРЫЛА НА ЗАСОВ", n: "ЗАКРЫЛО НА ЗАСОВ", pl: "ЗАКРЫЛИ НА ЗАСОВ", r: 0.43 },
-                { m: "УНЁС НА КРЫШУ", f: "УНЕСЛА НА КРЫШУ", n: "УНЕСЛО НА КРЫШУ", pl: "УНЕСЛИ НА КРЫШУ", r: 0.09 },
-                { m: "ПЕРЕПУТАЛ РАСПИСАНИЕ", f: "ПЕРЕПУТАЛА РАСПИСАНИЕ", n: "ПЕРЕПУТАЛО РАСПИСАНИЕ", pl: "ПЕРЕПУТАЛИ РАСПИСАНИЕ", r: 0.54 },
-                { m: "ЗАЛИЛ КОФЕ", f: "ЗАЛИЛА КОФЕ", n: "ЗАЛИЛО КОФЕ", pl: "ЗАЛИЛИ КОФЕ", r: 0.49 },
-                { m: "ПЕРЕКРЫЛ ПРОХОД", f: "ПЕРЕКРЫЛА ПРОХОД", n: "ПЕРЕКРЫЛО ПРОХОД", pl: "ПЕРЕКРЫЛИ ПРОХОД", r: 0.58 },
-                { m: "ПЕРЕВЁРНУЛ ВВЕРХ ДНОМ", f: "ПЕРЕВЕРНУЛА ВВЕРХ ДНОМ", n: "ПЕРЕВЕРНУЛО ВВЕРХ ДНОМ", pl: "ПЕРЕВЕРНУЛИ ВВЕРХ ДНОМ", r: 0.21 },
-                { m: "ПРИКЛЕИЛ К ПОЛУ", f: "ПРИКЛЕИЛА К ПОЛУ", n: "ПРИКЛЕИЛО К ПОЛУ", pl: "ПРИКЛЕИЛИ К ПОЛУ", r: 0.1 },
-                { m: "ЗАКОПАЛ В ПЕСОЧНИЦЕ", f: "ЗАКОПАЛА В ПЕСОЧНИЦЕ", n: "ЗАКОПАЛО В ПЕСОЧНИЦЕ", pl: "ЗАКОПАЛИ В ПЕСОЧНИЦЕ", r: 0.09 },
-                { m: "СБРОСИЛ НА ЗАВОДСКИЕ", f: "СБРОСИЛА НА ЗАВОДСКИЕ", n: "СБРОСИЛО НА ЗАВОДСКИЕ", pl: "СБРОСИЛИ НА ЗАВОДСКИЕ", r: 0.27 },
-                { m: "ПРЕВРАТИЛ В ТЫКВУ", f: "ПРЕВРАТИЛА В ТЫКВУ", n: "ПРЕВРАТИЛО В ТЫКВУ", pl: "ПРЕВРАТИЛИ В ТЫКВУ", r: 0.02 }
+                { m: "СЛОМАЛ", f: "СЛОМАЛА", n: "СЛОМАЛО", pl: "СЛОМАЛИ", r: 0.45, tags: ["home", "tech", "road"] },
+                { m: "УГНАЛ", f: "УГНАЛА", n: "УГНАЛО", pl: "УГНАЛИ", r: 0.16, tags: ["road"] },
+                { m: "СЪЕЛ", f: "СЪЕЛА", n: "СЪЕЛО", pl: "СЪЕЛИ", r: 0.22, tags: ["home", "people"] },
+                { m: "ЗАБЛОКИРОВАЛ", f: "ЗАБЛОКИРОВАЛА", n: "ЗАБЛОКИРОВАЛО", pl: "ЗАБЛОКИРОВАЛИ", r: 0.56, tags: ["home", "road", "tech"] },
+                { m: "ПОХИТИЛ", f: "ПОХИТИЛА", n: "ПОХИТИЛО", pl: "ПОХИТИЛИ", r: 0.06, tags: ["people", "home"] },
+                { m: "СПРЯТАЛ", f: "СПРЯТАЛА", n: "СПРЯТАЛО", pl: "СПРЯТАЛИ", r: 0.44, tags: ["home", "people"] },
+                { m: "ОТМЕНИЛ", f: "ОТМЕНИЛА", n: "ОТМЕНИЛО", pl: "ОТМЕНИЛИ", r: 0.52, tags: ["road", "time"] },
+                { m: "ПЕРЕЕХАЛ", f: "ПЕРЕЕХАЛА", n: "ПЕРЕЕХАЛО", pl: "ПЕРЕЕХАЛИ", r: 0.15, tags: ["road", "home"] },
+                { m: "ИСПУГАЛ", f: "ИСПУГАЛА", n: "ИСПУГАЛО", pl: "ИСПУГАЛИ", r: 0.36, tags: ["people", "home"] },
+                { m: "ЗАЛИЛ КЛЕЕМ", f: "ЗАЛИЛА КЛЕЕМ", n: "ЗАЛИЛО КЛЕЕМ", pl: "ЗАЛИЛИ КЛЕЕМ", r: 0.12, tags: ["home", "tech"] },
+                { m: "УТАЩИЛ В НОРУ", f: "УТАЩИЛА В НОРУ", n: "УТАЩИЛО В НОРУ", pl: "УТАЩИЛИ В НОРУ", r: 0.05, tags: ["home"] },
+                { m: "ИСПОРТИЛ", f: "ИСПОРТИЛА", n: "ИСПОРТИЛО", pl: "ИСПОРТИЛИ", r: 0.5, tags: ["home", "time", "people"] },
+                { m: "ВЫКАТИЛ НА ДОРОГУ", f: "ВЫКАТИЛА НА ДОРОГУ", n: "ВЫКАТИЛО НА ДОРОГУ", pl: "ВЫКАТИЛИ НА ДОРОГУ", r: 0.25, tags: ["road"] },
+                { m: "УДАЛИЛ", f: "УДАЛИЛА", n: "УДАЛИЛО", pl: "УДАЛИЛИ", r: 0.42, tags: ["tech", "time"] },
+                { m: "ПЕРЕПРОШИЛ", f: "ПЕРЕПРОШИЛА", n: "ПЕРЕПРОШИЛО", pl: "ПЕРЕПРОШИЛИ", r: 0.14, tags: ["tech"] },
+                { m: "ЗАПЕР В ПОДВАЛЕ", f: "ЗАПЕРЛА В ПОДВАЛЕ", n: "ЗАПЕРЛО В ПОДВАЛЕ", pl: "ЗАПЕРЛИ В ПОДВАЛЕ", r: 0.08, tags: ["home", "people"] },
+                { m: "СДУЛ ВЕТРОМ", f: "СДУЛА ВЕТРОМ", n: "СДУЛО ВЕТРОМ", pl: "СДУЛИ ВЕТРОМ", r: 0.28, tags: ["weather", "road"] },
+                { m: "РАЗОБРАЛ НА ЗАПЧАСТИ", f: "РАЗОБРАЛА НА ЗАПЧАСТИ", n: "РАЗОБРАЛО НА ЗАПЧАСТИ", pl: "РАЗОБРАЛИ НА ЗАПЧАСТИ", r: 0.11, tags: ["tech", "road"] },
+                { m: "ПОТЕРЯЛ В ТУМАНЕ", f: "ПОТЕРЯЛА В ТУМАНЕ", n: "ПОТЕРЯЛО В ТУМАНЕ", pl: "ПОТЕРЯЛИ В ТУМАНЕ", r: 0.24, tags: ["weather", "road"] },
+                { m: "ЗАМЕНИЛ НА КАМЕНЬ", f: "ЗАМЕНИЛА НА КАМЕНЬ", n: "ЗАМЕНИЛО НА КАМЕНЬ", pl: "ЗАМЕНИЛИ НА КАМЕНЬ", r: 0.07, tags: ["home", "road"] },
+                { m: "ОСТАНОВИЛ НА ПОЛПУТИ", f: "ОСТАНОВИЛА НА ПОЛПУТИ", n: "ОСТАНОВИЛО НА ПОЛПУТИ", pl: "ОСТАНОВИЛИ НА ПОЛПУТИ", r: 0.52, tags: ["road", "time"] },
+                { m: "ЗАПУТАЛ В ПРОВОДАХ", f: "ЗАПУТАЛА В ПРОВОДАХ", n: "ЗАПУТАЛО В ПРОВОДАХ", pl: "ЗАПУТАЛИ В ПРОВОДАХ", r: 0.34, tags: ["tech", "home"] },
+                { m: "ВЫКЛЮЧИЛ ИЗ РОЗЕТКИ", f: "ВЫКЛЮЧИЛА ИЗ РОЗЕТКИ", n: "ВЫКЛЮЧИЛО ИЗ РОЗЕТКИ", pl: "ВЫКЛЮЧИЛИ ИЗ РОЗЕТКИ", r: 0.46, tags: ["tech", "home"] },
+                { m: "ЗАКРЫЛ НА ЗАСОВ", f: "ЗАКРЫЛА НА ЗАСОВ", n: "ЗАКРЫЛО НА ЗАСОВ", pl: "ЗАКРЫЛИ НА ЗАСОВ", r: 0.43, tags: ["home"] },
+                { m: "УНЁС НА КРЫШУ", f: "УНЕСЛА НА КРЫШУ", n: "УНЕСЛО НА КРЫШУ", pl: "УНЕСЛИ НА КРЫШУ", r: 0.09, tags: ["weather", "home"] },
+                { m: "ПЕРЕПУТАЛ РАСПИСАНИЕ", f: "ПЕРЕПУТАЛА РАСПИСАНИЕ", n: "ПЕРЕПУТАЛО РАСПИСАНИЕ", pl: "ПЕРЕПУТАЛИ РАСПИСАНИЕ", r: 0.54, tags: ["time", "road"] },
+                { m: "ЗАЛИЛ КОФЕ", f: "ЗАЛИЛА КОФЕ", n: "ЗАЛИЛО КОФЕ", pl: "ЗАЛИЛИ КОФЕ", r: 0.49, tags: ["home", "tech"] },
+                { m: "ПЕРЕКРЫЛ ПРОХОД", f: "ПЕРЕКРЫЛА ПРОХОД", n: "ПЕРЕКРЫЛО ПРОХОД", pl: "ПЕРЕКРЫЛИ ПРОХОД", r: 0.58, tags: ["road", "home"] },
+                { m: "ПЕРЕВЁРНУЛ ВВЕРХ ДНОМ", f: "ПЕРЕВЕРНУЛА ВВЕРХ ДНОМ", n: "ПЕРЕВЕРНУЛО ВВЕРХ ДНОМ", pl: "ПЕРЕВЕРНУЛИ ВВЕРХ ДНОМ", r: 0.21, tags: ["home", "time"] },
+                { m: "ПРИКЛЕИЛ К ПОЛУ", f: "ПРИКЛЕИЛА К ПОЛУ", n: "ПРИКЛЕИЛО К ПОЛУ", pl: "ПРИКЛЕИЛИ К ПОЛУ", r: 0.1, tags: ["home"] },
+                { m: "ЗАКОПАЛ В ПЕСОЧНИЦЕ", f: "ЗАКОПАЛА В ПЕСОЧНИЦЕ", n: "ЗАКОПАЛО В ПЕСОЧНИЦЕ", pl: "ЗАКОПАЛИ В ПЕСОЧНИЦЕ", r: 0.09, tags: ["home", "road"] },
+                { m: "СБРОСИЛ НА ЗАВОДСКИЕ", f: "СБРОСИЛА НА ЗАВОДСКИЕ", n: "СБРОСИЛО НА ЗАВОДСКИЕ", pl: "СБРОСИЛИ НА ЗАВОДСКИЕ", r: 0.27, tags: ["tech", "time"] },
+                { m: "ПРЕВРАТИЛ В ТЫКВУ", f: "ПРЕВРАТИЛА В ТЫКВУ", n: "ПРЕВРАТИЛО В ТЫКВУ", pl: "ПРЕВРАТИЛИ В ТЫКВУ", r: 0.02, tags: ["time", "road"] }
             ],
             target: [
-                { text: "МОЙ АВТОБУС", r: 0.62 }, { text: "БУДИЛЬНИК", r: 0.65 }, { text: "ЛИФТ", r: 0.66 },
-                { text: "ПРОПУСК", r: 0.64 }, { text: "ШТАНЫ", r: 0.36 }, { text: "ТОРМОЗА НА ВЕЛИКЕ", r: 0.34 },
-                { text: "ВХОДНУЮ ДВЕРЬ", r: 0.58 }, { text: "МОЙ ЗАВТРАК", r: 0.45 }, { text: "МАРШРУТКУ", r: 0.63 },
-                { text: "КЛЮЧИ ОТ КВАРТИРЫ", r: 0.67 }, { text: "ЭЛЕКТРОСАМОКАТ", r: 0.55 }, { text: "БОТИНОК", r: 0.44 },
-                { text: "РАСПИСАНИЕ УРОКОВ", r: 0.48 }, { text: "УТРЕННИЙ КОФЕ", r: 0.52 }, { text: "ЗАРЯДКУ ТЕЛЕФОНА", r: 0.6 },
-                { text: "РЕЗЕРВНЫЙ КОД", r: 0.47 }, { text: "СМЕННУЮ ОБУВЬ", r: 0.46 }, { text: "ДОКУМЕНТЫ НА СТОЛЕ", r: 0.56 },
-                { text: "КАРТУ ОПЛАТЫ", r: 0.59 }, { text: "ЛЕВЫЙ НОСОК", r: 0.25 }, { text: "КРЫШКУ ОТ ТЕРМОСА", r: 0.38 },
-                { text: "МОБИЛЬНЫЙ ИНТЕРНЕТ", r: 0.57 }, { text: "КОД ОТ ДОМОФОНА", r: 0.58 }, { text: "РАБОЧИЙ АККАУНТ", r: 0.61 },
-                { text: "ЗАПАСНОЙ РЮКЗАК", r: 0.49 }, { text: "ТРАМВАЙНЫЙ ПУТЬ", r: 0.45 }, { text: "ТАЛОН НА ПРОЕЗД", r: 0.5 },
-                { text: "ПАРОЛЬ ОТ ВХОДА", r: 0.55 }, { text: "УТРЕННИЙ СИГНАЛ", r: 0.53 }, { text: "ПАПКУ С ФАЙЛАМИ", r: 0.54 },
-                { text: "ПОСЛЕДНИЙ ЭЛЕКТРОПОЕЗД", r: 0.57 }, { text: "КАРМАННЫЙ ФОНАРИК", r: 0.31 },
-                { text: "ШАУРМУ НА УГЛУ", r: 0.28 }, { text: "КАРШЕРИНГ", r: 0.56 }, { text: "ПОДПИСКУ НА ПЛЮС", r: 0.22 },
-                { text: "СЕЙВ В ИГРЕ", r: 0.18 }, { text: "ЧЕХЛЫ ОТ НАУШНИКОВ", r: 0.33 }, { text: "ЧЕТВЕРГОВЫЙ ПЛАН", r: 0.35 },
-                { text: "ПРАВЫЙ ШНУРОК", r: 0.24 }, { text: "КОД ДОСТУПА", r: 0.58 }
+                { text: "МОЙ АВТОБУС", r: 0.62, tags: ["road", "time"] },
+                { text: "БУДИЛЬНИК", r: 0.65, tags: ["tech", "time", "home"] },
+                { text: "ЛИФТ", r: 0.66, tags: ["home", "tech"] },
+                { text: "ПРОПУСК", r: 0.64, tags: ["people", "home"] },
+                { text: "ШТАНЫ", r: 0.36, tags: ["home", "people"] },
+                { text: "ТОРМОЗА НА ВЕЛИКЕ", r: 0.34, tags: ["road"] },
+                { text: "ВХОДНУЮ ДВЕРЬ", r: 0.58, tags: ["home"] },
+                { text: "МОЙ ЗАВТРАК", r: 0.45, tags: ["home", "time"] },
+                { text: "МАРШРУТКУ", r: 0.63, tags: ["road", "time"] },
+                { text: "КЛЮЧИ ОТ КВАРТИРЫ", r: 0.67, tags: ["home"] },
+                { text: "ЭЛЕКТРОСАМОКАТ", r: 0.55, tags: ["road", "tech"] },
+                { text: "БОТИНОК", r: 0.44, tags: ["home", "road"] },
+                { text: "РАСПИСАНИЕ УРОКОВ", r: 0.48, tags: ["time", "people"] },
+                { text: "УТРЕННИЙ КОФЕ", r: 0.52, tags: ["home", "time"] },
+                { text: "ЗАРЯДКУ ТЕЛЕФОНА", r: 0.6, tags: ["tech", "home"] },
+                { text: "РЕЗЕРВНЫЙ КОД", r: 0.47, tags: ["tech"] },
+                { text: "СМЕННУЮ ОБУВЬ", r: 0.46, tags: ["home", "people"] },
+                { text: "ДОКУМЕНТЫ НА СТОЛЕ", r: 0.56, tags: ["home", "people"] },
+                { text: "КАРТУ ОПЛАТЫ", r: 0.59, tags: ["road", "tech"] },
+                { text: "ЛЕВЫЙ НОСОК", r: 0.25, tags: ["home"] },
+                { text: "КРЫШКУ ОТ ТЕРМОСА", r: 0.38, tags: ["home", "road"] },
+                { text: "МОБИЛЬНЫЙ ИНТЕРНЕТ", r: 0.57, tags: ["tech"] },
+                { text: "КОД ОТ ДОМОФОНА", r: 0.58, tags: ["home", "tech"] },
+                { text: "РАБОЧИЙ АККАУНТ", r: 0.61, tags: ["tech", "people"] },
+                { text: "ЗАПАСНОЙ РЮКЗАК", r: 0.49, tags: ["home", "road"] },
+                { text: "ТРАМВАЙНЫЙ ПУТЬ", r: 0.45, tags: ["road", "weather"] },
+                { text: "ТАЛОН НА ПРОЕЗД", r: 0.5, tags: ["road"] },
+                { text: "ПАРОЛЬ ОТ ВХОДА", r: 0.55, tags: ["tech", "home"] },
+                { text: "УТРЕННИЙ СИГНАЛ", r: 0.53, tags: ["tech", "time"] },
+                { text: "ПАПКУ С ФАЙЛАМИ", r: 0.54, tags: ["tech", "people"] },
+                { text: "ПОСЛЕДНИЙ ЭЛЕКТРОПОЕЗД", r: 0.57, tags: ["road", "time"] },
+                { text: "КАРМАННЫЙ ФОНАРИК", r: 0.31, tags: ["home", "weather"] },
+                { text: "ШАУРМУ НА УГЛУ", r: 0.28, tags: ["road", "people"] },
+                { text: "КАРШЕРИНГ", r: 0.56, tags: ["road", "tech"] },
+                { text: "ПОДПИСКУ НА ПЛЮС", r: 0.22, tags: ["tech"] },
+                { text: "СЕЙВ В ИГРЕ", r: 0.18, tags: ["tech", "time"] },
+                { text: "ЧЕХЛЫ ОТ НАУШНИКОВ", r: 0.33, tags: ["tech", "home"] },
+                { text: "ЧЕТВЕРГОВЫЙ ПЛАН", r: 0.35, tags: ["time", "people"] },
+                { text: "ПРАВЫЙ ШНУРОК", r: 0.24, tags: ["home", "road"] },
+                { text: "КОД ДОСТУПА", r: 0.58, tags: ["tech", "home"] }
             ]
         },
         life: {
             who: [
-                { text: "АВТОБУС", g: "m", r: 0.92 }, { text: "МЕТРО", g: "n", r: 0.9 }, { text: "БУДИЛЬНИК", g: "m", r: 0.94 },
-                { text: "ЛИФТ", g: "m", r: 0.88 }, { text: "ПРОБКА НА МОСТУ", g: "f", r: 0.95 }, { text: "ДОЖДЬ", g: "m", r: 0.86 },
-                { text: "КУРЬЕР", g: "m", r: 0.78 }, { text: "КОНТРОЛЛЕР", g: "m", r: 0.72 }, { text: "СОСЕД СНИЗУ", g: "m", r: 0.68 },
-                { text: "МАРШРУТКА", g: "f", r: 0.91 }, { text: "СВЕТОФОР", g: "m", r: 0.84 }, { text: "ОБНОВЛЕНИЕ СИСТЕМЫ", g: "n", r: 0.85 },
-                { text: "ПОЕЗД", g: "m", r: 0.89 }, { text: "ТАКСИ", g: "n", r: 0.87 }, { text: "ДОМОФОН", g: "m", r: 0.82 },
-                { text: "ЛИВЕНЬ", g: "m", r: 0.87 }, { text: "РЕМОНТ ДОРОГИ", g: "m", r: 0.93 }, { text: "БАТАРЕЯ ТЕЛЕФОНА", g: "f", r: 0.86 },
-                { text: "ОЧЕРЕДЬ НА КАССЕ", g: "f", r: 0.76 }, { text: "СБОЙ СЕТИ", g: "m", r: 0.88 },
-                { text: "КОММУНАЛЬЩИКИ", g: "pl", r: 0.85 }, { text: "ЭСКАЛАТОР", g: "m", r: 0.8 }, { text: "ТУМАН", g: "m", r: 0.81 },
-                { text: "ГОЛОЛЁД", g: "m", r: 0.89 }
+                { text: "АВТОБУС", g: "m", r: 0.92, tags: ["road", "time"] },
+                { text: "МЕТРО", g: "n", r: 0.9, tags: ["road", "time"] },
+                { text: "БУДИЛЬНИК", g: "m", r: 0.94, tags: ["tech", "time", "home"] },
+                { text: "ЛИФТ", g: "m", r: 0.88, tags: ["home", "tech"] },
+                { text: "ПРОБКА НА МОСТУ", g: "f", r: 0.95, tags: ["road", "time"] },
+                { text: "ДОЖДЬ", g: "m", r: 0.86, tags: ["weather", "road"] },
+                { text: "КУРЬЕР", g: "m", r: 0.78, tags: ["home", "people"] },
+                { text: "КОНТРОЛЛЕР", g: "m", r: 0.72, tags: ["road", "people"] },
+                { text: "СОСЕД СНИЗУ", g: "m", r: 0.68, tags: ["home", "people"] },
+                { text: "МАРШРУТКА", g: "f", r: 0.91, tags: ["road", "time"] },
+                { text: "СВЕТОФОР", g: "m", r: 0.84, tags: ["road", "tech"] },
+                { text: "ОБНОВЛЕНИЕ СИСТЕМЫ", g: "n", r: 0.85, tags: ["tech"] },
+                { text: "ПОЕЗД", g: "m", r: 0.89, tags: ["road", "time"] },
+                { text: "ТАКСИ", g: "n", r: 0.87, tags: ["road", "time"] },
+                { text: "ДОМОФОН", g: "m", r: 0.82, tags: ["home", "tech"] },
+                { text: "ЛИВЕНЬ", g: "m", r: 0.87, tags: ["weather", "road"] },
+                { text: "РЕМОНТ ДОРОГИ", g: "m", r: 0.93, tags: ["road"] },
+                { text: "БАТАРЕЯ ТЕЛЕФОНА", g: "f", r: 0.86, tags: ["tech", "time"] },
+                { text: "ОЧЕРЕДЬ НА КАССЕ", g: "f", r: 0.76, tags: ["people", "time"] },
+                { text: "СБОЙ СЕТИ", g: "m", r: 0.88, tags: ["tech"] },
+                { text: "КОММУНАЛЬЩИКИ", g: "pl", r: 0.85, tags: ["home", "road"] },
+                { text: "ЭСКАЛАТОР", g: "m", r: 0.8, tags: ["road", "tech"] },
+                { text: "ТУМАН", g: "m", r: 0.81, tags: ["weather", "road"] },
+                { text: "ГОЛОЛЁД", g: "m", r: 0.89, tags: ["weather", "road"] }
             ],
             action: [
-                { m: "ЗАДЕРЖАЛ", f: "ЗАДЕРЖАЛА", n: "ЗАДЕРЖАЛО", pl: "ЗАДЕРЖАЛИ", r: 0.95 },
-                { m: "ОСТАНОВИЛ", f: "ОСТАНОВИЛА", n: "ОСТАНОВИЛО", pl: "ОСТАНОВИЛИ", r: 0.9 },
-                { m: "СБИЛ", f: "СБИЛА", n: "СБИЛО", pl: "СБИЛИ", r: 0.78 },
-                { m: "ПЕРЕКРЫЛ", f: "ПЕРЕКРЫЛА", n: "ПЕРЕКРЫЛО", pl: "ПЕРЕКРЫЛИ", r: 0.92 },
-                { m: "ОТКЛЮЧИЛ", f: "ОТКЛЮЧИЛА", n: "ОТКЛЮЧИЛО", pl: "ОТКЛЮЧИЛИ", r: 0.86 },
-                { m: "ЗАТЯНУЛ", f: "ЗАТЯНУЛА", n: "ЗАТЯНУЛО", pl: "ЗАТЯНУЛИ", r: 0.84 },
-                { m: "ПОМЕНЯЛ", f: "ПОМЕНЯЛА", n: "ПОМЕНЯЛО", pl: "ПОМЕНЯЛИ", r: 0.79 },
-                { m: "ЗАПЕР", f: "ЗАПЕРЛА", n: "ЗАПЕРЛО", pl: "ЗАПЕРЛИ", r: 0.72 },
-                { m: "ПРИТОРМОЗИЛ", f: "ПРИТОРМОЗИЛА", n: "ПРИТОРМОЗИЛО", pl: "ПРИТОРМОЗИЛИ", r: 0.88 },
-                { m: "ВЫКЛЮЧИЛ", f: "ВЫКЛЮЧИЛА", n: "ВЫКЛЮЧИЛО", pl: "ВЫКЛЮЧИЛИ", r: 0.85 },
-                { m: "СДВИНУЛ", f: "СДВИНУЛА", n: "СДВИНУЛО", pl: "СДВИНУЛИ", r: 0.83 },
-                { m: "ИСПОРТИЛ", f: "ИСПОРТИЛА", n: "ИСПОРТИЛО", pl: "ИСПОРТИЛИ", r: 0.77 },
-                { m: "ЗАТРУДНИЛ", f: "ЗАТРУДНИЛА", n: "ЗАТРУДНИЛО", pl: "ЗАТРУДНИЛИ", r: 0.89 },
-                { m: "ПЕРЕЗАПУСТИЛ", f: "ПЕРЕЗАПУСТИЛА", n: "ПЕРЕЗАПУСТИЛО", pl: "ПЕРЕЗАПУСТИЛИ", r: 0.82 }
+                { m: "ЗАДЕРЖАЛ", f: "ЗАДЕРЖАЛА", n: "ЗАДЕРЖАЛО", pl: "ЗАДЕРЖАЛИ", r: 0.95, tags: ["road", "time", "people", "weather"] },
+                { m: "ОСТАНОВИЛ", f: "ОСТАНОВИЛА", n: "ОСТАНОВИЛО", pl: "ОСТАНОВИЛИ", r: 0.9, tags: ["road", "tech", "weather"] },
+                { m: "СБИЛ", f: "СБИЛА", n: "СБИЛО", pl: "СБИЛИ", r: 0.78, tags: ["time", "tech", "people"] },
+                { m: "ПЕРЕКРЫЛ", f: "ПЕРЕКРЫЛА", n: "ПЕРЕКРЫЛО", pl: "ПЕРЕКРЫЛИ", r: 0.92, tags: ["road", "home"] },
+                { m: "ОТКЛЮЧИЛ", f: "ОТКЛЮЧИЛА", n: "ОТКЛЮЧИЛО", pl: "ОТКЛЮЧИЛИ", r: 0.86, tags: ["tech", "home"] },
+                { m: "ЗАТЯНУЛ", f: "ЗАТЯНУЛА", n: "ЗАТЯНУЛО", pl: "ЗАТЯНУЛИ", r: 0.84, tags: ["time", "people", "road"] },
+                { m: "ПОМЕНЯЛ", f: "ПОМЕНЯЛА", n: "ПОМЕНЯЛО", pl: "ПОМЕНЯЛИ", r: 0.79, tags: ["time", "road", "people"] },
+                { m: "ЗАПЕР", f: "ЗАПЕРЛА", n: "ЗАПЕРЛО", pl: "ЗАПЕРЛИ", r: 0.72, tags: ["home", "people"] },
+                { m: "ПРИТОРМОЗИЛ", f: "ПРИТОРМОЗИЛА", n: "ПРИТОРМОЗИЛО", pl: "ПРИТОРМОЗИЛИ", r: 0.88, tags: ["road", "weather", "tech"] },
+                { m: "ВЫКЛЮЧИЛ", f: "ВЫКЛЮЧИЛА", n: "ВЫКЛЮЧИЛО", pl: "ВЫКЛЮЧИЛИ", r: 0.85, tags: ["tech", "home"] },
+                { m: "СДВИНУЛ", f: "СДВИНУЛА", n: "СДВИНУЛО", pl: "СДВИНУЛИ", r: 0.83, tags: ["time", "road"] },
+                { m: "ИСПОРТИЛ", f: "ИСПОРТИЛА", n: "ИСПОРТИЛО", pl: "ИСПОРТИЛИ", r: 0.77, tags: ["time", "home", "people"] },
+                { m: "ЗАТРУДНИЛ", f: "ЗАТРУДНИЛА", n: "ЗАТРУДНИЛО", pl: "ЗАТРУДНИЛИ", r: 0.89, tags: ["road", "weather", "home"] },
+                { m: "ПЕРЕЗАПУСТИЛ", f: "ПЕРЕЗАПУСТИЛА", n: "ПЕРЕЗАПУСТИЛО", pl: "ПЕРЕЗАПУСТИЛИ", r: 0.82, tags: ["tech"] }
             ],
             target: [
-                { text: "УТРЕННИЙ РЕЙС", r: 0.94 }, { text: "ВЫХОД ИЗ ДОМА", r: 0.92 }, { text: "РАБОЧИЙ МАРШРУТ", r: 0.9 },
-                { text: "ГРАФИК ВСТРЕЧ", r: 0.87 }, { text: "ПУТЬ НА СТАНЦИЮ", r: 0.91 }, { text: "ВХОД В ЗДАНИЕ", r: 0.86 },
-                { text: "СВЯЗЬ С ОФИСОМ", r: 0.85 }, { text: "УТРЕННИЙ ПЛАН", r: 0.82 }, { text: "ПОДЪЁМ НА ЭТАЖ", r: 0.84 },
-                { text: "ПРОХОД ЧЕРЕЗ ДВОР", r: 0.88 }, { text: "ПОЕЗДКУ УТРОМ", r: 0.93 }, { text: "ВРЕМЯ ВЫХОДА", r: 0.9 },
-                { text: "ПЕРЕСАДКУ", r: 0.89 }, { text: "УТРЕННИЙ ГРАФИК", r: 0.91 }, { text: "ДОРОГУ НА РАБОТУ", r: 0.95 }
+                { text: "УТРЕННИЙ РЕЙС", r: 0.94, tags: ["road", "time", "weather"] },
+                { text: "ВЫХОД ИЗ ДОМА", r: 0.92, tags: ["home", "time", "people"] },
+                { text: "РАБОЧИЙ МАРШРУТ", r: 0.9, tags: ["road", "weather", "time"] },
+                { text: "ГРАФИК ВСТРЕЧ", r: 0.87, tags: ["time", "people", "tech"] },
+                { text: "ПУТЬ НА СТАНЦИЮ", r: 0.91, tags: ["road", "weather", "time"] },
+                { text: "ВХОД В ЗДАНИЕ", r: 0.86, tags: ["home", "people", "road"] },
+                { text: "СВЯЗЬ С ОФИСОМ", r: 0.85, tags: ["tech", "people"] },
+                { text: "УТРЕННИЙ ПЛАН", r: 0.82, tags: ["time", "people", "tech"] },
+                { text: "ПОДЪЁМ НА ЭТАЖ", r: 0.84, tags: ["home", "tech"] },
+                { text: "ПРОХОД ЧЕРЕЗ ДВОР", r: 0.88, tags: ["home", "road", "weather"] },
+                { text: "ПОЕЗДКУ УТРОМ", r: 0.93, tags: ["road", "time", "weather"] },
+                { text: "ВРЕМЯ ВЫХОДА", r: 0.9, tags: ["time", "home", "tech"] },
+                { text: "ПЕРЕСАДКУ", r: 0.89, tags: ["road", "time"] },
+                { text: "УТРЕННИЙ ГРАФИК", r: 0.91, tags: ["time", "tech", "people"] },
+                { text: "ДОРОГУ НА РАБОТУ", r: 0.95, tags: ["road", "weather", "time"] }
             ]
         }
     };
@@ -1052,6 +1133,16 @@
         return verbObj[gender] || verbObj.m;
     }
 
+    function countSharedTags(tagsA = [], tagsB = []) {
+        if (!Array.isArray(tagsA) || !Array.isArray(tagsB)) return 0;
+        const setB = new Set(tagsB);
+        let shared = 0;
+        for (const t of tagsA) {
+            if (setB.has(t)) shared += 1;
+        }
+        return shared;
+    }
+
     function computeCredibility() {
         const s1 = slotValues[0];
         const s2 = slotValues[1];
@@ -1073,24 +1164,37 @@
         const r2 = aObj && typeof aObj.r === 'number' ? aObj.r : (currentTone === 'life' ? 0.8 : 0.35);
         const r3 = tObj && typeof tObj.r === 'number' ? tObj.r : (currentTone === 'life' ? 0.8 : 0.45);
 
-        const modeBonus = currentTone === 'life' ? 0.08 : -0.05;
-        const minPenalty = Math.min(r1, r2, r3) < 0.12 ? -0.1 : 0;
-        const raw = (r1 * 0.34 + r2 * 0.36 + r3 * 0.30) + modeBonus + minPenalty;
-        const percent = Math.max(2, Math.min(98, Math.round(raw * 100)));
+        const t1 = wObj?.tags || [];
+        const t2 = aObj?.tags || [];
+        const t3 = tObj?.tags || [];
+
+        const match12 = countSharedTags(t1, t2) > 0;
+        const match23 = countSharedTags(t2, t3) > 0;
+        const match13 = countSharedTags(t1, t3) > 0;
+        const coherence = (match12 ? 0.4 : 0) + (match23 ? 0.4 : 0) + (match13 ? 0.2 : 0);
+
+        // Когерентность от 0 до 1: связка без общих тегов получает ощутимый штраф
+        const coherenceModifier = (coherence - 0.5) * 0.36;
+        const modeModifier = currentTone === 'life' ? 0.04 : -0.14;
+        const minPenalty = Math.min(r1, r2, r3) < 0.14 ? -0.12 : 0;
+
+        const baseScore = r1 * 0.32 + r2 * 0.36 + r3 * 0.32;
+        const raw = baseScore + coherenceModifier + modeModifier + minPenalty;
+        const percent = Math.max(2, Math.min(97, Math.round(raw * 100)));
 
         let verdict = 'СОМНИТЕЛЬНО';
         let color = '#e09f3e';
 
-        if (percent >= 82) {
+        if (percent >= 80) {
             verdict = 'ЖЕЛЕЗОБЕТОННО';
             color = '#48c78e';
-        } else if (percent >= 62) {
+        } else if (percent >= 60) {
             verdict = 'ПОТЯНЕТ';
             color = '#9fd356';
-        } else if (percent >= 40) {
+        } else if (percent >= 38) {
             verdict = 'НАТЯЖКА';
             color = '#e09f3e';
-        } else if (percent >= 20) {
+        } else if (percent >= 18) {
             verdict = 'ПАХНЕТ ФАНТАЗИЕЙ';
             color = '#f06449';
         } else {
@@ -1570,7 +1674,27 @@
         return EMPTY_SYMBOL;
     }
 
-    function pickNextItem(array, currentLabel, history = null, gender = 'm') {
+    function pickWeightedFromPool(pool, contextTags = []) {
+        if (!Array.isArray(contextTags) || contextTags.length === 0) {
+            return pool[Math.floor(Math.random() * pool.length)];
+        }
+
+        const weights = pool.map(item => {
+            const shared = countSharedTags(item.tags || [], contextTags);
+            // Совпадающие по смыслу слова получают заметно больший вес, но остальные тоже остаются в пуле
+            return shared > 0 ? 1 + shared * 3.5 : 0.45;
+        });
+
+        const totalWeight = weights.reduce((acc, w) => acc + w, 0);
+        let roll = Math.random() * totalWeight;
+        for (let i = 0; i < pool.length; i++) {
+            roll -= weights[i];
+            if (roll <= 0) return pool[i];
+        }
+        return pool[pool.length - 1];
+    }
+
+    function pickNextItem(array, currentLabel, history = null, gender = 'm', contextTags = []) {
         if (!array || array.length === 0) return { label: EMPTY_SYMBOL, raw: null };
         if (array.length === 1) {
             const raw = array[0];
@@ -1580,7 +1704,7 @@
         const filtered = array.filter(item => !blocked.has(getOptionLabel(item, gender)));
         const fallback = array.filter(item => getOptionLabel(item, gender) !== currentLabel);
         const source = filtered.length > 0 ? filtered : (fallback.length > 0 ? fallback : array);
-        const raw = source[Math.floor(Math.random() * source.length)];
+        const raw = pickWeightedFromPool(source, contextTags);
         return { label: getOptionLabel(raw, gender), raw };
     }
 
@@ -1592,7 +1716,7 @@
         }
     }
 
-    function spinReel(id, array, durationMs, reelIndex, getGenderFn = null) {
+    function spinReel(id, array, durationMs, reelIndex, getOptionsFn = null) {
         return new Promise(resolve => {
             const element = document.getElementById(id);
             const textEl = getSlotTextEl(id);
@@ -1611,10 +1735,12 @@
             function step() {
                 const elapsed = performance.now() - startTime;
                 const progress = Math.min(elapsed / durationMs, 1);
-                const g = getGenderFn ? getGenderFn() : currentGender;
+                const opts = getOptionsFn ? getOptionsFn() : { gender: currentGender, tags: [] };
+                const g = opts.gender || currentGender;
+                const tags = opts.tags || [];
 
                 if (elapsed >= durationMs) {
-                    const picked = pickNextItem(array, textEl.innerText, recentHistory[reelIndex], g);
+                    const picked = pickNextItem(array, textEl.innerText, recentHistory[reelIndex], g, tags);
                     setSlotDisplay(reelIndex, picked.label);
                     recordHistory(reelIndex, picked.label);
                     element.classList.remove('spinning');
@@ -1625,7 +1751,7 @@
                     return;
                 }
 
-                const tickPicked = pickNextItem(array, textEl.innerText, null, g);
+                const tickPicked = pickNextItem(array, textEl.innerText, null, g, tags);
                 textEl.innerText = tickPicked.label;
                 playTickSound(progress);
 
@@ -1717,21 +1843,30 @@
 
         const dict = packs[currentTone];
 
-        const [res1, res2, res3] = await Promise.all([
-            spinReel('slot1', dict.who, 1100, 0),
-            spinReel('slot2', dict.action, 1550, 1, () => currentGender),
-            spinReel('slot3', dict.target, 2000, 2)
-        ]);
+        let activeWhoObj = slotValues[0] !== EMPTY_SYMBOL ? findWhoObj(slotValues[0]) : null;
+        let activeGender = activeWhoObj ? activeWhoObj.g : currentGender;
+        let activeTags = activeWhoObj ? (activeWhoObj.tags || []) : [];
 
+        // Первый барабан останавливается быстрее, чтобы задать контекст следующим двум
+        const res1 = await spinReel('slot1', dict.who, 950, 0);
         if (!locked[0] && res1 && res1.raw) {
-            currentGender = res1.raw.g || 'm';
-        } else if (slotValues[0] !== EMPTY_SYMBOL) {
-            currentGender = findWhoGender(slotValues[0]);
+            activeWhoObj = res1.raw;
+            activeGender = res1.raw.g || 'm';
+            activeTags = res1.raw.tags || [];
+            currentGender = activeGender;
         }
+
+        const [res2, res3] = await Promise.all([
+            spinReel('slot2', dict.action, 1350, 1, () => ({ gender: activeGender, tags: activeTags })),
+            spinReel('slot3', dict.target, 1750, 2, () => {
+                const verbTags = (!locked[1] && currentVerbObj?.tags) ? currentVerbObj.tags : [];
+                return { gender: activeGender, tags: [...activeTags, ...verbTags] };
+            })
+        ]);
 
         if (!locked[1] && res2 && res2.raw) {
             currentVerbObj = res2.raw;
-            setSlotDisplay(1, inflectVerb(currentVerbObj, currentGender));
+            setSlotDisplay(1, inflectVerb(currentVerbObj, activeGender));
         } else if (!locked[1] && slotValues[1] !== EMPTY_SYMBOL) {
             syncSecondSlotGender();
         }
