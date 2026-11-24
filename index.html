@@ -604,6 +604,7 @@ button:focus-visible, .slot:focus-visible { outline: 2px solid var(--brass-hi); 
     const MEMORY_KEY = 'excuse_slots_memory_v5';
 
     // tags: 'road' | 'tech' | 'home' | 'people' | 'weather' | 'time' | 'school' | 'work' | 'friends' | 'date'
+    // В режиме "life" ещё есть теги-сцены с @ (например "@transport"): все три ячейки подбираются из одной сцены.
     const packs = {
         absurd: {
             who: [
@@ -734,67 +735,78 @@ button:focus-visible, .slot:focus-visible { outline: 2px solid var(--brass-hi); 
                 { text: "КОД ДОСТУПА", r: 0.58, tags: ["tech", "home", "work"] }
             ]
         },
-        life: {
-            who: [
-                { text: "АВТОБУС", g: "m", r: 0.92, tags: ["road", "time", "school", "work", "friends"] },
-                { text: "МЕТРО", g: "n", r: 0.9, tags: ["road", "time", "work", "school", "friends", "date"] },
-                { text: "БУДИЛЬНИК", g: "m", r: 0.94, tags: ["tech", "time", "home", "school", "work", "date"] },
-                { text: "ЛИФТ", g: "m", r: 0.88, tags: ["home", "tech", "work", "date", "friends"] },
-                { text: "ПРОБКА НА МОСТУ", g: "f", r: 0.95, tags: ["road", "time", "work", "school", "date", "friends"] },
-                { text: "ДОЖДЬ", g: "m", r: 0.86, tags: ["weather", "road", "date", "friends", "school"] },
-                { text: "КУРЬЕР", g: "m", r: 0.78, tags: ["home", "people", "work", "date", "friends"] },
-                { text: "КОНТРОЛЛЕР", g: "m", r: 0.72, tags: ["road", "people", "school", "friends"] },
-                { text: "СОСЕД СНИЗУ", g: "m", r: 0.68, tags: ["home", "people", "date"] },
-                { text: "МАРШРУТКА", g: "f", r: 0.91, tags: ["road", "time", "school", "work", "friends"] },
-                { text: "СВЕТОФОР", g: "m", r: 0.84, tags: ["road", "tech", "work", "date"] },
-                { text: "ОБНОВЛЕНИЕ СИСТЕМЫ", g: "n", r: 0.85, tags: ["tech", "work"] },
-                { text: "ПОЕЗД", g: "m", r: 0.89, tags: ["road", "time", "work", "friends"] },
-                { text: "ТАКСИ", g: "n", r: 0.87, tags: ["road", "time", "date", "friends", "work"] },
-                { text: "ДОМОФОН", g: "m", r: 0.82, tags: ["home", "tech", "date", "friends"] },
-                { text: "ЛИВЕНЬ", g: "m", r: 0.87, tags: ["weather", "road", "date", "friends", "school"] },
-                { text: "РЕМОНТ ДОРОГИ", g: "m", r: 0.93, tags: ["road", "work", "school", "date"] },
-                { text: "БАТАРЕЯ ТЕЛЕФОНА", g: "f", r: 0.86, tags: ["tech", "time", "date", "friends", "work"] },
-                { text: "ОЧЕРЕДЬ НА КАССЕ", g: "f", r: 0.76, tags: ["people", "time", "friends", "school", "date"] },
-                { text: "СБОЙ СЕТИ", g: "m", r: 0.88, tags: ["tech", "work"] },
-                { text: "КОММУНАЛЬЩИКИ", g: "pl", r: 0.85, tags: ["home", "road", "work", "date"] },
-                { text: "ЭСКАЛАТОР", g: "m", r: 0.8, tags: ["road", "tech", "school", "work", "friends"] },
-                { text: "ТУМАН", g: "m", r: 0.81, tags: ["weather", "road", "date", "friends"] },
-                { text: "ГОЛОЛЁД", g: "m", r: 0.89, tags: ["weather", "road", "school", "work", "date"] }
-            ],
-            action: [
-                { m: "ЗАДЕРЖАЛ", f: "ЗАДЕРЖАЛА", n: "ЗАДЕРЖАЛО", pl: "ЗАДЕРЖАЛИ", r: 0.95, tags: ["road", "time", "people", "weather", "school", "work", "friends", "date"] },
-                { m: "ОСТАНОВИЛ", f: "ОСТАНОВИЛА", n: "ОСТАНОВИЛО", pl: "ОСТАНОВИЛИ", r: 0.9, tags: ["road", "tech", "weather", "work", "school", "date"] },
-                { m: "СБИЛ", f: "СБИЛА", n: "СБИЛО", pl: "СБИЛИ", r: 0.78, tags: ["time", "tech", "people", "school", "work", "date"] },
-                { m: "ПЕРЕКРЫЛ", f: "ПЕРЕКРЫЛА", n: "ПЕРЕКРЫЛО", pl: "ПЕРЕКРЫЛИ", r: 0.92, tags: ["road", "home", "work", "school", "date"] },
-                { m: "ОТКЛЮЧИЛ", f: "ОТКЛЮЧИЛА", n: "ОТКЛЮЧИЛО", pl: "ОТКЛЮЧИЛИ", r: 0.86, tags: ["tech", "home", "work", "date"] },
-                { m: "ЗАТЯНУЛ", f: "ЗАТЯНУЛА", n: "ЗАТЯНУЛО", pl: "ЗАТЯНУЛИ", r: 0.84, tags: ["time", "people", "road", "friends", "date", "work"] },
-                { m: "ПОМЕНЯЛ", f: "ПОМЕНЯЛА", n: "ПОМЕНЯЛО", pl: "ПОМЕНЯЛИ", r: 0.79, tags: ["time", "road", "people", "school", "work", "friends"] },
-                { m: "ЗАПЕР", f: "ЗАПЕРЛА", n: "ЗАПЕРЛО", pl: "ЗАПЕРЛИ", r: 0.72, tags: ["home", "people", "date", "friends"] },
-                { m: "ПРИТОРМОЗИЛ", f: "ПРИТОРМОЗИЛА", n: "ПРИТОРМОЗИЛО", pl: "ПРИТОРМОЗИЛИ", r: 0.88, tags: ["road", "weather", "tech", "work", "school", "date", "friends"] },
-                { m: "ВЫКЛЮЧИЛ", f: "ВЫКЛЮЧИЛА", n: "ВЫКЛЮЧИЛО", pl: "ВЫКЛЮЧИЛИ", r: 0.85, tags: ["tech", "home", "work", "date"] },
-                { m: "СДВИНУЛ", f: "СДВИНУЛА", n: "СДВИНУЛО", pl: "СДВИНУЛИ", r: 0.83, tags: ["time", "road", "work", "friends", "date"] },
-                { m: "ИСПОРТИЛ", f: "ИСПОРТИЛА", n: "ИСПОРТИЛО", pl: "ИСПОРТИЛИ", r: 0.77, tags: ["time", "home", "people", "date", "friends"] },
-                { m: "ЗАТРУДНИЛ", f: "ЗАТРУДНИЛА", n: "ЗАТРУДНИЛО", pl: "ЗАТРУДНИЛИ", r: 0.89, tags: ["road", "weather", "home", "work", "school", "date"] },
-                { m: "ПЕРЕЗАПУСТИЛ", f: "ПЕРЕЗАПУСТИЛА", n: "ПЕРЕЗАПУСТИЛО", pl: "ПЕРЕЗАПУСТИЛИ", r: 0.82, tags: ["tech", "work"] }
-            ],
-            target: [
-                { text: "УТРЕННИЙ РЕЙС", r: 0.94, tags: ["road", "time", "weather", "work", "school"] },
-                { text: "ВЫХОД ИЗ ДОМА", r: 0.92, tags: ["home", "time", "people", "school", "work", "date", "friends"] },
-                { text: "РАБОЧИЙ МАРШРУТ", r: 0.9, tags: ["road", "weather", "time", "work"] },
-                { text: "ГРАФИК ВСТРЕЧ", r: 0.87, tags: ["time", "people", "tech", "work", "date"] },
-                { text: "ПУТЬ НА СТАНЦИЮ", r: 0.91, tags: ["road", "weather", "time", "work", "school", "friends"] },
-                { text: "ВХОД В ЗДАНИЕ", r: 0.86, tags: ["home", "people", "road", "work", "school", "date"] },
-                { text: "СВЯЗЬ С ОФИСОМ", r: 0.85, tags: ["tech", "people", "work"] },
-                { text: "УТРЕННИЙ ПЛАН", r: 0.82, tags: ["time", "people", "tech", "work", "school"] },
-                { text: "ПОДЪЁМ НА ЭТАЖ", r: 0.84, tags: ["home", "tech", "work", "date"] },
-                { text: "ПРОХОД ЧЕРЕЗ ДВОР", r: 0.88, tags: ["home", "road", "weather", "school", "date", "friends"] },
-                { text: "ПОЕЗДКУ УТРОМ", r: 0.93, tags: ["road", "time", "weather", "work", "school", "friends"] },
-                { text: "ВРЕМЯ ВЫХОДА", r: 0.9, tags: ["time", "home", "tech", "school", "work", "date", "friends"] },
-                { text: "ПЕРЕСАДКУ", r: 0.89, tags: ["road", "time", "work", "school", "friends"] },
-                { text: "УТРЕННИЙ ГРАФИК", r: 0.91, tags: ["time", "tech", "people", "work", "school"] },
-                { text: "ДОРОГУ НА РАБОТУ", r: 0.95, tags: ["road", "weather", "time", "work"] }
-            ]
-        }
+        life: (() => {
+            const w = (text, g, r, tags) => ({ text, g, r, tags });
+            const v = (m, f, n, pl, r, tags) => ({ m, f, n, pl, r, tags });
+            const t = (text, r, tags) => ({ text, r, tags });
+            const ALL = ["school", "work", "friends", "date"];
+
+            return {
+                who: [
+                    w("АВТОБУС", "m", 0.92, ["@transport", ...ALL]),
+                    w("МАРШРУТКА", "f", 0.9, ["@transport", ...ALL]),
+                    w("ТРАМВАЙ", "m", 0.9, ["@transport", ...ALL]),
+                    w("МЕТРО", "n", 0.9, ["@transport", ...ALL]),
+                    w("БУДИЛЬНИК", "m", 0.88, ["@home", "school", "work", "date"]),
+                    w("ЛИФТ", "m", 0.88, ["@home", "school", "work", "date"]),
+                    w("ТЕЛЕФОН", "m", 0.86, ["@home", "school", "work", "date"]),
+                    w("КОФЕМАШИНА", "f", 0.8, ["@home", "work", "date"]),
+                    w("ДОМОФОН", "m", 0.85, ["@home", "school", "friends", "date"]),
+                    w("ДОЖДЬ", "m", 0.9, ["@weather", ...ALL]),
+                    w("ГОЛОЛЁД", "m", 0.92, ["@weather", ...ALL]),
+                    w("ТУМАН", "m", 0.88, ["@weather", ...ALL]),
+                    w("МЕТЕЛЬ", "f", 0.9, ["@weather", ...ALL]),
+                    w("ОБНОВЛЕНИЕ СИСТЕМЫ", "n", 0.85, ["@tech", "work"]),
+                    w("ВПН", "m", 0.82, ["@tech", "work"]),
+                    w("ПРИНТЕР", "m", 0.84, ["@tech", "work"]),
+                    w("СЕРВЕР", "m", 0.86, ["@tech", "work"]),
+                    w("ПОЧТА", "f", 0.8, ["@tech", "work"]),
+                    w("МАМА", "f", 0.8, ["@people", "school", "friends", "date"]),
+                    w("БАБУШКА", "f", 0.78, ["@people", "school", "friends"]),
+                    w("ЛУЧШИЙ ДРУГ", "m", 0.75, ["@people", "friends", "date"]),
+                    w("ШЕФ", "m", 0.8, ["@people", "work"]),
+                    w("ПРОБКА", "f", 0.95, ["@city", ...ALL]),
+                    w("ПЕРЕЕЗД", "m", 0.9, ["@city", ...ALL]),
+                    w("СВЕТОФОР", "m", 0.84, ["@city", ...ALL]),
+                    w("КОММУНАЛЬЩИКИ", "pl", 0.85, ["@city", ...ALL]),
+                    w("РЕМОНТ ДОРОГИ", "m", 0.93, ["@city", ...ALL])
+                ],
+                action: [
+                    v("ЗАГЛОХ", "ЗАГЛОХЛА", "ЗАГЛОХЛО", "ЗАГЛОХЛИ", 0.88, ["@transport"]),
+                    v("ВСТАЛ", "ВСТАЛА", "ВСТАЛО", "ВСТАЛИ", 0.9, ["@transport"]),
+                    v("СЛОМАЛСЯ", "СЛОМАЛАСЬ", "СЛОМАЛОСЬ", "СЛОМАЛИСЬ", 0.85, ["@transport", "@home"]),
+                    v("ЗАВИС", "ЗАВИСЛА", "ЗАВИСЛО", "ЗАВИСЛИ", 0.87, ["@transport", "@home", "@tech", "@city"]),
+                    v("ВЫРУБИЛСЯ", "ВЫРУБИЛАСЬ", "ВЫРУБИЛОСЬ", "ВЫРУБИЛИСЬ", 0.8, ["@home", "@tech"]),
+                    v("ОТВАЛИЛСЯ", "ОТВАЛИЛАСЬ", "ОТВАЛИЛОСЬ", "ОТВАЛИЛИСЬ", 0.78, ["@home", "@tech"]),
+                    v("УПАЛ", "УПАЛА", "УПАЛО", "УПАЛИ", 0.85, ["@tech"]),
+                    v("ОБРУШИЛСЯ НА ГОРОД", "ОБРУШИЛАСЬ НА ГОРОД", "ОБРУШИЛОСЬ НА ГОРОД", "ОБРУШИЛИСЬ НА ГОРОД", 0.86, ["@weather"]),
+                    v("ЗАСТАЛ МЕНЯ ВРАСПЛОХ", "ЗАСТАЛА МЕНЯ ВРАСПЛОХ", "ЗАСТАЛО МЕНЯ ВРАСПЛОХ", "ЗАСТАЛИ МЕНЯ ВРАСПЛОХ", 0.78, ["@weather", "@people"]),
+                    v("ЗАСТАВИЛ ОБЪЕЗЖАТЬ ПОЛГОРОДА", "ЗАСТАВИЛА ОБЪЕЗЖАТЬ ПОЛГОРОДА", "ЗАСТАВИЛО ОБЪЕЗЖАТЬ ПОЛГОРОДА", "ЗАСТАВИЛИ ОБЪЕЗЖАТЬ ПОЛГОРОДА", 0.82, ["@weather", "@city"]),
+                    v("ПЕРЕКРЫЛ ВСЮ УЛИЦУ", "ПЕРЕКРЫЛА ВСЮ УЛИЦУ", "ПЕРЕКРЫЛО ВСЮ УЛИЦУ", "ПЕРЕКРЫЛИ ВСЮ УЛИЦУ", 0.9, ["@city"]),
+                    v("ПОЗВОНИЛ", "ПОЗВОНИЛА", "ПОЗВОНИЛО", "ПОЗВОНИЛИ", 0.85, ["@people"]),
+                    v("ЗАГОВОРИЛ МЕНЯ", "ЗАГОВОРИЛА МЕНЯ", "ЗАГОВОРИЛО МЕНЯ", "ЗАГОВОРИЛИ МЕНЯ", 0.8, ["@people"]),
+                    v("ПРИШЁЛ", "ПРИШЛА", "ПРИШЛО", "ПРИШЛИ", 0.8, ["@people"])
+                ],
+                target: [
+                    t("ПОСРЕДИ МОСТА", 0.88, ["@transport"]),
+                    t("ЗА ДВЕ ОСТАНОВКИ ДО МЕНЯ", 0.86, ["@transport"]),
+                    t("НА ПОЛЧАСА", 0.9, ["@transport", "@home", "@tech", "@city"]),
+                    t("РОВНО В ЧАС ПИК", 0.92, ["@transport", "@weather", "@city"]),
+                    t("ПРЯМО ПЕРЕД ВЫХОДОМ", 0.9, ["@home", "@weather", "@people"]),
+                    t("ИМЕННО СЕГОДНЯ", 0.8, ["@home", "@tech", "@people"]),
+                    t("В ЕДИНСТВЕННОЕ УТРО, КОГДА Я ВСТАЛ ВОВРЕМЯ", 0.7, ["@home"]),
+                    t("ПОСЛЕ ТОГО КАК Я УЖЕ ОДЕЛСЯ", 0.78, ["@home", "@people"]),
+                    t("ПОКА Я БЕЖАЛ НА ОСТАНОВКУ", 0.85, ["@weather"]),
+                    t("БЕЗ ВСЯКОГО ПРОГНОЗА", 0.8, ["@weather"]),
+                    t("ПРЯМО ПЕРЕД ДЕДЛАЙНОМ", 0.78, ["@tech"]),
+                    t("РОВНО В НАЧАЛЕ СМЕНЫ", 0.84, ["@tech"]),
+                    t("ПОСЛЕ ВЫХОДНЫХ", 0.82, ["@tech"]),
+                    t("ПЕРЕД САМЫМ ПОВОРОТОМ", 0.86, ["@city"]),
+                    t("БЕЗ ВСЯКОГО ПРЕДУПРЕЖДЕНИЯ", 0.82, ["@city", "@tech"]),
+                    t("В САМЫЙ НЕПОДХОДЯЩИЙ МОМЕНТ", 0.82, ["@people", "@home", "@tech"])
+                ]
+            };
+        })()
     };
 
     const slotIds = ['slot1', 'slot2', 'slot3'];
@@ -1427,9 +1439,16 @@ button:focus-visible, .slot:focus-visible { outline: 2px solid var(--brass-hi); 
             ? CONTEXT_META[ctxKey].fitTags
             : [];
 
+        const sceneTag = Array.isArray(contextTags)
+            ? contextTags.find(t => typeof t === 'string' && t.startsWith('@'))
+            : null;
+
         const weights = pool.map(item => {
             const itemTags = item.tags || [];
             let w = 1;
+            if (sceneTag) {
+                w *= itemTags.includes(sceneTag) ? 6 : 0.01;
+            }
             if (Array.isArray(contextTags) && contextTags.length > 0) {
                 const shared = countSharedTags(itemTags, contextTags);
                 w *= shared > 0 ? 1 + shared * 3.2 : 0.45;
@@ -1690,4 +1709,4 @@ button:focus-visible, .slot:focus-visible { outline: 2px solid var(--brass-hi); 
 </script>
 
 </body>
-  </html>
+    </html>
